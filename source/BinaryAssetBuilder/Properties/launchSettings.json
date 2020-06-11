@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BinaryAssetBuilder": {
+      "commandName": "Project",
+      "commandLineArgs": "test.xml"
+    }
+  }
+}
