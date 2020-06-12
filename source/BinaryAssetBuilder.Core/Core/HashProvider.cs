@@ -104,7 +104,7 @@ namespace BinaryAssetBuilder.Core
             {
                 { InstanceIdTableName, new StringHashBin(InstanceIdTableName, false) },
                 { TypeIdTableName, new StringHashBin(TypeIdTableName, true) },
-                { StringHashTableName, new StringHashBin(StringHashTableName, false) },
+                { StringHashTableName, new StringHashBin(StringHashTableName, true) },
                 { PoidTableName, new StringHashBin(PoidTableName, false) }
             };
             LoadPreviousStringHashes();

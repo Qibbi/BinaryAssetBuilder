@@ -130,6 +130,19 @@ namespace BinaryAssetBuilder.Core
             // throw new NotImplementedException();
         }
 
+        public void AddLastWrittenAsset(BinaryAsset asset)
+        {
+            if (_lastWrittenAssets.ContainsKey(asset.FileBase))
+            {
+                return;
+            }
+            _lastWrittenAssets.Add(asset.FileBase, new AssetLocationInfo
+            {
+                AssetOutputDirectory = asset.AssetOutputDirectory,
+                CustomDataOutputDirectory = asset.CustomDataOutputDirectory
+            });
+        }
+
         public AssetDeclarationDocument ProcessDocument(string fileName, bool generateOutput, bool outputStringHashes)
         {
             XIncludeReaderWrapper.LoadAssembly();

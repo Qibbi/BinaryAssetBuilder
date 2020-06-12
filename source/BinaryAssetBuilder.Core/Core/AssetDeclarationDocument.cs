@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -300,11 +302,10 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
-        private static Tracer _tracer = Tracer.GetTracer(nameof(AssetDeclarationDocument), "Provides Xml processing functionality");
+        private static readonly Tracer _tracer = Tracer.GetTracer(nameof(AssetDeclarationDocument), "Provides Xml processing functionality");
 
         private LastState _last;
         [NonSerialized] private CurrentState _current;
-        [NonSerialized] private bool _procesing;
 
         [NonSerialized] public bool ReloadForInheritance;
 
@@ -367,20 +368,18 @@ namespace BinaryAssetBuilder.Core
             }
             else
             {
-                using (MemoryStream memoryStream = new MemoryStream())
+                using MemoryStream memoryStream = new MemoryStream();
+                BinaryWriter writer = new BinaryWriter(memoryStream);
+                foreach (string dependentFile in _current.DependentFiles)
                 {
-                    BinaryWriter writer = new BinaryWriter(memoryStream);
-                    foreach (string dependentFile in _current.DependentFiles)
+                    if (TryGetFileHashItem(dependentFile, out FileHashItem item))
                     {
-                        if (TryGetFileHashItem(dependentFile, out FileHashItem item))
-                        {
-                            writer.Write(HashProvider.GetTextHash(item.Path.ToLower()));
-                            writer.Write(item.Hash);
-                        }
+                        writer.Write(HashProvider.GetTextHash(item.Path.ToLower()));
+                        writer.Write(item.Hash);
                     }
-                    byte[] array = memoryStream.ToArray();
-                    _current.DependentFileHash = array.Length <= 0 ? 0u : FastHash.GetHashCode(array);
                 }
+                byte[] array = memoryStream.ToArray();
+                _current.DependentFileHash = array.Length <= 0 ? 0u : FastHash.GetHashCode(array);
             }
             if (_current.InclusionItems.Count == 0)
             {
@@ -403,6 +402,74 @@ namespace BinaryAssetBuilder.Core
         {
             _current.FromScratch();
             InternalLoad(reason, true);
+        }
+
+        private void GatherUnvalidatedTags()
+        {
+            Tags.Clear();
+            foreach (XPathNavigator xPathNavigator in _current.XmlDocument.CreateNavigator().Evaluate("/ea:AssetDeclaration/ea:Tags/child::*", _current.NamespaceManager) as XPathNodeIterator)
+            {
+                _current.Tags.Add(xPathNavigator.GetAttribute("name", ""), xPathNavigator.GetAttribute("value", ""));
+            }
+        }
+
+        private void GatherDefines()
+        {
+            SelfDefines.Clear();
+            foreach (XPathNavigator xPathNavigator in _current.XmlDocument.CreateNavigator().Evaluate("/ea:AssetDeclaration/ea:Defines/child::*", _current.NamespaceManager) as XPathNodeIterator)
+            {
+                _current.SelfDefines.Add(new Definition
+                {
+                    Document = this,
+                    OriginalValue = xPathNavigator.GetAttribute("value", ""),
+                    Name = xPathNavigator.GetAttribute("name", ""),
+                    IsOverride = xPathNavigator.GetAttribute("override", "") == "true"
+                });
+            }
+        }
+
+        private void GatherUnvalidatedIncludes()
+        {
+            InclusionItems.Clear();
+            foreach (XPathNavigator xPathNavigator in _current.XmlDocument.CreateNavigator().Evaluate("/ea:AssetDeclaration/ea:Includes/child::*", _current.NamespaceManager) as XPathNodeIterator)
+            {
+                string path = xPathNavigator.GetAttribute("source", "").Trim().ToLower();
+                string resolvedPath = FileNameResolver.ResolvePath(SourceDirectory, path).ToLower();
+                InclusionItem inclusionItem = new InclusionItem(path, resolvedPath, (InclusionType)Enum.Parse(typeof(InclusionType), xPathNavigator.GetAttribute("type", ""), true));
+                _current.InclusionItems.Add(inclusionItem);
+                if (inclusionItem.Type == InclusionType.Instance)
+                {
+                    _current.DependentFiles.Add(path);
+                }
+            }
+        }
+
+        private void GatherUnvalidatedInstances()
+        {
+            SelfInstances.Clear();
+            foreach (XmlNode selectNode in _current.XmlDocument.SelectNodes("/ea:AssetDeclaration/child::*", _current.NamespaceManager))
+            {
+                if (!(selectNode.Name == "Includes") && !(selectNode.Name == "Tags") && !(selectNode.Name == "Defines"))
+                {
+                    InstanceDeclaration declaration = new InstanceDeclaration(this)
+                    {
+                        XmlNode = selectNode
+                    };
+                    if (!SelfInstances.TryAdd(declaration))
+                    {
+                        InstanceDeclaration selfInstance = SelfInstances[declaration.Handle];
+                        if (declaration.Handle.InstanceName == selfInstance.Handle.InstanceName)
+                        {
+                            throw new BinaryAssetBuilderException(ErrorCode.DuplicateInstance,
+                                                                  "Duplicate Instance: {0}, in {1} and {2}",
+                                                                  declaration,
+                                                                  declaration.Document.SourcePath,
+                                                                  selfInstance.Document.SourcePath);
+                        }
+                        throw new BinaryAssetBuilderException(ErrorCode.DuplicateInstance, "Duplicate Instance: {0} (other is {1})", declaration, selfInstance);
+                    }
+                }
+            }
         }
 
         private void InternalLoad(string reason, bool loadFromScratch)
@@ -455,6 +522,437 @@ namespace BinaryAssetBuilder.Core
                 return;
             }
             _current.NodeSourceInfoSet.AddFirst(new XmlNodeWithMetaData(args.Node, xmlReader.LineNumber));
+        }
+
+        private void ProcessExpressionsInNode(IExpressionEvaluator evaluator, XmlNode node)
+        {
+            if (node.Attributes != null)
+            {
+                foreach (XmlAttribute attribute in node.Attributes)
+                {
+                    if (attribute.Value.Length > 0 && attribute.Value[0] == '=')
+                    {
+                        attribute.Value = evaluator.Evaluate(attribute.Value);
+                    }
+                }
+            }
+            if (node.Value != null && node.Value.Length > 0 && node.Value[0] == '=')
+            {
+                node.Value = evaluator.Evaluate(node.Value);
+            }
+            if (node.ChildNodes is null)
+            {
+                return;
+            }
+            foreach (XmlNode childNode in node.ChildNodes)
+            {
+                ProcessExpressionsInNode(evaluator, childNode);
+            }
+        }
+
+        private void OverrideInstance(InstanceDeclaration instance)
+        {
+            if (instance.InheritFromHandle != null)
+            {
+                XmlNode baseNode = null;
+                InstanceDeclaration baseInstance = FindInstance(instance.InheritFromHandle,
+                                                                instance.InheritFromHandle == instance.Handle ? FindLocation.Self : FindLocation.None,
+                                                                out FindLocation location);
+                if (baseInstance is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                          "Instance {0} attempts to inherit from or override a non-existing instance {1}",
+                                                          instance.Handle,
+                                                          instance.InheritFromHandle);
+                }
+                if (!instance.IsInheritable && location != FindLocation.Self)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                          "Instance {0} cannot be overriden because it is not of type BaseInheritableAsset",
+                                                          instance.InheritFromHandle);
+                }
+                switch (location)
+                {
+                    case FindLocation.None:
+                        throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                              "Instance {0} attempts to inherit from an instance {1} which could not be found.",
+                                                              instance.Handle,
+                                                              instance.InheritFromHandle);
+                    case FindLocation.Self:
+                        if (baseInstance.PrevalidationXmlHash == 0u)
+                        {
+                            OverrideInstance(baseInstance);
+                        }
+                        baseNode = baseInstance.XmlNode;
+                        break;
+                    case FindLocation.Tentative:
+                        using (List<InclusionItem>.Enumerator enumerator = _current.InclusionItems.GetEnumerator())
+                        {
+                            while (enumerator.MoveNext())
+                            {
+                                if (enumerator.Current.Document == baseInstance.Document)
+                                {
+                                    baseNode = baseInstance.XmlNode;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                              "Instance {0}\n  in document '{1}'\n  attempts to inherit from instance {2}\n  from document '{3}'\n  which does not appear to be included by 'instance'.",
+                                                              instance.Handle,
+                                                              instance.Document.SourcePath,
+                                                              baseInstance,
+                                                              baseInstance.Document.SourcePath);
+                }
+                if (baseNode is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InternalError,
+                                                          "Instance {0} attempts to inherit from instance {1} but source XML is missing.",
+                                                          instance.Handle,
+                                                          instance.InheritFromHandle);
+                }
+                XmlNode newChild = NodeJoiner.Override(_current.DocumentProcessor.SchemaSet.Schemas, XmlDocument, baseNode, instance.XmlNode);
+                XmlNode parentNode = instance.XmlNode.ParentNode;
+                parentNode.RemoveChild(instance.XmlNode);
+                parentNode.AppendChild(newChild);
+                instance.XmlNode = newChild;
+                instance.InheritFromXmlHash = baseInstance.PrevalidationXmlHash;
+            }
+            instance.PrevalidationXmlHash = HashProvider.GetTextHash(instance.XmlNode.OuterXml);
+        }
+
+        private void ValidateInstances()
+        {
+            StringCollection derivedTypes = _current.DocumentProcessor.SchemaSet.GetDerivedTypes("BaseInheritableAsset");
+            foreach (InstanceDeclaration selfInstance in _current.SelfInstances)
+            {
+                ExtendedTypeInformation extendedTypeInformation = _current.DocumentProcessor.Plugins.GetExtendedTypeInformation(selfInstance.Handle.TypeId);
+                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, 10u.ToString());
+                selfInstance.Handle.TypeHash = extendedTypeInformation.TypeHash;
+                selfInstance.Handle.InstanceHash = HashProvider.GetTextHash(textHash, selfInstance.XmlNode.OuterXml);
+                selfInstance.ProcessingHash = extendedTypeInformation.ProcessingHash;
+                if (derivedTypes != null)
+                {
+                    selfInstance.IsInheritable = derivedTypes.Contains(selfInstance.XmlNode.SchemaInfo.SchemaType.Name);
+                }
+                if (selfInstance.Handle.TypeName != selfInstance.XmlNode.SchemaInfo.SchemaType.Name)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.SchemaValidation, "Type name and element name do not match for {0}.", selfInstance.Handle);
+                }
+                if (selfInstance.Handle.TypeHash == 0u)
+                {
+                    _tracer.TraceWarning("No type hash found for type {0}.", selfInstance.Handle.TypeName);
+                }
+                if (Settings.Current.OutputIntermediateXml)
+                {
+                    XmlWriterSettings settings = new XmlWriterSettings
+                    {
+                        NewLineOnAttributes = true,
+                        Encoding = Encoding.ASCII,
+                        Indent = true,
+                        IndentChars = "    "
+                    };
+                    string outputDir = Path.Combine(Settings.Current.OutputDirectory, "FinalXml");
+                    string assetName = selfInstance.Handle.TypeName + "." + selfInstance.Handle.InstanceName;
+                    Directory.CreateDirectory(outputDir);
+                    XmlWriter writer = XmlWriter.Create(Path.Combine(outputDir, assetName + ".xml"), settings);
+                    selfInstance.XmlNode.WriteTo(writer);
+                    writer.Close();
+                }
+                XPathNodeIterator xPathNodeIterator = selfInstance.XmlNode.CreateNavigator().SelectDescendants("", "uri:ea.com:eala:asset", true);
+                MemoryStream memoryStream = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+                foreach (XPathNavigator navigator in xPathNodeIterator)
+                {
+                    HandleReferenceType(selfInstance, navigator, binaryWriter);
+                    if (navigator.HasAttributes)
+                    {
+                        navigator.MoveToFirstAttribute();
+                        do
+                        {
+                            HandleReferenceType(selfInstance, navigator, binaryWriter);
+                        }
+                        while (navigator.MoveToNextAttribute());
+                        navigator.MoveToParent();
+                    }
+                    if (navigator.SchemaInfo != null && navigator.SchemaInfo.SchemaType != null && navigator.SchemaInfo.SchemaType.Name != null)
+                    {
+                        navigator.CreateAttribute("", "TypeId", "", HashProvider.GetCaseSenstitiveSymbolHash(navigator.SchemaInfo.SchemaType.Name).ToString());
+                    }
+                }
+                foreach (string referencedFile in selfInstance.ReferencedFiles)
+                {
+                    TryGetFileHashItem(referencedFile, out FileHashItem fileItem);
+                    binaryWriter.Write(fileItem.Hash);
+                }
+                if (memoryStream.Length > 0L)
+                {
+                    selfInstance.Handle.InstanceHash ^= FastHash.GetHashCode(memoryStream.GetBuffer());
+                }
+            }
+        }
+
+        private string GetRefTypeName(XmlAttribute[] unhandledAttributes)
+        {
+            if (unhandledAttributes != null)
+            {
+                foreach (XmlAttribute unhandledAttribute in unhandledAttributes)
+                {
+                    if (unhandledAttribute.NamespaceURI == "uri:ea.com:eala:asset:schema")
+                    {
+                        switch (unhandledAttribute.LocalName)
+                        {
+                            case "refType":
+                                return unhandledAttribute.Value;
+                            default:
+                                continue;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void HandleReferenceType(InstanceDeclaration instance, XPathNavigator navigator, BinaryWriter refTypeWriter)
+        {
+            if (navigator.SchemaInfo is null || navigator.SchemaInfo.SchemaType is null)
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Element {0} in instance {1} doesn't have a schema type.", navigator.Name, instance);
+            }
+            bool isWeakRef = XmlSchemaType.IsDerivedFrom(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlWeakReferenceType, XmlSchemaDerivationMethod.None);
+            bool isRef = !isWeakRef
+                      && XmlSchemaType.IsDerivedFrom(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlAssetReferenceType, XmlSchemaDerivationMethod.None);
+            if (isWeakRef || isRef)
+            {
+                string instanceName = navigator.Value.Trim().Split('\\')[0];
+                if (string.IsNullOrEmpty(instanceName))
+                {
+                    return;
+                }
+                InstanceHandle instanceHandle = new InstanceHandle(instanceName);
+                string refTypeName = null;
+                if (navigator.SchemaInfo.SchemaElement != null)
+                {
+                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaElement.UnhandledAttributes);
+                }
+                else if (navigator.SchemaInfo.SchemaAttribute != null)
+                {
+                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaAttribute.UnhandledAttributes);
+                }
+                if (refTypeName is null)
+                {
+                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaType.UnhandledAttributes);
+                }
+                if (refTypeName is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                          "Asset reference to '{0}' in '{1}' does not have type (xas:refType missing in schema).",
+                                                          instanceName,
+                                                          instance);
+                }
+                refTypeWriter.Write(HashProvider.GetCaseSenstitiveSymbolHash(refTypeName));
+                if (instanceHandle.TypeId == 0u)
+                {
+                    instanceHandle.TypeName = refTypeName;
+                }
+                else if (isRef)
+                {
+                    XmlSchemaType xmlType = _current.DocumentProcessor.SchemaSet.GetXmlType(instanceHandle.TypeName);
+                    XmlSchemaType otherType = _current.DocumentProcessor.SchemaSet.GetXmlType(refTypeName);
+                    if (otherType is null)
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                              "Unable to establish schema type of underlying reference type '{0}'. Make sure it's defined and included in the schema set.",
+                                                              refTypeName);
+                    }
+                    if (xmlType is null)
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                              "Unable to establish schema type of referenced instance '{0}'. Make sure it's defined and included in the schema set.",
+                                                              instanceHandle.Name);
+                    }
+                    if (!XmlSchemaType.IsDerivedFrom(xmlType, otherType, XmlSchemaDerivationMethod.None))
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                              "Type of instance '{0}' referenced from '{1}' does not appear to be equal to or derived from required reference type '{2}'.",
+                                                              instanceHandle.Name,
+                                                              instance.Handle.Name,
+                                                              refTypeName);
+                    }
+                }
+                if (isRef)
+                {
+                    instance.ReferencedInstances.Add(instanceHandle);
+                    navigator.SetValue($"{instanceName}\\{instance.ReferencedInstances.Count - 1}");
+                }
+                else
+                {
+                    instance.WeakReferencedInstances.Add(instanceHandle);
+                }
+            }
+            else if (XmlSchemaType.IsDerivedFrom(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlFileReferenceType, XmlSchemaDerivationMethod.None))
+            {
+                string lower = navigator.Value.Trim().ToLower();
+                TryGetFileHashItem(lower, out FileHashItem fileItem);
+                string path = fileItem.Path.ToLower();
+                _current.DependentFiles.Add(lower);
+                navigator.SetValue(path);
+                instance.ReferencedFiles.Add(lower);
+            }
+            else if (Equals(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlStringHashType))
+            {
+                HashProvider.RecordHash(HashProvider.StringHashTableName, navigator.Value.Trim());
+            }
+            else if (Equals(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlPoidType))
+            {
+                HashProvider.RecordHash(HashProvider.PoidTableName, navigator.Value.Trim());
+            }
+        }
+
+        private InstanceDeclaration ResolveReference(InstanceDeclaration parent, InstanceHandle reference, out FindLocation location)
+        {
+            InstanceDeclaration instance = FindInstance(reference, FindLocation.None, out location);
+            if (instance is null)
+            {
+                InstanceHandle handle = new InstanceHandle(reference.TypeName, reference.InstanceName);
+                StringCollection derivedTypes = _current.DocumentProcessor.SchemaSet.GetDerivedTypes(reference.TypeName);
+                if (derivedTypes != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    int num = 0;
+                    foreach (string str in derivedTypes)
+                    {
+                        handle.TypeName = str;
+                        InstanceDeclaration otherInstance = FindInstance(handle, FindLocation.None, out FindLocation otherLocation);
+                        if (otherInstance != null)
+                        {
+                            instance = otherInstance;
+                            location = otherLocation;
+                            if (num > 0)
+                            {
+                                sb.Append(", ");
+                            }
+                            sb.AppendFormat("'{0}'", handle.Name);
+                            ++num;
+                        }
+                    }
+                    if (num > 1)
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                              "Reference to instance '{0}' from '{1}' in 'file://{2}' is ambiguous. Possible matches: {3}",
+                                                              reference.Name,
+                                                              parent.Handle.Name,
+                                                              parent.Document.SourcePath,
+                                                              sb);
+                    }
+                }
+            }
+            return instance;
+        }
+
+        private void AddOutputInstance(InstanceDeclaration instance)
+        {
+            if (instance.Handle.TypeHash == 0u || _current.OutputInstanceSet.ContainsKey(instance.Handle))
+            {
+                return;
+            }
+            _current.OutputInstanceSet.Add(instance.Handle, instance);
+            if (instance.ValidatedReferencedInstances != null)
+            {
+                foreach (InstanceHandle referenceHandle in instance.ValidatedReferencedInstances)
+                {
+                    InstanceDeclaration reference = ResolveReference(instance, referenceHandle, out FindLocation location);
+                    if (reference != null && location != FindLocation.External)
+                    {
+                        AddOutputInstance(reference);
+                    }
+                }
+            }
+            else
+            {
+                instance.ValidatedReferencedInstances = new List<InstanceHandle>();
+                instance.AllDependentInstances = new InstanceHandleSet();
+                foreach (InstanceHandle referencedHandle in instance.ReferencedInstances)
+                {
+                    InstanceDeclaration reference = ResolveReference(instance, referencedHandle, out FindLocation location);
+                    if (reference != null)
+                    {
+                        if (location != FindLocation.External)
+                        {
+                            instance.AllDependentInstances.TryAdd(reference.Handle);
+                            AddOutputInstance(reference);
+                            foreach (InstanceHandle dependentHandle in reference.AllDependentInstances)
+                            {
+                                instance.AllDependentInstances.TryAdd(dependentHandle);
+                            }
+                        }
+                        instance.ValidatedReferencedInstances.Add(reference.Handle);
+                    }
+                    else
+                    {
+                        if (Settings.Current.ErrorLevel > 0)
+                        {
+                            throw new BinaryAssetBuilderException(ErrorCode.UnknownReference, "Unknown referenced asset: {0}", referencedHandle);
+                        }
+                        if (_current.DocumentProcessor.MissingReferences.TryAdd(referencedHandle))
+                        {
+                            _tracer.TraceWarning("Unknown asset '{0}' referenced from '{1}'\n   in 'file://{2}'", referencedHandle.Name, instance.Handle.Name, instance.Document.SourcePath);
+                        }
+                        instance.ValidatedReferencedInstances.Add(referencedHandle);
+                    }
+                }
+                foreach (string referencedFile in instance.ReferencedFiles)
+                {
+                    if (!instance.Document.TryGetFileHashItem(referencedFile, out FileHashItem _))
+                    {
+                        _tracer.TraceWarning("Referenced file not found: {0}", referencedFile);
+                    }
+                }
+            }
+        }
+
+        public InstanceDeclaration FindInstance(InstanceHandle handle, FindLocation skipLocation, out FindLocation location)
+        {
+            location = FindLocation.None;
+            if (_current.SelfInstances != null && skipLocation != FindLocation.Self && _current.SelfInstances.TryGetValue(handle, out InstanceDeclaration instance))
+            {
+                location = FindLocation.Self;
+                return instance;
+            }
+            if (_current.AllInstances != null && skipLocation != FindLocation.All && _current.AllInstances.TryGetValue(handle, out instance))
+            {
+                location = FindLocation.All;
+                return instance;
+            }
+            if (_current.TentativeInstances != null && skipLocation != FindLocation.Tentative && _current.TentativeInstances.TryGetValue(handle, out instance))
+            {
+                location = FindLocation.Tentative;
+                return instance;
+            }
+            if (_current.ReferenceInstances != null && skipLocation != FindLocation.External && _current.ReferenceInstances.TryGetValue(handle, out instance))
+            {
+                location = FindLocation.External;
+                return instance;
+            }
+            return null;
+        }
+
+        public void RecordStringHashes()
+        {
+            foreach (InstanceDeclaration selfInstance in _current.SelfInstances)
+            {
+                HashProvider.RecordHash(selfInstance.Handle);
+                foreach (InstanceHandle referencedInstance in selfInstance.ReferencedInstances)
+                {
+                    HashProvider.RecordHash(referencedInstance);
+                }
+                foreach (InstanceHandle referencedInstance in selfInstance.WeakReferencedInstances)
+                {
+                    HashProvider.RecordHash(referencedInstance);
+                }
+            }
         }
 
         public void SetChanged(string reason)
@@ -723,7 +1221,303 @@ namespace BinaryAssetBuilder.Core
             UpdateDocumentHashes();
         }
 
-        // TODO: public void EvaluateDefinitions()..
+        public void EvaluateDefinitions()
+        {
+            IExpressionEvaluator evaluator = ExpressionEvaluatorWrapper.GetEvaluator(this);
+            foreach (Definition selfDefine in SelfDefines)
+            {
+                if (selfDefine.OriginalValue != null)
+                {
+                    selfDefine.EvaluatedValue = null;
+                    evaluator.EvaluateDefinition(selfDefine);
+                }
+                if (AllDefines.TryGetValue(selfDefine.Name, out Definition definition) && selfDefine.Document != definition.Document && !selfDefine.IsOverride)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.DuplicateDefine,
+                                                          "Define {0} defined in {1} is already defined in {2}",
+                                                          selfDefine.Name,
+                                                          selfDefine.Document.SourcePath,
+                                                          definition.Document.SourcePath);
+                }
+                AllDefines[selfDefine.Name] = selfDefine;
+            }
+        }
+
+        public bool ValidateCachedDefines()
+        {
+            foreach (KeyValuePair<string, string> usedDefine in UsedDefines)
+            {
+                if (usedDefine.Value != AllDefines.GetEvaluatedValue(usedDefine.Key))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool ValidateInheritFromSources()
+        {
+            foreach (InstanceDeclaration selfInstance in SelfInstances)
+            {
+                if (!(selfInstance.InheritFromHandle is null))
+                {
+                    InstanceDeclaration instance = FindInstance(selfInstance.InheritFromHandle,
+                                                                selfInstance.InheritFromHandle == selfInstance.Handle ? FindLocation.Self : FindLocation.None,
+                                                                out FindLocation location);
+                    if (instance is null)
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                              "Instance {0} attempts to inherit from non-existing instance {1}.",
+                                                              selfInstance,
+                                                              selfInstance.InheritFromHandle);
+                    }
+                    switch (location)
+                    {
+                        case FindLocation.Self:
+                            if ((int)instance.PrevalidationXmlHash != (int)selfInstance.InheritFromXmlHash)
+                            {
+                                return false;
+                            }
+                            continue;
+                        case FindLocation.Tentative:
+                            bool included = false;
+                            foreach (InclusionItem inclusionItem in _current.InclusionItems)
+                            {
+                                if (inclusionItem.Document == instance.Document)
+                                {
+                                    included = true;
+                                    break;
+                                }
+                            }
+                            if (!included)
+                            {
+                                throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                                      "Instance {0} attempts to inherit from instance {1} which is not directly included.",
+                                                                      selfInstance,
+                                                                      selfInstance.InheritFromHandle);
+                            }
+                            goto case FindLocation.Self;
+                        default:
+                            throw new BinaryAssetBuilderException(ErrorCode.InheritFromError,
+                                                                  "Instance {0} attempts to inherit from instance {1} which is not included by 'instance'.",
+                                                                  selfInstance,
+                                                                  selfInstance.InheritFromHandle);
+                    }
+                }
+            }
+            return true;
+        }
+
+        public void ProcessExpressions()
+        {
+            IExpressionEvaluator evaluator = ExpressionEvaluatorWrapper.GetEvaluator(this);
+            if (evaluator is null)
+            {
+                return;
+            }
+            foreach (InstanceDeclaration selfInstance in SelfInstances)
+            {
+                ProcessExpressionsInNode(evaluator, selfInstance.XmlNode);
+            }
+        }
+
+        public void MergeInstances()
+        {
+            Instances.Clear();
+            Instances.Add(SelfInstances);
+            Instances.Add(AllInstances);
+        }
+
+        public void ProcessInstances(OutputManager outputManager, ref int instancesCompiledCount, ref int instancesCopiedFromCacheCount)
+        {
+            foreach (InstanceDeclaration selfInstance in SelfInstances)
+            {
+                ExtendedTypeInformation extendedTypeInformation = _current.DocumentProcessor.Plugins.GetExtendedTypeInformation(selfInstance.Handle.TypeId);
+                selfInstance.HasCustomData = extendedTypeInformation.HasCustomData;
+                BinaryAsset binaryAsset = outputManager.GetBinaryAsset(selfInstance, true);
+                if (binaryAsset != null)
+                {
+                    if (binaryAsset.GetLocation(AssetLocation.All, AssetLocationOption.None) == AssetLocation.None)
+                    {
+                        _tracer.Message("{0}: Compiling {1}", Path.GetFileName(_current.SourcePath), binaryAsset.Instance.ToString());
+                        if (binaryAsset.Instance.XmlNode is null)
+                        {
+                            throw new BinaryAssetBuilderException(ErrorCode.DependencyCacheFailure, "Need to compile instance {0} but XML is not loaded. Bug.", binaryAsset.Instance);
+                        }
+                        if (selfInstance.HasCustomData)
+                        {
+                            selfInstance.CustomDataPath = Path.Combine(binaryAsset.CustomDataOutputDirectory, binaryAsset.FileBase + ".cdata");
+                            if (!Directory.Exists(binaryAsset.CustomDataOutputDirectory))
+                            {
+                                Directory.CreateDirectory(binaryAsset.CustomDataOutputDirectory);
+                            }
+                        }
+                        IAssetBuilderPlugin plugin = _current.DocumentProcessor.Plugins.GetPlugin(binaryAsset.Instance.Handle.TypeId);
+                        binaryAsset.Buffer = plugin.ProcessInstance(binaryAsset.Instance);
+                    }
+                    if (_current.IsLoaded && !_current.DocumentProcessor.VerifierPlugins.GetPlugin(binaryAsset.Instance.Handle.TypeId).VerifyInstance(selfInstance))
+                    {
+                        _current.VerificationErrors = true;
+                    }
+                    AssetLocation assetLocation = binaryAsset.Commit();
+                    switch (assetLocation)
+                    {
+                        case AssetLocation.Memory:
+                            ++instancesCompiledCount;
+                            break;
+                        case AssetLocation.Local:
+                        case AssetLocation.Cache:
+                            ++instancesCopiedFromCacheCount;
+                            break;
+                    }
+                    if (assetLocation != AssetLocation.BasePatchStream)
+                    {
+                        _current.DocumentProcessor.AddLastWrittenAsset(binaryAsset);
+                    }
+                    if (!selfInstance.IsInheritable)
+                    {
+                        selfInstance.XmlNode = null;
+                    }
+                }
+            }
+        }
+
+        public void ProcessOverrides()
+        {
+            foreach (InstanceDeclaration selfInstance in SelfInstances)
+            {
+                OverrideInstance(selfInstance);
+            }
+        }
+
+        public void StableSort()
+        {
+            _tracer.TraceInfo("Stable sorting assets");
+            TypeDepComapre compare = new TypeDepComapre(_current.DocumentProcessor.SchemaSet.AssetDependencies);
+            _current.OutputInstances.Sort(compare);
+            List<InstanceDeclaration> instances = new List<InstanceDeclaration>();
+            foreach (InstanceDeclaration outputInstance in _current.OutputInstances)
+            {
+                int index = 0;
+                int a = 0;
+                int b = 0;
+                int c = 0;
+                uint typeId = 0;
+                uint lastTypeId = 0;
+                bool flag = false;
+                foreach (InstanceDeclaration x in instances)
+                {
+                    if ((int)x.Handle.TypeId != (int)lastTypeId)
+                    {
+                        b = a;
+                        lastTypeId = x.Handle.TypeId;
+                    }
+                    if (outputInstance.AllDependentInstances != null && outputInstance.AllDependentInstances.Contains(x.Handle))
+                    {
+                        index = a + 1;
+                        c = index;
+                        if ((int)outputInstance.Handle.TypeId != (int)x.Handle.TypeId)
+                        {
+                            flag = false;
+                            typeId = x.Handle.TypeId;
+                        }
+                    }
+                    else
+                    {
+                        if (x.AllDependentInstances != null && x.AllDependentInstances.Contains(outputInstance.Handle))
+                        {
+                            if (b > c)
+                            {
+                                if ((int)outputInstance.Handle.TypeId != (int)x.Handle.TypeId)
+                                {
+                                    index = b;
+                                    break;
+                                }
+                                break;
+                            }
+                            break;
+                        }
+                        if ((int)outputInstance.Handle.TypeId == (int)x.Handle.TypeId)
+                        {
+                            if (!flag)
+                            {
+                                index = a;
+                                flag = true;
+                            }
+                            if (string.Compare(outputInstance.Handle.InstanceName, x.Handle.InstanceName) > 0)
+                            {
+                                index = a + 1;
+                            }
+                        }
+                        else if ((int)x.Handle.TypeId == (int)typeId)
+                        {
+                            index = a + 1;
+                        }
+                        else
+                        {
+                            typeId = 0u;
+                            if (compare.Compare(outputInstance, x) > 0)
+                            {
+                                index = a + 1;
+                            }
+                        }
+                    }
+                    ++a;
+                }
+                instances.Insert(index, outputInstance);
+            }
+            _current.OutputInstances = instances;
+        }
+
+        public void PrepareOutputInstances(OutputManager outputManager)
+        {
+            _current.OutputInstanceSet = new SortedDictionary<InstanceHandle, InstanceDeclaration>();
+            foreach (InstanceDeclaration instance in Instances)
+            {
+                AddOutputInstance(instance);
+            }
+            foreach (InstanceDeclaration instance in _current.OutputInstanceSet.Values)
+            {
+                BinaryAsset binaryAsset = outputManager.GetBinaryAsset(instance, true);
+                if (binaryAsset != null)
+                {
+                    AssetLocation location = binaryAsset.GetLocation(AssetLocation.All, AssetLocationOption.None);
+                    if (location == AssetLocation.None)
+                    {
+                        location = binaryAsset.GetLocation(AssetLocation.Local | AssetLocation.Cache, AssetLocationOption.ForceUpdate);
+                    }
+                    if (location == AssetLocation.None)
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Asset {0} not available.", instance);
+                    }
+                    if ((location & AssetLocation.Output) == AssetLocation.None)
+                    {
+                        binaryAsset.Commit();
+                    }
+                    _current.OutputInstances.Add(instance);
+                }
+            }
+            if (Settings.Current.StableSort)
+            {
+                StableSort();
+            }
+            else
+            {
+                _current.OutputInstances.Sort(new DependencyComparer());
+            }
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(memoryStream);
+            foreach (InstanceDeclaration outputInstance in _current.OutputInstances)
+            {
+                writer.Write(outputInstance.Handle.TypeId);
+                writer.Write(outputInstance.Handle.TypeHash);
+                writer.Write(outputInstance.Handle.InstanceId);
+                writer.Write(outputInstance.Handle.InstanceHash);
+                writer.Write(outputInstance.ReferencedInstances.Count);
+            }
+            _current.OutputChecksum = memoryStream.Length <= 0L ? 0u : FastHash.GetHashCode(memoryStream.GetBuffer());
+            _current.OutputInstanceSet = null;
+        }
 
         public XmlSchema GetSchema()
         {

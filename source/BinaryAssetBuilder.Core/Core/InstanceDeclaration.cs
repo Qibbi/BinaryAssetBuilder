@@ -128,10 +128,60 @@ namespace BinaryAssetBuilder.Core
         private LastState _last;
         [NonSerialized] private CurrentState _current;
 
+        public List<InstanceHandle> ValidatedReferencedInstances { get => _current.ValidatedReferencedInstances; set => _current.ValidatedReferencedInstances = value; }
+        public InstanceHandleSet AllDependentInstances { get => _current.AllDependentInstances; set => _current.AllDependentInstances = value; }
+        public List<InstanceHandle> ReferencedInstances => _current.ReferencedInstances;
+        public List<InstanceHandle> WeakReferencedInstances => _current.WeakReferencedInstances;
+        public List<string> ReferencedFiles => _current.ReferencedFiles;
         public AssetDeclarationDocument Document => _current.Document;
         public InstanceHandle Handle => _current.Handle;
         public uint ProcessingHash { get => _current.ProcessingHash; set => _current.ProcessingHash = value; }
         public XmlNode Node => _current.XmlNode;
+        public XmlNode XmlNode
+        {
+            get => _current.XmlNode;
+            set
+            {
+                _current.XmlNode = value;
+                if (value is null)
+                {
+                    return;
+                }
+                XmlAttribute id = value.Attributes["id"];
+                if (id != null)
+                {
+                    _current.Handle = new InstanceHandle(value.Name, id.Value);
+                    XmlAttribute inheritFrom = value.Attributes["inheritFrom"];
+                    if (inheritFrom != null && inheritFrom.Value != string.Empty)
+                    {
+                        _current.InheritFromHandle = inheritFrom.Value.Contains(':') ? new InstanceHandle(inheritFrom.Value) : new InstanceHandle(value.Name, inheritFrom.Value);
+                    }
+                    value.Attributes.Remove(inheritFrom);
+                }
+                else
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.NoIdAttributeForAsset,
+                                                          "Node of type {0} in file://{1} has no id attribute",
+                                                          value.Name,
+                                                          _current.Document.SourcePath);
+                }
+            }
+        }
+        public bool IsInheritable { get => _current.IsInheritable; set => _current.IsInheritable = value; }
+        public bool HasCustomData { get => _current.HasCustomData; set => _current.HasCustomData = value; }
+        public string CustomDataPath { get => _current.CustomDataPath; set => _current.CustomDataPath = value; }
+        public InstanceHandle InheritFromHandle => _current.InheritFromHandle;
+        public uint InheritFromXmlHash { get => _current.InheritFromXmlHash; set => _current.InheritFromXmlHash = value; }
+        public uint PrevalidationXmlHash { get => _current.PrevalidationXmlHash; set => _current.PrevalidationXmlHash = value; }
+
+        public InstanceDeclaration()
+        {
+        }
+
+        public InstanceDeclaration(AssetDeclarationDocument document)
+        {
+            Initialize(document);
+        }
 
         public void Initialize(AssetDeclarationDocument document)
         {
