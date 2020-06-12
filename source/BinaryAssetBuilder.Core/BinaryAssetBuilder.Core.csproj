@@ -22,6 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Core\GUIBuildOutput.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>

@@ -26,6 +26,7 @@ namespace BinaryAssetBuilder.Core
         {
             foreach (PluginDescriptor plugin in plugins)
             {
+                plugin.Initialize(targetPlatform);
                 if (!(plugin.Plugin is IAssetBuilderVerifierPlugin verifierPlugin))
                 {
                     throw new ApplicationException($"'{plugin.QualifiedName}' does not implement {nameof(IAssetBuilderVerifierPlugin)}");

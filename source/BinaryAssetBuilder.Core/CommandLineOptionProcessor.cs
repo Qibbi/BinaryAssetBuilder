@@ -243,9 +243,9 @@ namespace BinaryAssetBuilder
                 string option = options[optionsIdx++].Trim();
                 if (!string.IsNullOrEmpty(option) && option[0] != '#')
                 {
-                    if (option[0] != '/')
+                    if (option[0] != '/' && option[0] != '-')
                     {
-                        echo.Add($"Command line option '{option}' does not start with '/'");
+                        echo.Add($"Command line option '{option}' does not start with '/' or '-'");
                         hasErrors = true;
                     }
                     else
@@ -299,7 +299,7 @@ namespace BinaryAssetBuilder
             }
             foreach (OptionalOptionInfo optionalOption in _optionalOptions)
             {
-                sb.AppendFormat("[/{0}", optionalOption.Descriptor.DisplayName);
+                sb.AppendFormat("[[/|-]{0}", optionalOption.Descriptor.DisplayName);
                 if (!string.IsNullOrEmpty(optionalOption.OptionAttribute.Alias))
                 {
                     sb.Append("|");
@@ -358,7 +358,7 @@ namespace BinaryAssetBuilder
             }
             foreach (OptionalOptionInfo optionalOption in _optionalOptions)
             {
-                sb.AppendFormat("  /{0}", optionalOption.Descriptor.DisplayName);
+                sb.AppendFormat("  [/|-]{0}", optionalOption.Descriptor.DisplayName);
                 sb.Append(' ', _displayNameMaxLength + 4 - optionalOption.Descriptor.DisplayName.Length);
                 sb.Append(optionalOption.Descriptor.Description);
                 object obj = optionalOption.Descriptor.GetValue(_settingsObject);

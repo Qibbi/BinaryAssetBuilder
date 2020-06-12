@@ -125,13 +125,48 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
-        private CurrentState _current;
+        private LastState _last;
+        [NonSerialized] private CurrentState _current;
 
+        public AssetDeclarationDocument Document => _current.Document;
         public InstanceHandle Handle => _current.Handle;
+        public uint ProcessingHash { get => _current.ProcessingHash; set => _current.ProcessingHash = value; }
+        public XmlNode Node => _current.XmlNode;
+
+        public void Initialize(AssetDeclarationDocument document)
+        {
+            if (_current != null)
+            {
+                return;
+            }
+            _current = new CurrentState(document);
+            if (_last != null)
+            {
+                _current.FromLast(_last);
+            }
+            else
+            {
+                _current.FromScratch();
+            }
+        }
+
+        public void MakeComplete()
+        {
+            _last = null;
+        }
+
+        public void MakeCacheable()
+        {
+            if (_last != null)
+            {
+                return;
+            }
+            _last = new LastState(_current);
+        }
 
         public XmlSchema GetSchema()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public void ReadXml(XmlReader reader)

@@ -1,6 +1,7 @@
 ﻿using BinaryAssetBuilder.Core;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace BinaryAssetBuilder
@@ -8,6 +9,7 @@ namespace BinaryAssetBuilder
     [XmlType("plugin")]
     public class PluginDescriptor
     {
+        [XmlIgnore] private Assembly _assembly;
         [XmlIgnore] public IAssetBuilderPluginBase Plugin { get; private set; }
         [XmlIgnore] public List<uint> HandledTypes { get; } = new List<uint>();
         [XmlAttribute("assetTypes")] public string AssetTypes { get; set; }
@@ -24,6 +26,11 @@ namespace BinaryAssetBuilder
             if (QualifiedName is null)
             {
                 throw new ApplicationException($"Target type not set");
+            }
+            string[] nameAndAssembly = QualifiedName.Split(new[] { ',' }, 2);
+            if (nameAndAssembly.Length > 1)
+            {
+                _assembly = Assembly.LoadFrom($"{nameAndAssembly[1].Trim()}.dll");
             }
             Type type = Type.GetType(QualifiedName);
             if (type is null)

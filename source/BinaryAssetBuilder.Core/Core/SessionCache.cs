@@ -76,10 +76,6 @@ namespace BinaryAssetBuilder.Core
                     List<FileItem> files = new List<FileItem>();
                     foreach (FileItem fileItem in current.Files.Values)
                     {
-                        if (fileItem is null)
-                        {
-                            continue;
-                        }
                         if (fileItem.HashItem.Exists)
                         {
                             files.Add(fileItem);
@@ -120,7 +116,7 @@ namespace BinaryAssetBuilder.Core
                 _assetCompilersVersion = Convert.ToUInt32(values[3]);
                 reader.MoveToElement();
                 reader.Read();
-                Files = XmlHelper.ReadCollection(reader, "fic", typeof(FileItem)) as FileItem[];
+                Files = XmlHelper.ReadCollection(reader, "fic", typeof(FileItem)) as FileItem[] ?? new FileItem[0];
                 reader.Read();
             }
         }
@@ -207,67 +203,6 @@ namespace BinaryAssetBuilder.Core
             _last.FromCurrent(_current);
         }
 
-        private void CheckFiles(List<string> knownChangedFiles)
-        {
-            bool flag = knownChangedFiles.Count == 0;
-            if (_last is null)
-            {
-                return;
-            }
-            if (_last.Version != CacheVersion)
-            {
-                _tracer.TraceInfo("Session cache outdated. Version is {0}. Expected version is {1}.", _last.Version, CacheVersion);
-                _last = null;
-            }
-            else if (_last.DocumentProcessorVersion != DocumentProcessor.Version)
-            {
-                _tracer.TraceInfo("DocumentProcessor version mismatch. Version is {0}. Expected version is {1}.", _last.DocumentProcessorVersion, DocumentProcessor.Version);
-                _last = null;
-            }
-            else
-            {
-                _tracer.TraceInfo("Checking {0} files for updates.", _last.Files.Length);
-                int num = 0;
-                foreach (FileItem file in _last.Files)
-                {
-                    if (file.Document != null)
-                    {
-                        file.Document.ResetState();
-                    }
-                    if (file.HashItem != null)
-                    {
-                        file.HashItem.Reset();
-                    }
-                    if ((file.HashItem?.IsDirty) == true)
-                    {
-                        if (_dirtyStreams != null)
-                        {
-                            if (file.Document is null || file.Document.StreamHints.Count == 0)
-                            {
-                                _tracer.TraceInfo("Building all streams because {0} has no stream hints.", file.HashItem.Path ?? string.Empty);
-                                _dirtyStreams = null;
-                            }
-                            else
-                            {
-                                foreach (string streamHint in file.Document.StreamHints)
-                                {
-                                    if (!_dirtyStreams.Contains(streamHint))
-                                    {
-                                        _dirtyStreams.Add(streamHint);
-                                    }
-                                }
-                            }
-                        }
-                        ++num;
-                        if (!flag && !knownChangedFiles.Contains(file.HashItem.Path ?? string.Empty))
-                        {
-                            throw new BinaryAssetBuilderException(ErrorCode.PathMonitor, "Change went undetected by experimental PathMonitor. Please notify the Sage Pipeline alias. File: {0}", file.HashItem.Path ?? string.Empty);
-                        }
-                    }
-                }
-            }
-        }
-
         public virtual void LoadCache(string sessionCachePath)
         {
             if (!string.IsNullOrEmpty(sessionCachePath))
@@ -321,11 +256,10 @@ namespace BinaryAssetBuilder.Core
             _tracer.TraceInfo("Session cache age is {0} days, {1} hours, {2} minutes.", Age.Days, Age.Hours, Age.Minutes);
         }
 
-        public virtual void InitializeCache(List<string> knownChangedFiles)
+        public virtual void InitializeCache()
         {
             _current = new CurrentState();
             _dirtyStreams = new List<string>();
-            CheckFiles(knownChangedFiles);
             if (_last != null)
             {
                 _tracer.TraceInfo("Cached session data available.");

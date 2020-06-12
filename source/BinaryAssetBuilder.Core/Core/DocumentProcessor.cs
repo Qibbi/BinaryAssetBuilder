@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Text;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -32,6 +33,8 @@ namespace BinaryAssetBuilder.Core
         private int _instancesCompiledCount;
         private string _sessionCachePath;
         private long _maxTotalMemory;
+
+        public static string CurrentDocument => _currentDocumentStack.Peek();
 
         public SessionCache Cache => _cache;
         public InstanceHandleSet MissingReferences => _missingReferences;
@@ -77,6 +80,7 @@ namespace BinaryAssetBuilder.Core
                 _tracer.TraceInfo("Session caching enabled ('{0}').", _sessionCachePath);
                 _cache = new SessionCache();
                 _cache.LoadCache(_sessionCachePath);
+                _cache.InitializeCache();
             }
         }
 
@@ -85,6 +89,98 @@ namespace BinaryAssetBuilder.Core
             if (_cache != null)
             {
                 _cache.SaveCache(false);
+            }
+        }
+
+        private AssetDeclarationDocument OpenDocument(string sourcePath, string logicalPath, bool generateOutput, string configuration)
+        {
+            if (!Path.IsPathRooted(sourcePath))
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Path for document {0} is not rooted.", sourcePath);
+            }
+            Cache.TryGetFile(sourcePath, configuration, Settings.Current.TargetPlatform, out FileHashItem hashItem);
+            Cache.TryGetDocument(sourcePath, configuration, Settings.Current.TargetPlatform, true, out AssetDeclarationDocument result);
+            if (result.Processing)
+            {
+                StringBuilder sb = new StringBuilder("Illegal circular document inclusion detected. Inclusion chain as follows:");
+                foreach (string doc in _documentStack)
+                {
+                    sb.AppendFormat("\n   {0}", doc);
+                }
+                sb.AppendFormat("\n   {0}", sourcePath);
+                throw new BinaryAssetBuilderException(ErrorCode.CircularDependency, sb.ToString());
+            }
+            result.Open(this, hashItem, logicalPath, configuration);
+
+        }
+
+        private AssetDeclarationDocument ProcessDocumentInternal(string logicalPath, string sourcePath, bool generateOutput, OutputManager outputManager, string basePathStream)
+        {
+            DateTime now = DateTime.Now;
+            AssetDeclarationDocument result = OpenDocument(sourcePath, logicalPath);
+            if (generateOutput)
+            {
+                if (result.State == DocumentState.Complete)
+                {
+                    return result;
+                }
+            }
+            return null;
+            // TODO:
+            // throw new NotImplementedException();
+        }
+
+        public AssetDeclarationDocument ProcessDocument(string fileName, bool generateOutput, bool outputStringHashes)
+        {
+            XIncludeReaderWrapper.LoadAssembly();
+            ExpressionEvaluatorWrapper.LoadAssembly();
+            DateTime now = DateTime.Now;
+            using (new MetricTimer("BAB.ProcessingTime"))
+            {
+                if (!File.Exists(fileName))
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InputXmlFileNotFound, "File {0} not found", fileName);
+                }
+                MetricManager.Submit("BAB.MapName", Path.GetFileName(Path.GetDirectoryName(fileName)));
+                HashProvider.InitializeStringHashes();
+                InitializeSessionCache();
+                MetricManager.Submit("BAB.StartupTime", DateTime.Now - now);
+                now = DateTime.Now;
+                bool success = false;
+                AssetDeclarationDocument document = null;
+                try
+                {
+                    document = ProcessDocumentInternal(fileName, fileName, generateOutput, null, Settings.Current.BasePatchStream);
+                    success = true;
+                }
+                finally
+                {
+                    MetricManager.Submit("BAB.PrepSourceTime", _totalPrepareSourceTime);
+                    MetricManager.Submit("BAB.ProcIncludesTime", _totalPostProcTime);
+                    MetricManager.Submit("BAB.ValidateTime", _totalValidateTime);
+                    MetricManager.Submit("BAB.InstanceProcessingTime", _totalProcInstancesTime);
+                    MetricManager.Submit("BAB.OutputPrepTime", _totalPrepareOutputTime);
+                    MetricManager.Submit("BAB.DocumentProcessingTime", DateTime.Now - now);
+                    now = DateTime.Now;
+                    if ((success || Settings.Current.PartialSessionCache) && !Settings.Current.FreezeSessionCache)
+                    {
+                        FinalizeSessionCache();
+                    }
+                    if (outputStringHashes)
+                    {
+                        HashProvider.FinalizeStringHashes(Settings.Current.IntermediateOutputDirectory);
+                    }
+                    MetricManager.Submit("BAB.LinkedStreamsEnabled", Settings.Current.LinkedStreams);
+                    MetricManager.Submit("BAB.MaxMemorySize", _maxTotalMemory);
+                    MetricManager.Submit("BAB.FilesProcessedCount", (long)_filesProcessedCount);
+                    MetricManager.Submit("BAB.FilesParsedCount", (long)_filesParsedCount);
+                    MetricManager.Submit("BAB.InstancesProcessedCount", (long)_instancesProcessedCount);
+                    MetricManager.Submit("BAB.InstancesCompiledCount", (long)_instancesCompiledCount);
+                    MetricManager.Submit("BAB.InstancesCopiedFromCacheCount", (long)_instancesCopiedFromCacheCount);
+                    MetricManager.Submit("BAB.ShutdownTime", DateTime.Now - now);
+                    MetricManager.Submit("BAB.BuildSuccessful", success);
+                }
+                return document;
             }
         }
     }
