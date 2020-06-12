@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAssetBuilder.Utility;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -8,45 +9,48 @@ namespace BinaryAssetBuilder.Core
 {
     public class DocumentProcessor
     {
+        public class ProcessOptions
+        {
+            public string BasePatchStream;
+            public bool GenerateOutput;
+            public string Configuration;
+            public bool UsePrecompiled;
+        }
+
         [NonSerialized] public const uint Version = 10;
 
-        private static Tracer _tracer = Tracer.GetTracer(nameof(DocumentProcessor), "Provides XML processing functionality");
-        private static InstanceHandleSet _missingReferences = new InstanceHandleSet();
+        private static readonly Tracer _tracer = Tracer.GetTracer(nameof(DocumentProcessor), "Provides XML processing functionality");
+        private static readonly InstanceHandleSet _missingReferences = new InstanceHandleSet();
         private static TimeSpan _totalProcInstancesTime = new TimeSpan(0L);
         private static TimeSpan _totalPrepareOutputTime = new TimeSpan(0L);
         private static TimeSpan _totalPrepareSourceTime = new TimeSpan(0L);
         private static TimeSpan _totalPostProcTime = new TimeSpan(0L);
         private static TimeSpan _totalValidateTime = new TimeSpan(0L);
-        private static Stack<string> _currentDocumentStack = new Stack<string>();
+        private static readonly Stack<string> _currentDocumentStack = new Stack<string>();
 
-        private StringCollection _documentStack = new StringCollection();
-        private InstanceHandleSet _requiredInheritFromSources = new InstanceHandleSet();
-        [NonSerialized] private Dictionary<string, AssetLocationInfo> _lastWrittenAssets = new Dictionary<string, AssetLocationInfo>();
-        private SessionCache _cache;
-        private SchemaSet _schemaSet;
-        private PluginRegistry _pluginRegistry;
-        private VerifierPluginRegistry _verifierPluginRegistry;
+        private readonly StringCollection _documentStack = new StringCollection();
+        [NonSerialized] private readonly Dictionary<string, AssetLocationInfo> _lastWrittenAssets = new Dictionary<string, AssetLocationInfo>();
         private int _instancesProcessedCount;
         private int _filesProcessedCount;
         private int _filesParsedCount;
         private int _instancesCopiedFromCacheCount;
         private int _instancesCompiledCount;
-        private string _sessionCachePath;
+        private readonly string _sessionCachePath;
         private long _maxTotalMemory;
 
         public static string CurrentDocument => _currentDocumentStack.Peek();
 
-        public SessionCache Cache => _cache;
+        public SessionCache Cache { get; private set; }
         public InstanceHandleSet MissingReferences => _missingReferences;
-        public InstanceHandleSet ChangedInheritFromReferences => _requiredInheritFromSources;
-        public SchemaSet SchemaSet => _schemaSet;
-        public PluginRegistry Plugins => _pluginRegistry;
-        public VerifierPluginRegistry VerifierPlugins => _verifierPluginRegistry;
+        public InstanceHandleSet ChangedInheritFromReferences { get; } = new InstanceHandleSet();
+        public SchemaSet SchemaSet { get; }
+        public PluginRegistry Plugins { get; }
+        public VerifierPluginRegistry VerifierPlugins { get; }
 
         public DocumentProcessor(Settings settings, PluginRegistry pluginRegistry, VerifierPluginRegistry verifierPluginRegistry)
         {
-            _pluginRegistry = pluginRegistry;
-            _verifierPluginRegistry = verifierPluginRegistry;
+            Plugins = pluginRegistry;
+            VerifierPlugins = verifierPluginRegistry;
             if (Settings.Current.SingleFile)
             {
                 _tracer.TraceInfo("Single file mode enabled.");
@@ -62,7 +66,7 @@ namespace BinaryAssetBuilder.Core
             {
                 _tracer.TraceInfo("Network caching enabled ('{0}').", Settings.Current.BuildCacheDirectory);
             }
-            _schemaSet = new SchemaSet(Settings.Current.StableSort);
+            SchemaSet = new SchemaSet(Settings.Current.StableSort);
         }
 
         private void InitializeSessionCache()
@@ -78,21 +82,21 @@ namespace BinaryAssetBuilder.Core
             else
             {
                 _tracer.TraceInfo("Session caching enabled ('{0}').", _sessionCachePath);
-                _cache = new SessionCache();
-                _cache.LoadCache(_sessionCachePath);
-                _cache.InitializeCache();
+                Cache = new SessionCache();
+                Cache.LoadCache(_sessionCachePath);
+                Cache.InitializeCache();
             }
         }
 
         private void FinalizeSessionCache()
         {
-            if (_cache != null)
+            if (Cache != null)
             {
-                _cache.SaveCache(false);
+                Cache.SaveCache(false);
             }
         }
 
-        private AssetDeclarationDocument OpenDocument(string sourcePath, string logicalPath, bool generateOutput, string configuration)
+        private AssetDeclarationDocument OpenDocument(string sourcePath, string logicalPath, string configuration)
         {
             if (!Path.IsPathRooted(sourcePath))
             {
@@ -111,23 +115,234 @@ namespace BinaryAssetBuilder.Core
                 throw new BinaryAssetBuilderException(ErrorCode.CircularDependency, sb.ToString());
             }
             result.Open(this, hashItem, logicalPath, configuration);
-
+            if (result.State != DocumentState.Complete)
+            {
+                ++_filesProcessedCount;
+            }
+            return result;
         }
 
-        private AssetDeclarationDocument ProcessDocumentInternal(string logicalPath, string sourcePath, bool generateOutput, OutputManager outputManager, string basePathStream)
+        private void ProcessIncludedDocuments(AssetDeclarationDocument document, OutputManager outputManager, ProcessOptions options, bool usePrecompiled)
         {
             DateTime now = DateTime.Now;
-            AssetDeclarationDocument result = OpenDocument(sourcePath, logicalPath);
+            string configuration = options.Configuration;
+            document.TentativeInstances.Clear();
+            document.AllInstances.Clear();
+            document.ReferenceInstances.Clear();
+            document.AllDefines.Clear();
+            if (document.IsLoaded)
+            {
+                foreach (InstanceDeclaration selfInstance in document.SelfInstances)
+                {
+                    if (selfInstance.InheritFromHandle != null)
+                    {
+                        ChangedInheritFromReferences.TryAdd(selfInstance.InheritFromHandle);
+                    }
+                }
+            }
+            foreach (InclusionItem inclusionItem in document.InclusionItems)
+            {
+                if (inclusionItem.Type == InclusionType.Reference && !Settings.Current.SingleFile && Settings.Current.DataRoot is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.NoDataRootSpecified, "DataRoot must be specified if not doing /singleFile");
+                }
+                bool valid = Cache.TryGetFile(inclusionItem.PhysicalPath, configuration, Settings.Current.TargetPlatform, out FileHashItem fileItem);
+                if (inclusionItem.Type != InclusionType.Reference || (valid && !Settings.Current.UsePrecompiled) || !LoadPrecompiledReference(document, inclusionItem))
+                {
+                    if (!valid)
+                    {
+                        _tracer.TraceError("Input file '{0}' not found (referenced from file://{1}). Treating it as empty.", inclusionItem.LogicalPath, document.SourcePath);
+                    }
+                    _totalPostProcTime += DateTime.Now - now;
+                    ProcessOptions newOptions = new ProcessOptions
+                    {
+                        GenerateOutput = inclusionItem.Type == InclusionType.Reference && !usePrecompiled,
+                        UsePrecompiled = usePrecompiled,
+                        Configuration = configuration
+                    };
+                    AssetDeclarationDocument assetDocument = ProcessDocumentInternal(inclusionItem.LogicalPath, inclusionItem.PhysicalPath, valid ? null : outputManager, newOptions);
+                    now = DateTime.Now;
+                    inclusionItem.Document = assetDocument;
+                    document.AllDefines.AddDefinitions(assetDocument.AllDefines);
+                    switch (inclusionItem.Type)
+                    {
+                        case InclusionType.Reference:
+                            document.ReferenceInstances.Add(assetDocument.ReferenceInstances);
+                            document.ReferenceInstances.Add(assetDocument.Instances);
+                            break;
+                        case InclusionType.Instance:
+                            document.TentativeInstances.Add(assetDocument.Instances);
+                            document.TentativeInstances.Add(assetDocument.TentativeInstances);
+                            break;
+                        case InclusionType.All:
+                            document.ReferenceInstances.Add(assetDocument.ReferenceInstances);
+                            document.AllInstances.Add(assetDocument.Instances);
+                            document.TentativeInstances.Add(assetDocument.TentativeInstances);
+                            break;
+                    }
+                    assetDocument.Reset();
+                    _totalPostProcTime += DateTime.Now - now;
+                }
+            }
+            foreach (InstanceDeclaration referenceInstance in document.ReferenceInstances)
+            {
+                if (document.AllInstances.TryGetValue(referenceInstance.Handle, out InstanceDeclaration assetDeclaration) && assetDeclaration.Document == referenceInstance.Document)
+                {
+                    document.AllInstances.Remove(assetDeclaration);
+                }
+                if (document.TentativeInstances.TryGetValue(referenceInstance.Handle, out assetDeclaration) && assetDeclaration.Document == referenceInstance.Document)
+                {
+                    document.TentativeInstances.Remove(assetDeclaration);
+                }
+            }
+            document.EvaluateDefinitions();
+        }
+
+        private void ProcessDocumentContents(AssetDeclarationDocument document, OutputManager outputManager, ProcessOptions options, bool generateOutput)
+        {
+            if (document.State != DocumentState.Loaded && !document.ValidateInheritFromSources())
+            {
+                document.InplaceLoad("inheritFrom source changed");
+                ProcessIncludedDocuments(document, outputManager, options, false);
+            }
+            if (document.State != DocumentState.Loaded && !document.ValidateCachedDefines())
+            {
+                document.InplaceLoad("used definitions changed");
+                ProcessIncludedDocuments(document, outputManager, options, false);
+            }
+            if (document.State == DocumentState.Loaded)
+            {
+                DateTime now = DateTime.Now;
+                ++_filesParsedCount;
+                document.ProcessExpressions();
+                document.ProcessOverrides();
+                document.Validate();
+                _totalValidateTime += DateTime.Now - now;
+            }
+            _instancesProcessedCount += document.SelfInstances.Count;
+            document.RecordStringHashes();
+            document.MergeInstances();
+            if (outputManager != null)
+            {
+                DateTime now = DateTime.Now;
+                document.ProcessInstances(outputManager, ref _instancesCompiledCount, ref _instancesCopiedFromCacheCount);
+                _totalProcInstancesTime += DateTime.Now - now;
+            }
             if (generateOutput)
+            {
+                DateTime now = DateTime.Now;
+                _tracer.Message("Resolving references: {0}", document.SourcePathFromRoot);
+                document.PrepareOutputInstances(outputManager);
+                _tracer.Message("Generating stream: {0}", document.SourcePathFromRoot);
+                outputManager.CommitManifest(document);
+                outputManager.CleanOutput();
+                document.UpdateOutputAssets(outputManager);
+                if (Settings.Current.LinkedStreams)
+                {
+                    outputManager.LinkStream(document);
+                }
+                if (Settings.Current.VersionFiles)
+                {
+                    outputManager.CreateVersionFile(document, Settings.Current.StreamPostfix);
+                }
+                _tracer.Message("{0} Stream complete", document.SourcePathFromRoot);
+                _totalPrepareOutputTime += DateTime.Now - now;
+            }
+            _documentStack.RemoveAt(_documentStack.Count - 1);
+            document.MakeComplete();
+        }
+
+        private AssetDeclarationDocument ProcessDocumentInternal(string logicalPath, string sourcePath, OutputManager outputManager, ProcessOptions options)
+        {
+            DateTime now = DateTime.Now;
+            AssetDeclarationDocument result = OpenDocument(sourcePath, logicalPath, options.Configuration);
+            if (options.GenerateOutput)
             {
                 if (result.State == DocumentState.Complete)
                 {
                     return result;
                 }
+                if (!Settings.Current.SingleFile && string.IsNullOrEmpty(result.SourcePathFromRoot))
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.IllegalPath,
+                                                          "{0} is a stream (.manifest) but does not have {1} as its root.",
+                                                          sourcePath,
+                                                          Settings.Current.DataRoot);
+                }
+                string str = ShPath.Canonicalize(Path.Combine(Settings.Current.IntermediateOutputDirectory, result.SourcePathFromRoot));
+                string outputDirectory = ShPath.Canonicalize(Path.Combine(Settings.Current.OutputDirectory, result.SourcePathFromRoot)) + Settings.Current.StreamPostfix;
+                string intermediateOutputDirectory = str + Settings.Current.StreamPostfix;
+                outputManager = new OutputManager(this, result.LastOutputAssets, outputDirectory, intermediateOutputDirectory, options.BasePatchStream);
             }
-            return null;
-            // TODO:
-            // throw new NotImplementedException();
+            string fileName = Path.GetFileName(sourcePath);
+            _currentDocumentStack.Push($"{fileName}:");
+            if (result.State == DocumentState.Shallow)
+            {
+                result.Reinitialize(outputManager);
+            }
+            if (!result.IsLoaded)
+            {
+                result.ReloadIfRequired(ChangedInheritFromReferences);
+            }
+            _documentStack.Add(sourcePath);
+            result.Processing = true;
+            _totalPrepareSourceTime += DateTime.Now - now;
+            ProcessIncludedDocuments(result, outputManager, options, options.UsePrecompiled);
+            if (result.State != DocumentState.Complete)
+            {
+                ProcessDocumentContents(result, outputManager, options, options.GenerateOutput);
+            }
+            result.Processing = false;
+            _currentDocumentStack.Pop();
+            _maxTotalMemory = Math.Max(_maxTotalMemory, GC.GetTotalMemory(false));
+            return result;
+        }
+
+        private bool LoadPrecompiledReference(AssetDeclarationDocument parentDoc, InclusionItem item)
+        {
+            string expectedOutputManfiest = GetExpectedOutputManifest(parentDoc, item);
+            string str = ShPath.Canonicalize(Path.Combine(Settings.Current.OutputDirectory, expectedOutputManfiest));
+            if (!File.Exists(str))
+            {
+                return false;
+            }
+            Manifest manifest = new Manifest();
+            string[] patchSearchPaths = new[] { Settings.Current.OutputDirectory };
+            try
+            {
+                manifest.Load(str, patchSearchPaths);
+            }
+            catch
+            {
+                _tracer.TraceError("Could not load {0}.", str);
+                return false;
+            }
+            foreach (Asset asset in manifest.Assets)
+            {
+                InstanceDeclaration instanceDeclaration = new InstanceDeclaration();
+                instanceDeclaration.InitializePrecompiled(asset);
+                parentDoc.ReferenceInstances.Add(instanceDeclaration);
+            }
+            return true;
+        }
+
+        private void TryDeleteFile(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception ex)
+            {
+                throw new BinaryAssetBuilderException(ex,
+                                                      ErrorCode.LockedFile,
+                                                      "Unable to delete '{0}'. Make sure no other application is writing or reading from this file while the data build is running.",
+                                                      path);
+            }
         }
 
         public void AddLastWrittenAsset(BinaryAsset asset)
@@ -141,6 +356,12 @@ namespace BinaryAssetBuilder.Core
                 AssetOutputDirectory = asset.AssetOutputDirectory,
                 CustomDataOutputDirectory = asset.CustomDataOutputDirectory
             });
+        }
+
+        public AssetLocationInfo GetLastWrittenAsset(string key)
+        {
+            _lastWrittenAssets.TryGetValue(key, out AssetLocationInfo result);
+            return result;
         }
 
         public AssetDeclarationDocument ProcessDocument(string fileName, bool generateOutput, bool outputStringHashes)
@@ -163,7 +384,15 @@ namespace BinaryAssetBuilder.Core
                 AssetDeclarationDocument document = null;
                 try
                 {
-                    document = ProcessDocumentInternal(fileName, fileName, generateOutput, null, Settings.Current.BasePatchStream);
+                    document = ProcessDocumentInternal(fileName,
+                                                       fileName,
+                                                       null,
+                                                       new ProcessOptions
+                                                       {
+                                                           BasePatchStream = Settings.Current.BasePatchStream,
+                                                           Configuration = Settings.Current.BuildConfigurationName,
+                                                           GenerateOutput = generateOutput
+                                                       });
                     success = true;
                 }
                 finally
@@ -195,6 +424,16 @@ namespace BinaryAssetBuilder.Core
                 }
                 return document;
             }
+        }
+
+        public string GetExpectedOutputManifest(AssetDeclarationDocument parentDoc, InclusionItem item)
+        {
+            string physicalPath = item.PhysicalPath;
+            string dataRoot = Settings.Current.DataRoot;
+            return (string.IsNullOrEmpty(dataRoot)
+                 || !physicalPath.StartsWith(dataRoot, StringComparison.InvariantCultureIgnoreCase) ? Path.GetFileNameWithoutExtension(physicalPath)
+                                                                                                    : Path.Combine(Path.GetDirectoryName(physicalPath.Substring(dataRoot.Length + 1)),
+                                                                                                                   Path.GetFileNameWithoutExtension(physicalPath))) + ".manifest";
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAssetBuilder.Utility;
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
@@ -200,6 +201,19 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
+        public void InitializePrecompiled(Asset asset)
+        {
+            _current = new CurrentState(null);
+            _current.FromScratch();
+            _current.Handle = new InstanceHandle(asset.TypeName, asset.InstanceName)
+            {
+                TypeHash = asset.TypeHash,
+                InstanceHash = asset.InstanceHash
+            };
+            _current.IsInheritable = false;
+            _current.HasCustomData = false;
+        }
+
         public void MakeComplete()
         {
             _last = null;
@@ -214,6 +228,11 @@ namespace BinaryAssetBuilder.Core
             _last = new LastState(_current);
         }
 
+        public void CacheFromInstance(InstanceDeclaration current)
+        {
+            _last = new LastState(current._current);
+        }
+
         public XmlSchema GetSchema()
         {
             return null;
@@ -221,12 +240,31 @@ namespace BinaryAssetBuilder.Core
 
         public void ReadXml(XmlReader reader)
         {
-            throw new NotImplementedException();
+            _last = new LastState(reader);
         }
 
         public void WriteXml(XmlWriter writer)
         {
-            throw new NotImplementedException();
+            if (_last is null)
+            {
+                MakeCacheable();
+            }
+            _last.WriteXml(writer);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ((InstanceDeclaration)obj).Handle == Handle;
+        }
+
+        public override int GetHashCode()
+        {
+            return _current.Handle.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return _current.Handle.ToString();
         }
     }
 }

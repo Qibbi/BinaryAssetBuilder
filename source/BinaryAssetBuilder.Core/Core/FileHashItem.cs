@@ -141,7 +141,7 @@ namespace BinaryAssetBuilder.Core
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteStartElement("hi");
-            writer.WriteAttributeString("d", $"{_path};{_hash};{_lastDate.ToBinary()};{_buildConfiguration};{_targetPlatform}");
+            writer.WriteAttributeString("d", $"{_path};{_hash};{_lastDate.ToBinary()};{_buildConfiguration};{(int)_targetPlatform}");
             writer.WriteEndElement();
         }
     }

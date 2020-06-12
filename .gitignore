@@ -4,6 +4,7 @@ SageXml/
 
 # Remove test files
 StringHashes.xml*
+StringHashesI.xml*
 test.xml
 
 ## Ignore Visual Studio temporary files, build results, and

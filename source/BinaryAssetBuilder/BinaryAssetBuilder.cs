@@ -108,6 +108,10 @@ namespace BinaryAssetBuilder
         {
             Settings current = Settings.Current;
             string directoryName = Path.GetDirectoryName(GetType().Assembly.ManifestModule.FullyQualifiedName);
+            if (!Path.IsPathRooted(current.InputPath))
+            {
+                current.InputPath = Path.GetFullPath(Path.Combine(directoryName, current.InputPath));
+            }
             if (!Path.IsPathRooted(current.DataRoot))
             {
                 current.DataRoot = Path.GetFullPath(Path.Combine(directoryName, current.DataRoot));
