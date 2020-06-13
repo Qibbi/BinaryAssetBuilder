@@ -1,0 +1,6 @@
+﻿namespace SageBinaryData
+{
+    class LogicCommandSet
+    {
+    }
+}

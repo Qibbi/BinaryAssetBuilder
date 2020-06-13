@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 
 namespace BinaryAssetBuilder.Core
 {
-    // TODO:
     [Serializable]
     public class InstanceDeclaration : IXmlSerializable
     {

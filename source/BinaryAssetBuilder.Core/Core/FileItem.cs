@@ -33,7 +33,10 @@ namespace BinaryAssetBuilder.Core
         {
             writer.WriteStartElement("fi");
             HashItem.WriteXml(writer);
-            Document.WriteXml(writer);
+            if (Document != null)
+            {
+                Document.WriteXml(writer);
+            }
             writer.WriteEndElement();
         }
     }

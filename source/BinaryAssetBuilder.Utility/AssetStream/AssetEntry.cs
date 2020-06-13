@@ -9,10 +9,10 @@ namespace AssetStream
         public uint InstanceId;
         public uint TypeHash;
         public uint InstanceHash;
-        public uint AssetReferenceOffset;
+        public int AssetReferenceOffset;
         public int AssetReferenceCount;
-        public uint AssetNameOffset;
-        public uint SourceFileNameOffset;
+        public int NameOffset;
+        public int SourceFileNameOffset;
         public int InstanceDataSize;
         public int RelocationDataSize;
         public int ImportsDataSize;

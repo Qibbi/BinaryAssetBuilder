@@ -12,6 +12,6 @@ namespace AssetStream
         public int InstanceDataSize;
         public int RelocationDataSize;
         public int ImportsDataSize;
-        public uint Unknown28;
+        public uint Zero;
     }
 }

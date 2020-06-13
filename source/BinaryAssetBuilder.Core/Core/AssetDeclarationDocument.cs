@@ -11,7 +11,6 @@ using System.Xml.XPath;
 
 namespace BinaryAssetBuilder.Core
 {
-    // TODO:
     [Serializable]
     public class AssetDeclarationDocument : IXmlSerializable
     {

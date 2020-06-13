@@ -1,5 +1,5 @@
 ﻿using BinaryAssetBuilder.Core;
-using System;
+using SageBinaryData;
 
 namespace BinaryAssetBuilder.XmlCompiler
 {
@@ -37,18 +37,39 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             switch (typeId)
             {
+                case 0xEC066D65u:
+                    result.TypeName = nameof(LogicCommandSet);
+                    result.ProcessingHash = num ^ 0x6D148BD7u;
+                    result.TypeHash = 0x6D148BD7u;
+                    break;
                 default:
                     result.TypeName = "<unknown>";
-                    result.ProcessingHash = uint.MaxValue;
-                    result.TypeHash = uint.MaxValue;
+                    result.ProcessingHash = 0u;
+                    result.TypeHash = 0u;
                     break;
             }
             return result;
         }
 
-        public AssetBuffer ProcessInstance(InstanceDeclaration instance)
+        public AssetBuffer ProcessInstance(InstanceDeclaration declaration)
         {
-            throw new NotImplementedException();
+            AssetBuffer result = new AssetBuffer();
+            switch (declaration.Handle.TypeId)
+            {
+                case 0xEC066D65u:
+                    HandleLogicCommandSet(declaration, result);
+                    break;
+            }
+
+            return result;
+        }
+
+        public void HandleLogicCommandSet(InstanceDeclaration declaration, AssetBuffer buffer)
+        {
+            // TODO:
+            buffer.InstanceData = new byte[4];
+            buffer.RelocationData = new byte[0];
+            buffer.ImportsData = new byte[0];
         }
     }
 }

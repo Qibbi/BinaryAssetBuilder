@@ -12,7 +12,7 @@ namespace BinaryAssetBuilder.Native
         private readonly ulong _value;
 #endif
 
-        public SizeT(ushort size)
+        public SizeT(uint size)
         {
             _value = size;
         }
