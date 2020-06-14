@@ -137,11 +137,7 @@ namespace BinaryAssetBuilder.Core
 
         private void MoveLinked(string linkPath, string linkPathExisting, string extension)
         {
-            if (File.Exists(linkPathExisting + extension))
-            {
-                File.Delete(linkPathExisting + extension);
-            }
-            File.Move(linkPath + extension, linkPathExisting + extension);
+            File.Move(linkPath + extension, linkPathExisting + extension, true);
         }
 
         public BinaryAsset GetBinaryAsset(InstanceDeclaration instance, bool isOutputAsset)

@@ -233,14 +233,14 @@ namespace BinaryAssetBuilder.Core
                 {
                     try
                     {
-                        File.Move(sessionCachePath, sessionCachePath + ".corrupt");
+                        File.Move(sessionCachePath, sessionCachePath + ".corrupt", true);
                     }
                     catch
                     {
                     }
                     try
                     {
-                        File.Move(sessionCachePath + ".deflate", sessionCachePath + ".deflate.corrupt");
+                        File.Move(sessionCachePath + ".deflate", sessionCachePath + ".deflate.corrupt", true);
                     }
                     catch
                     {
@@ -302,11 +302,7 @@ namespace BinaryAssetBuilder.Core
             }
             if (File.Exists(cacheFileName))
             {
-                if (File.Exists(cacheFileName + ".old"))
-                {
-                    File.Delete(cacheFileName + ".old");
-                }
-                File.Move(cacheFileName, cacheFileName + ".old");
+                File.Move(cacheFileName, cacheFileName + ".old", true);
             }
             File.Move(cacheFileName + ".tmp", cacheFileName);
         }
