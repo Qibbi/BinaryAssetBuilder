@@ -23,29 +23,14 @@ namespace BinaryAssetBuilder.XmlCompiler
         {
             Relo.Chunk chunk = new Relo.Chunk();
             tracker.MakeRelocatable(chunk);
-            buffer.InstanceData = new byte[chunk.InstanceBufferSize];
-            if (chunk.InstanceBufferSize > 0u)
+            buffer.InstanceData = chunk.InstanceBuffer;
+            if (chunk.RelocationBuffer.Length > 0)
             {
-                fixed (byte* pInstanceData = &buffer.InstanceData[0])
-                {
-                    Native.MsVcRt.MemCpy((IntPtr)pInstanceData, chunk.InstanceBuffer, new Native.SizeT(chunk.InstanceBufferSize));
-                }
+                buffer.RelocationData = chunk.RelocationBuffer;
             }
-            buffer.RelocationData = new byte[chunk.RelocationBufferSize];
-            if (chunk.RelocationBufferSize > 0u)
+            if (chunk.ImportsBuffer.Length > 0)
             {
-                fixed (byte* pRelocationData = &buffer.RelocationData[0])
-                {
-                    Native.MsVcRt.MemCpy((IntPtr)pRelocationData, chunk.RelocationBuffer, new Native.SizeT(chunk.RelocationBufferSize));
-                }
-            }
-            buffer.ImportsData = new byte[chunk.ImportsBufferSize];
-            if (chunk.ImportsBufferSize > 0u)
-            {
-                fixed (byte* pImportsData = &buffer.ImportsData[0])
-                {
-                    Native.MsVcRt.MemCpy((IntPtr)pImportsData, chunk.ImportsBuffer, new Native.SizeT(chunk.ImportsBufferSize));
-                }
+                buffer.ImportsData = chunk.ImportsBuffer;
             }
         }
 

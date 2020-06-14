@@ -136,60 +136,68 @@ namespace Relo
             {
                 return false;
             }
-            byte* instanceBuffer = (byte*)chunk.InstanceBuffer;
-            byte* instanceBufferPosition = instanceBuffer;
-            int blockCount = _blocks.Count;
-            uint[] bookmarks = new uint[blockCount];
-            int idx = 0;
-            foreach (Block block in _blocks)
+            fixed (byte* instanceBuffer = &chunk.InstanceBuffer[0])
             {
-                BinaryAssetBuilder.Native.MsVcRt.MemCpy((IntPtr)instanceBufferPosition, block.Data, new BinaryAssetBuilder.Native.SizeT(block.Size));
-                bookmarks[idx++] = (uint)(instanceBufferPosition - instanceBuffer);
-                instanceBufferPosition += block.Size;
-            }
-            if (relocationBufferSize > 0)
-            {
-                uint* relocationBuffer = (uint*)chunk.RelocationBuffer;
-                _relocations.Sort(new Comparison<Bookmark>((x, y) => BookmarkCompare(x, y) ? -1 : 1));
-                foreach (Bookmark relocation in _relocations)
+                byte* instanceBufferPosition = instanceBuffer;
+                int blockCount = _blocks.Count;
+                uint[] bookmarks = new uint[blockCount];
+                int idx = 0;
+                foreach (Block block in _blocks)
                 {
-                    uint from = bookmarks[relocation.Index] + relocation.From;
-                    *relocationBuffer = from;
-                    if (IsBigEndian)
-                    {
-                        InplaceEndianToPlatform(relocationBuffer);
-                    }
-                    uint to = bookmarks[(int)relocation.To];
-                    if (IsBigEndian)
-                    {
-                        InplaceEndianToPlatform(&to);
-                    }
-                    *(uint*)(instanceBuffer + from) = to;
-                    relocationBuffer++;
+                    BinaryAssetBuilder.Native.MsVcRt.MemCpy((IntPtr)instanceBufferPosition, block.Data, new BinaryAssetBuilder.Native.SizeT(block.Size));
+                    bookmarks[idx++] = (uint)(instanceBufferPosition - instanceBuffer);
+                    instanceBufferPosition += block.Size;
                 }
-                *relocationBuffer = uint.MaxValue;
-            }
-            if (importsBufferSize > 0u)
-            {
-                uint* importsBuffer = (uint*)chunk.ImportsBuffer;
-                _imports.Sort(new Comparison<Bookmark>((x, y) => BookmarkCompare(x, y) ? -1 : 1));
-                foreach (Bookmark import in _imports)
+                if (relocationBufferSize > 0)
                 {
-                    uint from = bookmarks[import.Index] + import.From;
-                    *importsBuffer = from;
-                    if (IsBigEndian)
+                    _relocations.Sort(new Comparison<Bookmark>((x, y) => BookmarkCompare(x, y) ? -1 : 1));
+                    fixed (byte* pRelocationBuffer = &chunk.RelocationBuffer[0])
                     {
-                        InplaceEndianToPlatform(importsBuffer);
+                        uint* relocationBuffer = (uint*)pRelocationBuffer;
+                        foreach (Bookmark relocation in _relocations)
+                        {
+                            uint from = bookmarks[relocation.Index] + relocation.From;
+                            *relocationBuffer = from;
+                            if (IsBigEndian)
+                            {
+                                InplaceEndianToPlatform(relocationBuffer);
+                            }
+                            uint to = bookmarks[(int)relocation.To];
+                            if (IsBigEndian)
+                            {
+                                InplaceEndianToPlatform(&to);
+                            }
+                            *(uint*)(instanceBuffer + from) = to;
+                            relocationBuffer++;
+                        }
+                        *relocationBuffer = uint.MaxValue;
                     }
-                    uint to = import.To;
-                    if (IsBigEndian)
-                    {
-                        InplaceEndianToPlatform(&to);
-                    }
-                    *(uint*)(instanceBuffer + from) = to;
-                    importsBuffer++;
                 }
-                *importsBuffer = uint.MaxValue;
+                if (importsBufferSize > 0u)
+                {
+                    _imports.Sort(new Comparison<Bookmark>((x, y) => BookmarkCompare(x, y) ? -1 : 1));
+                    fixed (byte* pImportsBuffer = &chunk.ImportsBuffer[0])
+                    {
+                        uint* importsBuffer = (uint*)pImportsBuffer;
+                        foreach (Bookmark import in _imports)
+                        {
+                            uint from = bookmarks[import.Index] + import.From;
+                            *importsBuffer = from;
+                            if (IsBigEndian)
+                            {
+                                InplaceEndianToPlatform(importsBuffer);
+                            }
+                            uint to = import.To;
+                            if (IsBigEndian)
+                            {
+                                InplaceEndianToPlatform(&to);
+                            }
+                            *(uint*)(instanceBuffer + from) = to;
+                            importsBuffer++;
+                        }
+                        *importsBuffer = uint.MaxValue;
+                    }
+                }
             }
             return true;
         }
