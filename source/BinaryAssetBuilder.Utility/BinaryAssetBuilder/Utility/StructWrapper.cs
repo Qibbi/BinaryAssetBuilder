@@ -19,7 +19,7 @@ namespace BinaryAssetBuilder.Utility
             _hData = Marshal.AllocHGlobal(Size);
             if (_hData != IntPtr.Zero)
             {
-                Native.MsVcRt.ClearMemory(_hData, 0, Size);
+                Native.MsVcRt.MemSet(_hData, 0, new Native.SizeT(Size));
                 Data = (T*)_hData;
             }
         }

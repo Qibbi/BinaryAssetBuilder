@@ -21,7 +21,7 @@ namespace Relo
             {
                 Data = Marshal.AllocHGlobal((int)size);
                 Size = size;
-                BinaryAssetBuilder.Native.MsVcRt.ClearMemory(Data, 0, (int)size);
+                BinaryAssetBuilder.Native.MsVcRt.MemSet(Data, 0, new BinaryAssetBuilder.Native.SizeT(size));
                 Console.WriteLine($"Allocated block at 0x{Data:x8}, size: {size}");
             }
         }

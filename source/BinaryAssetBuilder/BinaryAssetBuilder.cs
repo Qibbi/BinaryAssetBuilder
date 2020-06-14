@@ -240,7 +240,7 @@ namespace BinaryAssetBuilder
                 throw new ApplicationException($"{nameof(BinaryAssetBuilder)} configuration not found.");
             }
             CommandLineOptionProcessor lineOptionProcessor = new CommandLineOptionProcessor(Settings.Current);
-            if (args.Length == 0 || (args.Length > 0 && args[0] == "/?"))
+            if (args.Length == 0 || (args.Length > 0 && (args[0] == "/?" || args[0] == "-?")))
             {
                 Console.WriteLine(GetApplicationVersionString());
                 Console.WriteLine($"Usage: {nameof(BinaryAssetBuilder)} {lineOptionProcessor.GetCommandLineHintText()}\n");

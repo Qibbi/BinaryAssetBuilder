@@ -92,13 +92,12 @@ namespace BinaryAssetBuilder.Core
             {
                 return;
             }
-            uint test;
             using (Stream stream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 long length = stream.Length;
                 byte[] buffer = new byte[length];
                 stream.Read(buffer, 0, buffer.Length);
-                _hash = test = FastHash.GetHashCode((uint)length, buffer);
+                _hash = FastHash.GetHashCode((uint)length, buffer);
             }
             _lastDate = CurrentDate;
         }
