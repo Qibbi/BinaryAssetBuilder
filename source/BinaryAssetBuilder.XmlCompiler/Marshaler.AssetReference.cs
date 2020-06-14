@@ -2,7 +2,7 @@
 
 public static partial class Marshaler
 {
-    public static unsafe void Marshal<T>(string text, AssetReference<T>* objT, Tracker tracker) where T : unmanaged
+    public static unsafe void Marshal<T>(string text, AssetReference<T>* objT, Tracker state) where T : unmanaged
     {
         int index = text.IndexOf('\\');
         if (index == -1)
@@ -10,7 +10,7 @@ public static partial class Marshaler
             return;
         }
         uint value = uint.Parse(text.Substring(index + 1));
-        tracker.AddReference((void*)objT, value);
+        state.AddReference((void*)objT, value);
     }
 
     public static unsafe void Marshal<T>(Value value, AssetReference<T>* objT, Tracker state) where T : unmanaged
