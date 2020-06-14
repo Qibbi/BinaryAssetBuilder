@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices;
 
 namespace BinaryAssetBuilder.Utility
 {
@@ -7,18 +6,8 @@ namespace BinaryAssetBuilder.Utility
     {
         public static ushort LatestVersion => 5;
 
-        public unsafe bool IsBigEndian
-        {
-            [return: MarshalAs(UnmanagedType.U1)]
-            get => Data->IsBigEndian;
-        }
-        public unsafe bool IsLinked
-        {
-            [return: MarshalAs(UnmanagedType.U1)]
-            get => Data->IsLinked;
-            [param: MarshalAs(UnmanagedType.U1)]
-            set => Data->IsLinked = value;
-        }
+        public unsafe bool IsBigEndian => Data->IsBigEndian;
+        public unsafe bool IsLinked { get => Data->IsLinked; set => Data->IsLinked = value; }
         public unsafe ushort Version { get => Data->Version; set => Data->Version = value; }
         public unsafe uint StreamChecksum { get => Data->StreamChecksum; set => Data->StreamChecksum = value; }
         public unsafe uint AllTypesHash { get => Data->AllTypesHash; set => Data->AllTypesHash = value; }
@@ -60,7 +49,7 @@ namespace BinaryAssetBuilder.Utility
             Data->SourceFileNameBufferSize = EA.Endian.BigEndian(Data->SourceFileNameBufferSize);
         }
 
-        public override unsafe void SaveToStream(Stream output, [MarshalAs(UnmanagedType.U1)] bool isBigEndian)
+        public override unsafe void SaveToStream(Stream output, bool isBigEndian)
         {
             Data->IsBigEndian = isBigEndian;
             base.SaveToStream(output, isBigEndian);

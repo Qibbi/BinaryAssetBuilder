@@ -12,7 +12,7 @@ namespace BinaryAssetBuilder.Utility
         public ReferenceHandle[] ExternalReferences { get; }
         public string FileBasePath { get; }
         public string CDataPath { get; }
-        public bool HasErrors { [return: MarshalAs(UnmanagedType.U1)] get; private set; }
+        public bool HasErrors { get; private set; }
         public string Source { get; }
         public string Message { get; private set; }
         public string TypeName => _id[0];

@@ -93,7 +93,6 @@ namespace BinaryAssetBuilder.Core
             public List<Definition> SelfDefines;
             public List<InstanceDeclaration> SelfInstances;
             public List<DefinitionPair> UsedDefines;
-            public List<string> StreamHints;
 
             public LastState()
             {
@@ -119,7 +118,6 @@ namespace BinaryAssetBuilder.Core
                     });
                 }
                 UsedDefines = new List<DefinitionPair>(list);
-                StreamHints = current.StreamHints.Count > 0 ? new List<string>(current.StreamHints) : null;
             }
 
             private void ReadOldStrings(XmlReader reader)
@@ -162,8 +160,6 @@ namespace BinaryAssetBuilder.Core
                 ReadOldStrings(reader);
                 object obj = XmlHelper.ReadStringArrayElement(reader, "sf");
                 DependentFiles = obj is null ? null : new List<string>(obj as string[]);
-                obj = XmlHelper.ReadStringArrayElement(reader, "dsf");
-                StreamHints = obj is null ? null : new List<string>(obj as string[]);
                 obj = XmlHelper.ReadCollection(reader, "iic", typeof(InclusionItem));
                 InclusionItems = obj is null ? null : new List<InclusionItem>(obj as InclusionItem[]);
                 obj = XmlHelper.ReadCollection(reader, "oac", typeof(OutputAsset));
@@ -183,7 +179,6 @@ namespace BinaryAssetBuilder.Core
                 writer.WriteStartElement("ad");
                 writer.WriteAttributeString("d", $"{DocumentHash};{DependentFileHash};{IncludePathHash}");
                 XmlHelper.WriteStringArrayElement(writer, "sf", DependentFiles?.ToArray());
-                XmlHelper.WriteStringArrayElement(writer, "dsf", StreamHints?.ToArray());
                 XmlHelper.WriteCollection(writer, "iic", InclusionItems);
                 XmlHelper.WriteCollection(writer, "oac", OutputAssets);
                 XmlHelper.WriteCollection(writer, "sdc", SelfDefines);
@@ -226,7 +221,6 @@ namespace BinaryAssetBuilder.Core
             public XmlDocument XmlDocument;
             public XmlNamespaceManager NamespaceManager;
             public DocumentProcessor DocumentProcessor;
-            public List<string> StreamHints;
             public LinkedList<XmlNodeWithMetaData> NodeSourceInfoSet;
             public IDictionary<InstanceHandle, InstanceDeclaration> OutputInstanceSet;
             public XmlReader XmlReader;
@@ -266,7 +260,6 @@ namespace BinaryAssetBuilder.Core
             {
                 InclusionItems = last.InclusionItems != null ? new List<InclusionItem>(last.InclusionItems) : new List<InclusionItem>();
                 DependentFiles = last.DependentFiles != null ? new List<string>(last.DependentFiles) : new List<string>();
-                StreamHints = last.StreamHints != null ? new List<string>(last.StreamHints) : new List<string>();
                 UsedDefines = new SortedDictionary<string, string>();
                 if (last.UsedDefines != null)
                 {
@@ -296,7 +289,6 @@ namespace BinaryAssetBuilder.Core
                 UsedDefines = new SortedDictionary<string, string>();
                 SelfDefines = new List<Definition>();
                 SelfInstances = new InstanceSet();
-                StreamHints = new List<string>();
                 State = DocumentState.None;
             }
         }
@@ -335,7 +327,6 @@ namespace BinaryAssetBuilder.Core
         public XmlNamespaceManager NamespaceManager => _current.NamespaceManager;
         public string SourceDirectory => _current.SourceDirectory;
         public bool VerificationErrors => _current.VerificationErrors;
-        public List<string> StreamHints => _last.StreamHints;
         public bool Processing
         {
             get => _current != null && _current.Processing;
@@ -1024,7 +1015,6 @@ namespace BinaryAssetBuilder.Core
                     inclusionItem.PhysicalPath = FileNameResolver.ResolvePath(SourceDirectory, inclusionItem.LogicalPath).ToLower();
                 }
             }
-            _current.StreamHints.Clear();
         }
 
         public void ReloadIfRequired(InstanceHandleSet requiredOverrideSources)
@@ -1180,17 +1170,6 @@ namespace BinaryAssetBuilder.Core
                 selfInstance.MakeComplete();
             }
             _last = null;
-        }
-
-        public void AddStreamHints(string[] streams)
-        {
-            foreach (string stream in streams)
-            {
-                if (!_current.StreamHints.Contains(stream))
-                {
-                    _current.StreamHints.Add(stream);
-                }
-            }
         }
 
         public void HandleValidationEvents(object sender, ValidationEventArgs args)

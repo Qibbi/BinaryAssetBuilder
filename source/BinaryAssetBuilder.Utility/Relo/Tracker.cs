@@ -45,9 +45,6 @@ namespace Relo
             }
         }
 
-        private static Tracker _nullTracker;
-        private static bool _hasNullTracker;
-
         private uint _instanceBufferSize;
         private readonly System.Collections.Generic.List<uint> _stack;
         private readonly System.Collections.Generic.List<Block> _blocks;
@@ -64,24 +61,13 @@ namespace Relo
             _imports = new System.Collections.Generic.List<Bookmark>();
         }
 
-        public unsafe Tracker(void** rootPointer, uint size, [MarshalAs(UnmanagedType.U1)] bool isBigEndian) : this()
+        public unsafe Tracker(void** rootPointer, uint size, bool isBigEndian) : this()
         {
             uint index = Allocate(1u, size);
             _stack.Add(index);
             *(IntPtr*)rootPointer = _blocks[(int)index].Data;
         }
 
-        internal static unsafe Tracker NullTracker()
-        {
-            if (!_hasNullTracker)
-            {
-                _hasNullTracker = true;
-                _nullTracker = new Tracker();
-            }
-            return _nullTracker;
-        }
-
-        [return: MarshalAs(UnmanagedType.U1)]
         internal static unsafe bool BookmarkCompare(Bookmark x, Bookmark y)
         {
             return x.Index < y.Index || (x.Index <= y.Index && x.To < y.To);
@@ -134,7 +120,6 @@ namespace Relo
             _stack.RemoveAt(_stack.Count - 1);
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         public unsafe bool MakeRelocatable(Chunk chunk)
         {
             uint importsBufferSize = 0;
@@ -190,7 +175,7 @@ namespace Relo
                 _imports.Sort(new Comparison<Bookmark>((x, y) => BookmarkCompare(x, y) ? -1 : 1));
                 foreach (Bookmark import in _imports)
                 {
-                    uint from = bookmarks[import.Index] + (import.From * 4);
+                    uint from = bookmarks[import.Index] + import.From;
                     *importsBuffer = from;
                     if (IsBigEndian)
                     {

@@ -22,7 +22,6 @@ namespace Relo
             ImportsBufferSize = 0;
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         internal bool Allocate(uint instanceBufferSize, uint relocationBufferSize, uint importsBufferSize)
         {
             InstanceBufferSize = (int)instanceBufferSize;

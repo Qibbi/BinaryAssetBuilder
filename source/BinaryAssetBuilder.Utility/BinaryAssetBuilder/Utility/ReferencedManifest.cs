@@ -1,13 +1,11 @@
-﻿using System.Runtime.InteropServices;
-
-namespace BinaryAssetBuilder.Utility
+﻿namespace BinaryAssetBuilder.Utility
 {
     public class ReferencedManifest
     {
-        public bool IsPatch { [return: MarshalAs(UnmanagedType.U1)] get; }
+        public bool IsPatch { get; }
         public string Path { get; }
 
-        public ReferencedManifest(string path, [MarshalAs(UnmanagedType.U1)] bool isPatch)
+        public ReferencedManifest(string path, bool isPatch)
         {
             Path = path;
             IsPatch = isPatch;

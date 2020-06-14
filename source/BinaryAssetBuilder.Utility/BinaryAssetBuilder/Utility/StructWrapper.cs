@@ -24,7 +24,7 @@ namespace BinaryAssetBuilder.Utility
             }
         }
 
-        public virtual unsafe void LoadFromBuffer(byte[] buffer, [MarshalAs(UnmanagedType.U1)] bool isBigEndian)
+        public virtual unsafe void LoadFromBuffer(byte[] buffer, bool isBigEndian)
         {
             fixed (byte* pBuffer = &buffer[0])
             {
@@ -36,14 +36,14 @@ namespace BinaryAssetBuilder.Utility
             }
         }
 
-        public virtual void LoadFromStream(Stream input, [MarshalAs(UnmanagedType.U1)] bool isBigEndian)
+        public virtual void LoadFromStream(Stream input, bool isBigEndian)
         {
             byte[] buffer = new byte[Size];
             input.Read(buffer, 0, Size);
             LoadFromBuffer(buffer, isBigEndian);
         }
 
-        public virtual unsafe void SaveToStream(Stream output, [MarshalAs(UnmanagedType.U1)] bool isBigEndian)
+        public virtual unsafe void SaveToStream(Stream output, bool isBigEndian)
         {
             if (isBigEndian)
             {

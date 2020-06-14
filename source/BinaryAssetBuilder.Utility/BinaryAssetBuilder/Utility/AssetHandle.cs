@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace BinaryAssetBuilder.Utility
+﻿namespace BinaryAssetBuilder.Utility
 {
     internal class AssetHandle
     {
@@ -26,7 +24,6 @@ namespace BinaryAssetBuilder.Utility
             _typeId = src._typeId;
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         public override bool Equals(object obj)
         {
             return obj is AssetHandle objT && _instanceId == objT._instanceId && _typeId == objT._typeId;

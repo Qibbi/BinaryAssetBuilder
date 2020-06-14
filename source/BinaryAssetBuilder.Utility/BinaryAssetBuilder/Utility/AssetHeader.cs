@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace BinaryAssetBuilder.Utility
+﻿namespace BinaryAssetBuilder.Utility
 {
     public class AssetHeader : AStructWrapper<AssetStream.AssetHeader>
     {
@@ -23,7 +21,6 @@ namespace BinaryAssetBuilder.Utility
             Data->ImportsDataSize = EA.Endian.BigEndian(Data->ImportsDataSize);
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         public unsafe bool IsValidFileLength(long fileLength)
         {
             return Data->InstanceDataSize + 32 + Data->RelocationDataSize + Data->ImportsDataSize == fileLength;
