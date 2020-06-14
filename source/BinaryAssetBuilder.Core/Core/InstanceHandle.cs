@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -7,7 +8,7 @@ using System.Xml.Serialization;
 namespace BinaryAssetBuilder.Core
 {
     [Serializable]
-    public class InstanceHandle : IXmlSerializable
+    public class InstanceHandle : IXmlSerializable, IComparable<InstanceHandle>
     {
         private string _instanceName = string.Empty;
         private string _typeName = string.Empty;
@@ -189,6 +190,27 @@ namespace BinaryAssetBuilder.Core
                 return;
             }
             Debugger.Break();
+        }
+
+        public int CompareTo([AllowNull] InstanceHandle other)
+        {
+            if (InstanceId == other.InstanceId && TypeId == other.TypeId)
+            {
+                return 0;
+            }
+            if (TypeId < other.TypeId)
+            {
+                return -1;
+            }
+            if (TypeId > other.TypeId)
+            {
+                return 1;
+            }
+            if (InstanceId < other.InstanceId)
+            {
+                return -1;
+            }
+            return InstanceId > other.InstanceId ? 1 : 0;
         }
 
         public override bool Equals(object obj)

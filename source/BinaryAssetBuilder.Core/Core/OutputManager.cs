@@ -189,7 +189,7 @@ namespace BinaryAssetBuilder.Core
 
         public void CommitManifest(AssetDeclarationDocument document)
         {
-            uint lastAllTypesHash = 0;
+            uint lastAllTypesHash = DocumentProcessor.Plugins.DefaultPlugin.GetAllTypesHash();
             foreach (IAssetBuilderPlugin plugin in DocumentProcessor.Plugins.AllPlugins)
             {
                 uint allTypesHash = plugin.GetAllTypesHash();

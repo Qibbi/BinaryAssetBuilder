@@ -154,13 +154,14 @@ namespace BinaryAssetBuilder.Core
                         _tracer.TraceError("Input file '{0}' not found (referenced from file://{1}). Treating it as empty.", inclusionItem.LogicalPath, document.SourcePath);
                     }
                     _totalPostProcTime += DateTime.Now - now;
+                    bool output = inclusionItem.Type == InclusionType.Reference && !usePrecompiled;
                     ProcessOptions newOptions = new ProcessOptions
                     {
-                        GenerateOutput = inclusionItem.Type == InclusionType.Reference && !usePrecompiled,
+                        GenerateOutput = output,
                         UsePrecompiled = usePrecompiled,
                         Configuration = configuration
                     };
-                    AssetDeclarationDocument assetDocument = ProcessDocumentInternal(inclusionItem.LogicalPath, inclusionItem.PhysicalPath, valid ? null : outputManager, newOptions);
+                    AssetDeclarationDocument assetDocument = ProcessDocumentInternal(inclusionItem.LogicalPath, inclusionItem.PhysicalPath, output ? null : outputManager, newOptions);
                     now = DateTime.Now;
                     inclusionItem.Document = assetDocument;
                     document.AllDefines.AddDefinitions(assetDocument.AllDefines);
@@ -384,7 +385,7 @@ namespace BinaryAssetBuilder.Core
                 AssetDeclarationDocument document = null;
                 try
                 {
-                    document = ProcessDocumentInternal(fileName,
+                    document = ProcessDocumentInternal(Path.IsPathRooted(fileName) ? Path.GetFileName(fileName) : fileName,
                                                        fileName,
                                                        null,
                                                        new ProcessOptions

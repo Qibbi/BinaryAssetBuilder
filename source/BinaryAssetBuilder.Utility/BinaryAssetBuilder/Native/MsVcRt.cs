@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace BinaryAssetBuilder.Native
 {
-    internal static class MsVcRt
+    public static class MsVcRt
     {
         public delegate IntPtr ClearMemoryDelegate(IntPtr ptr, byte value, ulong count);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

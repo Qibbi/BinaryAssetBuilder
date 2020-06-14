@@ -485,7 +485,7 @@ namespace BinaryAssetBuilder.Core
             LoadXml(loadFromScratch);
             GatherUnvalidatedTags();
             GatherDefines();
-            if (!loadFromScratch)
+            if (loadFromScratch)
             {
                 GatherUnvalidatedIncludes();
             }
@@ -1504,7 +1504,7 @@ namespace BinaryAssetBuilder.Core
             {
                 _current.OutputInstances.Sort(new DependencyComparer());
             }
-            MemoryStream memoryStream = new MemoryStream();
+            using MemoryStream memoryStream = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(memoryStream);
             foreach (InstanceDeclaration outputInstance in _current.OutputInstances)
             {

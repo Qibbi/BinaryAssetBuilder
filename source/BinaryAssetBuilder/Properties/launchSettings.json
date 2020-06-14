@@ -2,7 +2,7 @@
   "profiles": {
     "BinaryAssetBuilder": {
       "commandName": "Project",
-      "commandLineArgs": "..\\test.xml -tl:9"
+      "commandLineArgs": "..\\test.xml -tl:9 -ls"
     }
   }
 }
