@@ -20,4 +20,8 @@
     <DefineConstants>TRACE;WIN32</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Security.Principal.Windows" Version="4.7.0" />
+  </ItemGroup>
+
 </Project>

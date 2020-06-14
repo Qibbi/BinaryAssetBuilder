@@ -1,4 +1,4 @@
-﻿namespace BinaryAssetBuilder.Core
+﻿namespace Metrics
 {
     public enum MetricType
     {

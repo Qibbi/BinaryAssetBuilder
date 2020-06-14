@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace BinaryAssetBuilder.Core
+namespace Metrics
 {
     public class Metric
     {

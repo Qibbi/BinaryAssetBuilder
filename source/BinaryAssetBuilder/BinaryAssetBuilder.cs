@@ -1,4 +1,5 @@
 ﻿using BinaryAssetBuilder.Core;
+using Metrics;
 using System;
 using System.Configuration;
 using System.IO;
@@ -15,6 +16,32 @@ namespace BinaryAssetBuilder
         private static bool _pauseOnError;
         private static GUIBuildOutput _buildWindow;
         private static Thread _workThread;
+
+        public static MetricDescriptor[] _descriptors = new[]
+        {
+            MetricManager.GetDescriptor("BAB.MapName", MetricType.Name, "Map name"),
+            MetricManager.GetDescriptor("BAB.ProcessingTime", MetricType.Duration, "Total processing time"),
+            MetricManager.GetDescriptor("BAB.FilesProcessedCount", MetricType.Count, "Number of files processed"),
+            MetricManager.GetDescriptor("BAB.InstancesProcessedCount", MetricType.Count, "Number of instances processed"),
+            MetricManager.GetDescriptor("BAB.InstancesCopiedFromCacheCount", MetricType.Count, "Number of instances copied from cache"),
+            MetricManager.GetDescriptor("BAB.InstancesCompiledCount", MetricType.Count, "Number of instances compiled"),
+            MetricManager.GetDescriptor("BAB.FilesParsedCount", MetricType.Count, "Number of files parsed"),
+            MetricManager.GetDescriptor("BAB.SessionCacheSize", MetricType.Size, "Size of session cache"),
+            MetricManager.GetDescriptor("BAB.MaxMemorySize", MetricType.Size, "Maximum allocated memory"),
+            MetricManager.GetDescriptor("BAB.StartupTime", MetricType.Duration, "Startup time"),
+            MetricManager.GetDescriptor("BAB.SessionSerialization", MetricType.Duration, "Session Serialization time"),
+            MetricManager.GetDescriptor("BAB.ShutdownTime", MetricType.Duration, "Shutdown time"),
+            MetricManager.GetDescriptor("BAB.DocumentProcessingTime", MetricType.Duration, "Document processing time"),
+            MetricManager.GetDescriptor("BAB.NetworkCacheEnabled", MetricType.Enabled, "Network cache enabled"),
+            MetricManager.GetDescriptor("BAB.SessionCacheEnabled", MetricType.Enabled, "Session cache enabled"),
+            MetricManager.GetDescriptor("BAB.LinkedStreamsEnabled", MetricType.Enabled, "Linked streams enabled"),
+            MetricManager.GetDescriptor("BAB.InstanceProcessingTime", MetricType.Duration, "Instance Processing Time"),
+            MetricManager.GetDescriptor("BAB.OutputPrepTime", MetricType.Duration, "Output Preparation Time"),
+            MetricManager.GetDescriptor("BAB.PrepSourceTime", MetricType.Duration, "Prepare Sources Time"),
+            MetricManager.GetDescriptor("BAB.ProcIncludesTime", MetricType.Duration, "Include Processing Time"),
+            MetricManager.GetDescriptor("BAB.ValidateTime", MetricType.Duration, "Validation Time"),
+            MetricManager.GetDescriptor("BAB.BuildSuccessful", MetricType.Success, "Build completed successfully")
+        };
 
         private int _runResult;
 
@@ -62,6 +89,7 @@ namespace BinaryAssetBuilder
         {
             try
             {
+                MetricManager.AddListener(new ConsoleMetricsListener());
                 MetricManager.OpenSession();
                 _tracer.Message($"{nameof(BinaryAssetBuilder)} started");
                 PluginRegistry pluginRegistry = new PluginRegistry(Settings.Current.Plugins, Settings.Current.TargetPlatform);
@@ -71,7 +99,6 @@ namespace BinaryAssetBuilder
                 new DocumentProcessor(Settings.Current, pluginRegistry, verifierPluginRegistry)
                     .ProcessDocument(Path.Combine(Settings.Current.IntermediateOutputDirectory, HashProvider.StringHashesFile), true, false);
                 _tracer.Message($"{nameof(BinaryAssetBuilder)} complete");
-                MetricManager.CloseSession();
             }
             catch (BinaryAssetBuilderException ex)
             {
@@ -88,7 +115,7 @@ namespace BinaryAssetBuilder
                         Thread.Sleep(10000);
                     }
                 }
-                _runResult = -1;
+                _runResult = (int)ex.ErrorCode;
                 if (_buildWindow is null)
                 {
                     return;
@@ -97,6 +124,7 @@ namespace BinaryAssetBuilder
             }
             finally
             {
+                MetricManager.CloseSession();
                 if (_buildWindow != null)
                 {
                     _buildWindow.DiffThreadClose();

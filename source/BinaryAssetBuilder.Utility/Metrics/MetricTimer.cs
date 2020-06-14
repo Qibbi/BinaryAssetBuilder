@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BinaryAssetBuilder.Core
+namespace Metrics
 {
     public class MetricTimer : IDisposable
     {

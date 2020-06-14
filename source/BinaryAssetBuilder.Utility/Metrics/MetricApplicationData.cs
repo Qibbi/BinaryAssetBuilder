@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Security.Principal;
 
-namespace BinaryAssetBuilder.Core
+namespace Metrics
 {
     public class MetricApplicationData
     {

@@ -6,6 +6,10 @@ SageXml/
 StringHashes.xml*
 StringHashesI.xml*
 test*.xml
+test*.manifest
+test.bin
+test.relo
+test.imp
 cache/
 test/
 BinaryAssetBuilder.SessionCache.*

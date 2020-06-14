@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace BinaryAssetBuilder.Core
+namespace Metrics
 {
     public class MetricManager
     {

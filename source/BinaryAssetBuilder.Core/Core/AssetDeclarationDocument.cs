@@ -1225,6 +1225,10 @@ namespace BinaryAssetBuilder.Core
             IExpressionEvaluator evaluator = ExpressionEvaluatorWrapper.GetEvaluator(this);
             foreach (Definition selfDefine in SelfDefines)
             {
+                if (evaluator is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.ExpressionEvaluationError, "Expression evaluator not loaded but evaluation was requested");
+                }
                 if (selfDefine.OriginalValue != null)
                 {
                     selfDefine.EvaluatedValue = null;
