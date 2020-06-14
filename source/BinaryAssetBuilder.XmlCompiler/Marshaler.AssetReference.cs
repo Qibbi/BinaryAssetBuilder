@@ -1,4 +1,5 @@
 ﻿using Relo;
+using SageBinaryData;
 
 public static partial class Marshaler
 {

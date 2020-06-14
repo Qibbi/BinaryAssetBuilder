@@ -8,21 +8,19 @@ namespace BinaryAssetBuilder.Utility
     {
         public static unsafe int Size { get; } = sizeof(T);
 
+        private IntPtr _hData;
+
         protected unsafe T* Data;
 
         protected abstract void Swap();
 
         public unsafe AStructWrapper()
         {
-            T* ptr = (T*)Marshal.AllocHGlobal(Size);
-            if ((IntPtr)ptr != IntPtr.Zero)
+            _hData = Marshal.AllocHGlobal(Size);
+            if (_hData != IntPtr.Zero)
             {
-                Native.MsVcRt.ClearMemory((IntPtr)ptr, 0, Size);
-                Data = ptr;
-            }
-            else
-            {
-                Data = (T*)IntPtr.Zero;
+                Native.MsVcRt.ClearMemory(_hData, 0, Size);
+                Data = (T*)_hData;
             }
         }
 
@@ -60,21 +58,14 @@ namespace BinaryAssetBuilder.Utility
             }
         }
 
-        protected virtual unsafe void Dispose([MarshalAs(UnmanagedType.U1)] bool disposing)
+        public virtual unsafe void Dispose()
         {
-            if (disposing)
+            if (_hData != IntPtr.Zero)
             {
-                if ((IntPtr)Data != IntPtr.Zero)
-                {
-                    Marshal.FreeHGlobal((IntPtr)Data);
-                }
+                Marshal.FreeHGlobal(_hData);
+                _hData = IntPtr.Zero;
+                Data = null;
             }
-        }
-
-        public virtual void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

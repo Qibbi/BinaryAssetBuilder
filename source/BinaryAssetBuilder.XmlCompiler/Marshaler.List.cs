@@ -1,5 +1,6 @@
 ﻿using BinaryAssetBuilder;
 using Relo;
+using SageBinaryData;
 using System;
 using System.Reflection;
 
@@ -51,6 +52,7 @@ public static partial class Marshaler
         {
             state.InplaceEndianToPlatform(&listCount);
         }
+        Console.WriteLine($"Writing count to 0x{(IntPtr)(&objT->Count):x8}");
         objT->Count = listCount;
         if (count != 0u)
         {

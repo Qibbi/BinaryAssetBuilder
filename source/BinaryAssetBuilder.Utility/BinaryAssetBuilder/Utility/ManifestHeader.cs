@@ -40,7 +40,7 @@ namespace BinaryAssetBuilder.Utility
             }
             catch
             {
-                Dispose(true);
+                Dispose();
             }
         }
 

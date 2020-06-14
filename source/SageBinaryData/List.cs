@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Relo
+namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct List<T> where T : unmanaged

@@ -22,6 +22,7 @@ namespace Relo
                 Data = Marshal.AllocHGlobal((int)size);
                 Size = size;
                 BinaryAssetBuilder.Native.MsVcRt.ClearMemory(Data, 0, (int)size);
+                Console.WriteLine($"Allocated block at 0x{Data:x8}, size: {size}");
             }
         }
 
@@ -63,16 +64,11 @@ namespace Relo
             _imports = new System.Collections.Generic.List<Bookmark>();
         }
 
-        public static unsafe Tracker Create<T>(T** rootPointer, [MarshalAs(UnmanagedType.U1)] bool isBigEndian) where T : unmanaged
+        public unsafe Tracker(void** rootPointer, uint size, [MarshalAs(UnmanagedType.U1)] bool isBigEndian) : this()
         {
-            Tracker result = new Tracker
-            {
-                IsBigEndian = isBigEndian
-            };
-            uint index = result.Allocate(1u, (uint)sizeof(T));
-            result._stack.Add(index);
-            *(IntPtr*)rootPointer = result._blocks[(int)index].Data;
-            return result;
+            uint index = Allocate(1u, size);
+            _stack.Add(index);
+            *(IntPtr*)rootPointer = _blocks[(int)index].Data;
         }
 
         internal static unsafe Tracker NullTracker()
@@ -129,6 +125,7 @@ namespace Relo
             };
             *(IntPtr*)pointerLocation = _blocks[(int)newIndex].Data;
             _relocations.Add(bookmark);
+            Console.WriteLine($"Pushing new objects, ptr: 0x{(IntPtr)(pointerLocation):x8}, target: 0x{(IntPtr)(*pointerLocation):x8}");
             return new Context(this);
         }
 
@@ -229,6 +226,7 @@ namespace Relo
         {
             while (_blocks.Count != 0)
             {
+                Console.WriteLine($"Free'd block at 0x{_blocks[^1].Data:x8}");
                 Marshal.FreeHGlobal(_blocks[^1].Data);
                 _blocks.RemoveAt(_blocks.Count - 1);
             }
