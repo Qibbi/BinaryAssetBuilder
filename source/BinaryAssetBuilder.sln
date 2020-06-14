@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder", "BinaryAssetBuilder\BinaryAssetBuilder.csproj", "{8AA446DD-830C-43E5-AB05-71B3BF319F65}"
+	ProjectSection(ProjectDependencies) = postProject
+		{176492B7-3567-447A-AB1A-84F76247C247} = {176492B7-3567-447A-AB1A-84F76247C247}
+		{10381FEE-813C-4FB2-8512-857E99DFD770} = {10381FEE-813C-4FB2-8512-857E99DFD770}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.Core", "BinaryAssetBuilder.Core\BinaryAssetBuilder.Core.csproj", "{A245F295-D338-4D4E-9EEF-E293F1881642}"
 EndProject
@@ -11,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.XmlCompi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.Utility", "BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj", "{236B2050-9714-4EE8-8E63-7E14CB031B02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryAssetBuilder.GameDataVerifier", "BinaryAssetBuilder.GameDataVerifier\BinaryAssetBuilder.GameDataVerifier.csproj", "{176492B7-3567-447A-AB1A-84F76247C247}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.GameDataVerifier", "BinaryAssetBuilder.GameDataVerifier\BinaryAssetBuilder.GameDataVerifier.csproj", "{176492B7-3567-447A-AB1A-84F76247C247}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageBinaryData", "SageBinaryData\SageBinaryData.csproj", "{D0827BF6-CEE5-4DA4-B743-E2B304A88740}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,10 @@ Global
 		{176492B7-3567-447A-AB1A-84F76247C247}.Debug|x86.Build.0 = Debug|x86
 		{176492B7-3567-447A-AB1A-84F76247C247}.Release|x86.ActiveCfg = Release|x86
 		{176492B7-3567-447A-AB1A-84F76247C247}.Release|x86.Build.0 = Release|x86
+		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Debug|x86.ActiveCfg = Debug|x86
+		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Debug|x86.Build.0 = Debug|x86
+		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Release|x86.ActiveCfg = Release|x86
+		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,7 +18,7 @@ namespace BinaryAssetBuilder.Utility
             _positions = new Dictionary<int, int>();
         }
 
-        public unsafe int AddReference(string name, [MarshalAs(UnmanagedType.U1)] bool isPatch)
+        public unsafe int AddReference(string name, bool isPatch)
         {
             int nameHash = name.GetHashCode();
             if (!_positions.TryGetValue(nameHash, out int result))

@@ -21,7 +21,7 @@ namespace BinaryAssetBuilder
         [OptionalCommandLineOption("oof"), Description("Uses the old asset output format with three separate files"), XmlIgnore] public bool OldOutputFormat { get; set; }
         [OptionalCommandLineOption("dr"), Description("Directory used as a root for all stream XML files"), XmlAttribute("dataRoot")] public string DataRoot { get; set; }
         [OptionalCommandLineOption("cl", 0, 2), Description("Cache level used for building data"), XmlIgnore] public int CacheLevel { get; set; } = 2;
-        [OptionalCommandLineOption("tl", 0, 9), Description("Trace level used for output"), XmlIgnore] public int TraceLevel { get; set; } = 2;
+        [OptionalCommandLineOption("tl", 0, 9), Description("Trace level used for output"), XmlIgnore] public int TraceLevel { get; set; } = 3;
         [OptionalCommandLineOption("el", 0, 1), Description("Error level for reporting"), XmlIgnore] public int ErrorLevel { get; set; }
         [OptionalCommandLineOption("bcn"), Description("Name of build configuration to use"), XmlIgnore] public string BuildConfigurationName { get; set; }
         [OptionalCommandLineOption("poe"), Description("Pause after build is complete if errors occurred"), XmlIgnore] public bool PauseOnError { get; set; }

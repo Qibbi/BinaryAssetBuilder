@@ -1,7 +1,7 @@
 ﻿using Relo;
 using SageBinaryData;
 
-public static class Marshaler
+public static partial class Marshaler
 {
     public const float PI = 3.14159265359f;
     public const float RADS_PER_DEGREE = PI / 180.0f;
@@ -17,7 +17,6 @@ public static class Marshaler
         {
             return;
         }
-        node.Release();
     }
 
     private static unsafe void Marshal(Node node, BaseInheritableAsset* objT, Tracker state)
@@ -27,67 +26,5 @@ public static class Marshaler
             return;
         }
         Marshal(node, (BaseAssetType*)objT, state);
-    }
-
-    public static unsafe void Marshal(string text, AssetReference<LogicCommand>* reference, Tracker tracker)
-    {
-        int index = text.IndexOf('\\');
-        if (index == -1)
-        {
-            return;
-        }
-        uint value = uint.Parse(text.Substring(index + 1));
-        tracker.AddReference((void*)reference, value);
-    }
-
-    public static unsafe void Marshal(Value value, AssetReference<LogicCommand>* objT, Tracker state)
-    {
-        if (value is null)
-        {
-            return;
-        }
-        Marshal(value.GetText(), objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, AssetReference<LogicCommand>* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetValue(), objT, state);
-    }
-
-    public static unsafe void Marshal(List list, RList<AssetReference<LogicCommand>>* target, Tracker tracker)
-    {
-        if (list is null)
-        {
-            return;
-        }
-        uint count = (uint)list.GetCount();
-        uint listCount = count;
-        if (tracker.IsBigEndian)
-        {
-            tracker.ByteSwap32(&listCount);
-        }
-        target->Count = listCount;
-        if (count != 0u)
-        {
-            tracker.Push((void**)&target->Target, 4u, count);
-            for (uint idx = 0; idx < count; ++idx)
-            {
-                Marshal(list.GetNextNode(), &target->Target[idx], tracker);
-            }
-            tracker.Pop();
-        }
-    }
-
-    public static unsafe void Marshal(Node node, LogicCommandSet* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetChildNodes("Cmd"), &objT->Cmd, state);
     }
 }

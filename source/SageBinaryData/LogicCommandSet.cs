@@ -1,5 +1,4 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace SageBinaryData
 {
@@ -7,6 +6,6 @@ namespace SageBinaryData
     public struct LogicCommandSet
     {
         public BaseInheritableAsset Base;
-        public RList<AssetReference<LogicCommand>> Cmd;
+        public List<AssetReference<LogicCommand>> Cmd;
     }
 }

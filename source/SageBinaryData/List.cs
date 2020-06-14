@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Relo
+namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct RList<T> where T : unmanaged
+    public struct List<T> where T : unmanaged
     {
         public uint Count;
         public unsafe T* Target;

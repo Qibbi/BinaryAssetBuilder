@@ -92,17 +92,13 @@ namespace BinaryAssetBuilder.Core
             {
                 return;
             }
-            AsynchronousFileReader asynchronousFileReader = new AsynchronousFileReader(_path);
-            uint hash = asynchronousFileReader.FileSize;
-            while (asynchronousFileReader.BeginRead())
+            using (Stream stream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                if (asynchronousFileReader.CurrentChunk != null && asynchronousFileReader.CurrentChunk.Data != null)
-                {
-                    hash = FastHash.GetHashCode(hash, asynchronousFileReader.CurrentChunk.Data, asynchronousFileReader.CurrentChunk.BytesRead);
-                }
-                asynchronousFileReader.EndRead();
+                long length = stream.Length;
+                byte[] buffer = new byte[length];
+                stream.Read(buffer, 0, buffer.Length);
+                _hash = FastHash.GetHashCode((uint)length, buffer);
             }
-            _hash = hash;
             _lastDate = CurrentDate;
         }
 

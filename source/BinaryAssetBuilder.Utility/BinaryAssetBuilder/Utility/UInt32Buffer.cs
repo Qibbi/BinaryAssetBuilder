@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace BinaryAssetBuilder.Utility
 {
@@ -22,7 +21,7 @@ namespace BinaryAssetBuilder.Utility
             return result;
         }
 
-        public void SaveToStream(Stream output, [MarshalAs(UnmanagedType.U1)] bool isBigEndian)
+        public void SaveToStream(Stream output, bool isBigEndian)
         {
             BinaryWriter writer = new BinaryWriter(output);
             if (isBigEndian)

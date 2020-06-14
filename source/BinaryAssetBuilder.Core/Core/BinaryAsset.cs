@@ -295,11 +295,7 @@ namespace BinaryAssetBuilder.Core
                         }
                         destAssetStream.Flush();
                     }
-                    if (File.Exists(assetOutputPath))
-                    {
-                        File.Delete(assetOutputPath);
-                    }
-                    File.Move(tmpOutputPath, assetOutputPath);
+                    File.Move(tmpOutputPath, assetOutputPath, true);
                 }
                 if (Instance.HasCustomData)
                 {
@@ -416,11 +412,7 @@ namespace BinaryAssetBuilder.Core
                     stream.Write(_buffer.ImportsData, 0, _buffer.ImportsData.Length);
                     stream.Flush();
                 }
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-                File.Move(tmpPath, path);
+                File.Move(tmpPath, path, true);
                 _buffer = null;
                 _memoryAvailability = Availability.Missing;
             }

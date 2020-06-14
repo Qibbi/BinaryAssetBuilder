@@ -13,13 +13,13 @@ namespace BinaryAssetBuilder.Utility
         private unsafe AssetStream.ManifestHeader* _pHeader;
         private IDictionary<uint, string> _stringHashes;
 
-        public unsafe bool IsLoaded { [return: MarshalAs(UnmanagedType.U1)] get => (IntPtr)_pBuffer != IntPtr.Zero; }
+        public unsafe bool IsLoaded => (IntPtr)_pBuffer != IntPtr.Zero;
         public Manifest PatchManifest { get; private set; }
         public ReferencedManifest[] ReferencedManifests { get; private set; }
         public string FileName { get; private set; }
         public Asset[] Assets { get; private set; }
-        public unsafe bool IsBigEndian { [return: MarshalAs(UnmanagedType.U1)] get => (IntPtr)_pHeader != IntPtr.Zero && _pHeader->IsBigEndian; }
-        public unsafe bool IsLinked { [return: MarshalAs(UnmanagedType.U1)] get => (IntPtr)_pHeader != IntPtr.Zero && _pHeader->IsLinked; }
+        public unsafe bool IsBigEndian => (IntPtr)_pHeader != IntPtr.Zero && _pHeader->IsBigEndian;
+        public unsafe bool IsLinked => (IntPtr)_pHeader != IntPtr.Zero && _pHeader->IsLinked;
         public unsafe int Version => (IntPtr)_pHeader != IntPtr.Zero ? _pHeader->Version : 0;
         public unsafe uint StreamChecksum => (IntPtr)_pHeader != IntPtr.Zero ? _pHeader->StreamChecksum : 0u;
         public unsafe uint AllTypesHash => (IntPtr)_pHeader != IntPtr.Zero ? _pHeader->AllTypesHash : 0u;
@@ -63,13 +63,11 @@ namespace BinaryAssetBuilder.Utility
             return !result.Load(fileName, patchSearchPaths) ? null : result;
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         public bool Load(string fileName)
         {
             return Load(fileName, null);
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         public unsafe bool Load(string fileName, string[] patchSearchPaths)
         {
             Free();
@@ -252,7 +250,6 @@ namespace BinaryAssetBuilder.Utility
             return true;
         }
 
-        [return: MarshalAs(UnmanagedType.U1)]
         public bool Reload()
         {
             return !string.IsNullOrEmpty(FileName) && Load(FileName, null);
