@@ -7,6 +7,6 @@ namespace SageBinaryData
     public struct LogicCommandSet
     {
         public BaseInheritableAsset Base;
-        public RList<AssetReference<LogicCommand>> Cmd;
+        public List<AssetReference<LogicCommand>> Cmd;
     }
 }

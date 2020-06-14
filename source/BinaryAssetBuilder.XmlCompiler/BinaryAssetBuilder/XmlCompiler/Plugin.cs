@@ -2,6 +2,7 @@
 using Relo;
 using SageBinaryData;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
@@ -11,9 +12,10 @@ namespace BinaryAssetBuilder.XmlCompiler
     public class Plugin : IAssetBuilderPlugin
     {
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(XmlCompiler), "Marshals XML data into binary data structures.");
-        private static int Win32 = 0;
-        private static int Xbox360 = 2;
-        private static int XmlCompilerVersion = 1;
+        private static int _win32 = 0;
+        private static int _xbox360 = 2;
+        private static int _xmlCompilerVersion = 1;
+        private static readonly Dictionary<Type, MethodInfo> _marshalMethods = new Dictionary<Type, MethodInfo>();
 
         private TargetPlatform _platform;
 
@@ -24,8 +26,8 @@ namespace BinaryAssetBuilder.XmlCompiler
 
         public uint GetAllTypesHash()
         {
-            return 0x12B3E763u; // KW 1.02
-            // return 0xEB19D975u; // TW 1.09
+            // return 0x12B3E763u; // KW 1.02
+            return 0xEB19D975u; // TW 1.09
         }
 
         public ExtendedTypeInformation GetExtendedTypeInformation(uint typeId)
@@ -35,10 +37,10 @@ namespace BinaryAssetBuilder.XmlCompiler
                 HasCustomData = false,
                 TypeId = typeId
             };
-            uint num = (uint)XmlCompilerVersion;
+            uint num = (uint)_xmlCompilerVersion;
             if (_platform == TargetPlatform.Xbox360)
             {
-                num += (uint)Xbox360;
+                num += (uint)_xbox360;
             }
             switch (typeId)
             {
@@ -76,11 +78,15 @@ namespace BinaryAssetBuilder.XmlCompiler
             XPathNavigator navigator = declaration.Node.CreateNavigator();
             Node node = new Node(navigator, namespaceManager);
             T* objT;
-            Relo.Tracker tracker = Relo.Tracker.Create(&objT, isBigEndian);
-            MethodInfo marshal = typeof(Marshaler).GetMethod("Marshal", new[] { typeof(Node), typeof(LogicCommandSet*), typeof(Tracker) });
-            if (marshal is null)
+            using Tracker tracker = Tracker.Create(&objT, isBigEndian);
+            if (!_marshalMethods.TryGetValue(typeof(T), out MethodInfo marshal))
             {
-                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Cannot find marshal method for type '{0}'", typeof(T*).Name);
+                marshal = typeof(Marshaler).GetMethod("Marshal", new[] { typeof(Node), typeof(T*), typeof(Tracker) });
+                if (marshal is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Cannot find marshal method for type '{0}'", typeof(T*).Name);
+                }
+                _marshalMethods.Add(typeof(T), marshal);
             }
             marshal.Invoke(null, new object[] { node, (IntPtr)objT, tracker });
             Relo.Chunk chunk = new Relo.Chunk();

@@ -92,7 +92,7 @@ namespace BinaryAssetBuilder.Core
             {
                 return;
             }
-            AsynchronousFileReader asynchronousFileReader = new AsynchronousFileReader(_path);
+            using AsynchronousFileReader asynchronousFileReader = new AsynchronousFileReader(_path);
             uint hash = asynchronousFileReader.FileSize;
             while (asynchronousFileReader.BeginRead())
             {

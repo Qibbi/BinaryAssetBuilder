@@ -222,7 +222,7 @@ namespace BinaryAssetBuilder.Core
                 }
             }
             _header = new ManifestHeader();
-            MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new MemoryStream();
             uint assetsCount = 0;
             uint instanceDataSize = 0;
             uint maxInstanceChunkSize = 0;
@@ -312,7 +312,6 @@ namespace BinaryAssetBuilder.Core
                 nameBuffer.SaveToStream(fileStream);
                 sourceFileNameBuffer.SaveToStream(fileStream);
             }
-            stream.Close();
         }
 
         public void LinkStream(AssetDeclarationDocument document)
@@ -324,8 +323,8 @@ namespace BinaryAssetBuilder.Core
             {
                 checksum = (uint)((((int)checksum & 0xFF) << 24) | (((int)checksum & 0xFF00) << 8) | ((int)(checksum >> 8) & 0xFF00) | ((int)(checksum >> 24) & 0xFF));
             }
-            MemoryStream reloStream = new MemoryStream();
-            MemoryStream impStream = new MemoryStream();
+            using MemoryStream reloStream = new MemoryStream();
+            using MemoryStream impStream = new MemoryStream();
             bool dirty = true;
             using (Stream fileStream = new FileStream(outputDirectory + ".bin", FileMode.OpenOrCreate, FileAccess.Read))
             {
@@ -412,8 +411,6 @@ namespace BinaryAssetBuilder.Core
             {
                 _tracer.Message("{0} Linked import data up to date", document.SourcePathFromRoot);
             }
-            reloStream.Close();
-            impStream.Close();
         }
 
         public void CleanOutput()

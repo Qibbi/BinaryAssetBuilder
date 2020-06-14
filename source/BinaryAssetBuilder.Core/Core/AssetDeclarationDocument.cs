@@ -661,7 +661,7 @@ namespace BinaryAssetBuilder.Core
                     writer.Close();
                 }
                 XPathNodeIterator xPathNodeIterator = selfInstance.XmlNode.CreateNavigator().SelectDescendants("", "uri:ea.com:eala:asset", true);
-                MemoryStream memoryStream = new MemoryStream();
+                using MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
                 foreach (XPathNavigator navigator in xPathNodeIterator)
                 {

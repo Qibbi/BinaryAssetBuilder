@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Relo
 {
-    public class Tracker
+    public class Tracker : IDisposable
     {
         internal class Bookmark
         {
@@ -30,19 +29,19 @@ namespace Relo
         private static bool _hasNullTracker;
 
         private uint _instanceBufferSize;
-        private readonly List<uint> _stack;
-        private readonly List<Block> _blocks;
-        private readonly List<Bookmark> _relocations;
-        private readonly List<Bookmark> _imports;
+        private readonly System.Collections.Generic.List<uint> _stack;
+        private readonly System.Collections.Generic.List<Block> _blocks;
+        private readonly System.Collections.Generic.List<Bookmark> _relocations;
+        private readonly System.Collections.Generic.List<Bookmark> _imports;
 
         public bool IsBigEndian { get; private set; }
 
         private Tracker()
         {
-            _stack = new List<uint>();
-            _blocks = new List<Block>();
-            _relocations = new List<Bookmark>();
-            _imports = new List<Bookmark>();
+            _stack = new System.Collections.Generic.List<uint>();
+            _blocks = new System.Collections.Generic.List<Block>();
+            _relocations = new System.Collections.Generic.List<Bookmark>();
+            _imports = new System.Collections.Generic.List<Bookmark>();
         }
 
         public static unsafe Tracker Create<T>(T** rootPointer, [MarshalAs(UnmanagedType.U1)] bool isBigEndian) where T : unmanaged
@@ -139,7 +138,7 @@ namespace Relo
             byte* instanceBuffer = (byte*)chunk.InstanceBuffer;
             byte* instanceBufferPosition = instanceBuffer;
             int blockCount = _blocks.Count;
-            uint* bookmarks = (uint*)Marshal.AllocHGlobal(blockCount > 0x3FFFFFFF ? int.MaxValue : blockCount * 4);
+            uint[] bookmarks = new uint[blockCount];
             int idx = 0;
             foreach (Block block in _blocks)
             {
@@ -207,7 +206,7 @@ namespace Relo
             _imports.Add(bookmark);
         }
 
-        public void Dispse()
+        public void Dispose()
         {
             while (_blocks.Count != 0)
             {
