@@ -43,8 +43,8 @@ public class Node
             if (_navigator.MoveToChild(name, _navigator.NamespaceURI))
             {
                 result = new Node(_navigator.CreateNavigator(), _namespaceManager);
+                _navigator.MoveToParent();
             }
-            _navigator.MoveToParent();
         }
         if (result is null && defaultValue != null)
         {

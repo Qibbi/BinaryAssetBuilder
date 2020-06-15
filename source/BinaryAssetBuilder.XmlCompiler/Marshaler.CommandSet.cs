@@ -23,5 +23,6 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(CommandSet.Name), null), &objT->Name, state);
         Marshal(node.GetAttributeValue(nameof(CommandSet.InitialVisible), "32"), &objT->InitialVisible, state);
         Marshal(node.GetChildNodes(nameof(CommandSet.CommandButton)), &objT->CommandButton, state);
+        Marshal(node, (BaseAssetType*)objT, state);
     }
 }

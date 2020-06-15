@@ -70,17 +70,29 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             switch (typeId)
             {
-                case 0xEC066D65u:
-                    result.Type = typeof(LogicCommandSet);
-                    result.TypeName = nameof(LogicCommandSet);
-                    result.ProcessingHash = num ^ 0x6D148BD7u;
-                    result.TypeHash = 0x6D148BD7u;
+                case 0x2C358B80u:
+                    result.Type = typeof(MpGameRules);
+                    result.TypeName = nameof(MpGameRules);
+                    result.ProcessingHash = num ^ 0xEDDBB607u;
+                    result.TypeHash = 0xEDDBB607u;
+                    break;
+                case 0x7D464170u:
+                    result.Type = typeof(LogicCommand);
+                    result.TypeName = nameof(LogicCommand);
+                    result.ProcessingHash = num ^ 0x97D0A46Eu;
+                    result.TypeHash = 0x97D0A46Eu;
                     break;
                 case 0x9A104B07u:
                     result.Type = typeof(CommandSet);
                     result.TypeName = nameof(CommandSet);
                     result.ProcessingHash = num ^ 0x3CFF78A1u;
                     result.TypeHash = 0x3CFF78A1u;
+                    break;
+                case 0xEC066D65u:
+                    result.Type = typeof(LogicCommandSet);
+                    result.TypeName = nameof(LogicCommandSet);
+                    result.ProcessingHash = num ^ 0x6D148BD7u;
+                    result.TypeHash = 0x6D148BD7u;
                     break;
                 default:
                     result.TypeName = "<unknown>";

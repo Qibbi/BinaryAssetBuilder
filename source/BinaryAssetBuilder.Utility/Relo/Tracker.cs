@@ -44,6 +44,8 @@ namespace Relo
             }
         }
 
+        public static Tracker NullTracker { get; } = new Tracker();
+
         private uint _instanceBufferSize;
         private readonly System.Collections.Generic.List<uint> _stack;
         private readonly System.Collections.Generic.List<Block> _blocks;

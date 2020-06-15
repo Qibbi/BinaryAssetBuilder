@@ -31,4 +31,14 @@ public static partial class Marshaler
         }
         Marshal(node.GetValue(), objT, state);
     }
+
+    public static unsafe void Marshal<T>(Node node, AssetReference<T>** objT, Tracker state) where T : unmanaged
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, 4u, 1u);
+        Marshal(node, *objT, state);
+    }
 }

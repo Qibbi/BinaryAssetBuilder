@@ -121,12 +121,15 @@ public static partial class Marshaler
 
     private static unsafe void Marshal<T>(string text, T* objT, Tracker state) where T : unmanaged, Enum
     {
-        T result = (T)Enum.Parse(typeof(T), text, false);
-        if (state.IsBigEndian)
+        if (Enum.TryParse(text, false, out T value))
         {
-            state.InplaceEndianToPlatform((uint*)&result);
+            T result = (T)Enum.Parse(typeof(T), text, false);
+            if (state.IsBigEndian)
+            {
+                state.InplaceEndianToPlatform((uint*)&result);
+            }
+            *objT = result;
         }
-        *objT = result;
     }
 
     private static unsafe void Marshal<T>(Value value, T* objT, Tracker state) where T : unmanaged, Enum
