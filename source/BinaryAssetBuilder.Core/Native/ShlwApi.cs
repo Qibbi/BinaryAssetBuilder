@@ -10,9 +10,13 @@ namespace BinaryAssetBuilder.Native
 
         public static readonly IntPtr HModule;
 
-        public delegate bool PathRemoveFileSpecWDelegate(StringBuilder path);
-        public delegate bool PathCanonicalizeWDelegate(StringBuilder result, string path);
-        public delegate bool PathRelativePathToWDelegate(StringBuilder result, string from, uint typeFrom, string to, uint typeTo);
+        public delegate bool PathRemoveFileSpecWDelegate([MarshalAs(UnmanagedType.LPWStr)] StringBuilder path);
+        public delegate bool PathCanonicalizeWDelegate([MarshalAs(UnmanagedType.LPWStr)] StringBuilder result, [In, MarshalAs(UnmanagedType.LPWStr)] string path);
+        public delegate bool PathRelativePathToWDelegate([MarshalAs(UnmanagedType.LPWStr)] StringBuilder result,
+                                                         [In, MarshalAs(UnmanagedType.LPWStr)] string from,
+                                                         uint typeFrom,
+                                                         [In, MarshalAs(UnmanagedType.LPWStr)] string to,
+                                                         uint typeTo);
 
         public static PathRemoveFileSpecWDelegate PathRemoveFileSpecW;
         public static PathCanonicalizeWDelegate PathCanonicalizeW;
