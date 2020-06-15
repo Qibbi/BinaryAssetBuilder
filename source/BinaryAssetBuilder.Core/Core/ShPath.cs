@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -8,8 +9,10 @@ namespace BinaryAssetBuilder.Core
 
         public static string Canonicalize(string path)
         {
-            StringBuilder result = new StringBuilder(path, 260);
-            return !Native.ShlwApi.PathCanonicalizeW(result, path) ? string.Empty : result.ToString();
+            // this doesn't seem to work?
+            // StringBuilder result = new StringBuilder(path, 260);
+            // return !Native.ShlwApi.PathCanonicalizeW(result, path) ? string.Empty : result.ToString();
+            return new FileInfo(path)?.FullName ?? null;
         }
 
         public static string RemoveFileSpec(string path)

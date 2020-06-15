@@ -117,7 +117,7 @@ namespace BinaryAssetBuilder.Utility
             sbyte* ptr4 = ptr3;
             sbyte* referenceManifestNameBuffer = ptr3 + _pHeader->AssetReferenceBufferSize;
             sbyte* referenceManifestNameBufferPosition = referenceManifestNameBuffer;
-            sbyte* ptr7 = referenceManifestNameBuffer + _pHeader->AssetNameBufferSize;
+            sbyte* ptr7 = referenceManifestNameBuffer + _pHeader->ReferenceManifestNameBufferSize;
             List<ReferencedManifest> referencedManifests = new List<ReferencedManifest>();
             string path;
             for (; referenceManifestNameBufferPosition < ptr7; referenceManifestNameBufferPosition += path.Length + 1)
@@ -136,7 +136,7 @@ namespace BinaryAssetBuilder.Utility
             }
             ReferencedManifests = referencedManifests.ToArray();
             sbyte* ptr8 = ptr7;
-            sbyte* ptr9 = ptr7 + _pHeader->SourceFileNameBufferSize;
+            sbyte* ptr9 = ptr7 + _pHeader->AssetNameBufferSize;
             int linkedInstanceOffset = 4;
             int linkedRelocationOffset = 4;
             int linkedImportsOffset = 4;

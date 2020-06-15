@@ -109,7 +109,7 @@ namespace BinaryAssetBuilder.Core
                     }
                 }
             }
-            _tracer.TraceData("Result: {0}", result);
+            _tracer.TraceData("Resolve Path Result: {0}", result);
             return result;
         }
 
