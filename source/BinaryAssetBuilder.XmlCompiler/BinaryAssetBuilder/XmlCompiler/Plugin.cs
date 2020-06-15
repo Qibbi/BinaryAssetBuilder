@@ -11,12 +11,14 @@ namespace BinaryAssetBuilder.XmlCompiler
 {
     public class Plugin : IAssetBuilderPlugin
     {
+        public unsafe delegate void MarshalDelegate<T>(Node node, T* objT, Tracker state) where T : unmanaged;
+
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(XmlCompiler), "Marshals XML data into binary data structures.");
         private static readonly int _win32 = 0;
         private static readonly int _xbox360 = 2;
         private static readonly int _xmlCompilerVersion = 1;
         private static readonly IDictionary<uint, MethodInfo> _handleMethods = new SortedDictionary<uint, MethodInfo>();
-        private static readonly IDictionary<uint, MethodInfo> _marshalMethods = new SortedDictionary<uint, MethodInfo>();
+        private static readonly IDictionary<uint, Delegate> _marshalMethods = new SortedDictionary<uint, Delegate>();
 
         private TargetPlatform _platform;
 
@@ -115,16 +117,21 @@ namespace BinaryAssetBuilder.XmlCompiler
             Node node = new Node(navigator, namespaceManager);
             T* objT;
             using Tracker tracker = new Tracker((void**)&objT, (uint)sizeof(T), isBigEndian);
-            if (!_marshalMethods.TryGetValue(declaration.Handle.TypeId, out MethodInfo marshal))
+            if (!_marshalMethods.TryGetValue(declaration.Handle.TypeId, out Delegate marshal))
             {
-                marshal = typeof(Marshaler).GetMethod(nameof(Marshaler.Marshal), new[] { typeof(Node), typeof(T*), typeof(Tracker) });
+                MethodInfo method = typeof(Marshaler).GetMethod(nameof(Marshaler.Marshal), new[] { typeof(Node), typeof(T*), typeof(Tracker) });
+                if (method is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Cannot find marshal method for type '{0}'", typeof(T*).Name);
+                }
+                marshal = Delegate.CreateDelegate(typeof(MarshalDelegate<T>), method);
                 if (marshal is null)
                 {
-                    throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Unable to find marshal method for type '{0}'", typeof(T).Name);
+                    throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Cannot convert marshal method to delegate for type '{0}'", typeof(T*).Name);
                 }
                 _marshalMethods.Add(declaration.Handle.TypeId, marshal);
             }
-            marshal.Invoke(null, new object[] { node, (IntPtr)objT, tracker });
+            (marshal as MarshalDelegate<T>)(node, objT, tracker);
             WriteAssetBuffer(buffer, tracker);
         }
     }
