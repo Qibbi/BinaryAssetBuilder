@@ -52,11 +52,10 @@ public static partial class Marshaler
         {
             state.InplaceEndianToPlatform(&listCount);
         }
-        Console.WriteLine($"Writing count to 0x{(IntPtr)(&objT->Count):x8}");
         objT->Count = listCount;
         if (count != 0u)
         {
-            using Tracker.Context context = state.Push((void**)&objT->Target, (uint)sizeof(AssetReference<T>), count);
+            using Tracker.Context context = state.Push((void**)&objT->Target, 4u, count);
             for (uint idx = 0; idx < count; ++idx)
             {
                 Marshal(list.GetNextNode(), &objT->Target[idx], state);

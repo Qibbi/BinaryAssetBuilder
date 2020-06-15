@@ -22,7 +22,6 @@ namespace Relo
                 Data = Marshal.AllocHGlobal((int)size);
                 Size = size;
                 BinaryAssetBuilder.Native.MsVcRt.MemSet(Data, 0, new BinaryAssetBuilder.Native.SizeT(size));
-                Console.WriteLine($"Allocated block at 0x{Data:x8}, size: {size}");
             }
         }
 
@@ -111,7 +110,6 @@ namespace Relo
             };
             *(IntPtr*)pointerLocation = _blocks[(int)newIndex].Data;
             _relocations.Add(bookmark);
-            Console.WriteLine($"Pushing new objects, ptr: 0x{(IntPtr)(pointerLocation):x8}, target: 0x{(IntPtr)(*pointerLocation):x8}");
             return new Context(this);
         }
 
@@ -219,7 +217,6 @@ namespace Relo
         {
             while (_blocks.Count != 0)
             {
-                Console.WriteLine($"Free'd block at 0x{_blocks[^1].Data:x8}");
                 Marshal.FreeHGlobal(_blocks[^1].Data);
                 _blocks.RemoveAt(_blocks.Count - 1);
             }

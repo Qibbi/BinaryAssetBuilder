@@ -9,6 +9,6 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetChildNodes("Cmd"), &objT->Cmd, state);
+        Marshal(node.GetChildNodes(nameof(LogicCommandSet.Cmd)), &objT->Cmd, state);
     }
 }

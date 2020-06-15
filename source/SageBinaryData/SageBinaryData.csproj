@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Platforms>x86</Platforms>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>SageBinaryData</RootNamespace>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
