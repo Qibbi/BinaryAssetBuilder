@@ -25,7 +25,7 @@ public static partial class Marshaler
         {
             if (!_marshalListItemMethods.TryGetValue(typeof(T), out MethodInfo marshal))
             {
-                marshal = typeof(Marshaler).GetMethod("Marshal", new[] { typeof(Node), typeof(T*), typeof(Tracker) });
+                marshal = typeof(Marshaler).GetMethod(nameof(Marshal), new[] { typeof(Node), typeof(T*), typeof(Tracker) });
                 if (marshal is null)
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Cannot find marshal method for type '{0}'", typeof(T*).Name);

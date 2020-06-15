@@ -393,7 +393,8 @@ namespace BinaryAssetBuilder.Core
                                                        {
                                                            BasePatchStream = Settings.Current.BasePatchStream,
                                                            Configuration = Settings.Current.BuildConfigurationName,
-                                                           GenerateOutput = generateOutput
+                                                           GenerateOutput = generateOutput,
+                                                           UsePrecompiled = Settings.Current.UsePrecompiled
                                                        });
                     success = true;
                 }

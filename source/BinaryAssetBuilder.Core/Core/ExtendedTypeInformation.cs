@@ -1,4 +1,6 @@
-﻿namespace BinaryAssetBuilder.Core
+﻿using System;
+
+namespace BinaryAssetBuilder.Core
 {
     public class ExtendedTypeInformation
     {
@@ -7,5 +9,6 @@
         public uint TypeHash { get; set; }
         public uint ProcessingHash { get; set; }
         public bool HasCustomData { get; set; }
+        public Type Type { get; set; }
     }
 }

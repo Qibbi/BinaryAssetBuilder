@@ -15,7 +15,8 @@ namespace BinaryAssetBuilder.XmlCompiler
         private static readonly int _win32 = 0;
         private static readonly int _xbox360 = 2;
         private static readonly int _xmlCompilerVersion = 1;
-        private static readonly Dictionary<Type, MethodInfo> _marshalMethods = new Dictionary<Type, MethodInfo>();
+        private static readonly IDictionary<uint, MethodInfo> _handleMethods = new SortedDictionary<uint, MethodInfo>();
+        private static readonly IDictionary<uint, MethodInfo> _marshalMethods = new SortedDictionary<uint, MethodInfo>();
 
         private TargetPlatform _platform;
 
@@ -28,9 +29,17 @@ namespace BinaryAssetBuilder.XmlCompiler
             {
                 buffer.RelocationData = chunk.RelocationBuffer;
             }
+            else
+            {
+                buffer.RelocationData = new byte[0];
+            }
             if (chunk.ImportsBuffer.Length > 0)
             {
                 buffer.ImportsData = chunk.ImportsBuffer;
+            }
+            else
+            {
+                buffer.ImportsData = new byte[0];
             }
         }
 
@@ -60,9 +69,16 @@ namespace BinaryAssetBuilder.XmlCompiler
             switch (typeId)
             {
                 case 0xEC066D65u:
+                    result.Type = typeof(LogicCommandSet);
                     result.TypeName = nameof(LogicCommandSet);
                     result.ProcessingHash = num ^ 0x6D148BD7u;
                     result.TypeHash = 0x6D148BD7u;
+                    break;
+                case 0x9A104B07u:
+                    result.Type = typeof(CommandSet);
+                    result.TypeName = nameof(CommandSet);
+                    result.ProcessingHash = num ^ 0x3CFF78A1u;
+                    result.TypeHash = 0x3CFF78A1u;
                     break;
                 default:
                     result.TypeName = "<unknown>";
@@ -76,13 +92,18 @@ namespace BinaryAssetBuilder.XmlCompiler
         public AssetBuffer ProcessInstance(InstanceDeclaration declaration)
         {
             AssetBuffer result = new AssetBuffer();
-            switch (declaration.Handle.TypeId)
+            if (!_handleMethods.TryGetValue(declaration.Handle.TypeId, out MethodInfo handleType))
             {
-                case 0xEC066D65u:
-                    HandleType<LogicCommandSet>(declaration, result);
-                    break;
+                handleType = GetType().GetMethod(nameof(HandleType));
+                ExtendedTypeInformation extendedTypeInformation = GetExtendedTypeInformation(declaration.Handle.TypeId);
+                handleType = handleType.MakeGenericMethod(extendedTypeInformation.Type);
+                if (handleType is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Unable to find handle method for type '{0}", extendedTypeInformation.TypeName);
+                }
+                _handleMethods.Add(extendedTypeInformation.TypeId, handleType);
             }
-
+            handleType.Invoke(this, new object[] { declaration, result });
             return result;
         }
 
@@ -94,14 +115,14 @@ namespace BinaryAssetBuilder.XmlCompiler
             Node node = new Node(navigator, namespaceManager);
             T* objT;
             using Tracker tracker = new Tracker((void**)&objT, (uint)sizeof(T), isBigEndian);
-            if (!_marshalMethods.TryGetValue(typeof(T), out MethodInfo marshal))
+            if (!_marshalMethods.TryGetValue(declaration.Handle.TypeId, out MethodInfo marshal))
             {
-                marshal = typeof(Marshaler).GetMethod("Marshal", new[] { typeof(Node), typeof(T*), typeof(Tracker) });
+                marshal = typeof(Marshaler).GetMethod(nameof(Marshaler.Marshal), new[] { typeof(Node), typeof(T*), typeof(Tracker) });
                 if (marshal is null)
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Unable to find marshal method for type '{0}'", typeof(T).Name);
                 }
-                _marshalMethods.Add(typeof(T), marshal);
+                _marshalMethods.Add(declaration.Handle.TypeId, marshal);
             }
             marshal.Invoke(null, new object[] { node, (IntPtr)objT, tracker });
             WriteAssetBuffer(buffer, tracker);
