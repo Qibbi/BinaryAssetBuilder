@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAssetBuilder.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -151,6 +152,19 @@ namespace BinaryAssetBuilder
                 }
             }
             return obj;
+        }
+
+        private string[] ProcessPaths(string combinedPaths)
+        {
+            string[] result = combinedPaths.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int idx = 0; idx < result.Length; ++idx)
+            {
+                if (result[idx] != "*")
+                {
+                    result[idx] = ShPath.Canonicalize(Path.Combine(Settings.Current.DataRoot, result[idx]));
+                }
+            }
+            return result;
         }
 
         private void SetSettingsObject(object settingsObject)
@@ -383,6 +397,103 @@ namespace BinaryAssetBuilder
                 options = File.ReadAllLines(path);
             }
             return ProcessOptionsInternal(options, out messages);
+        }
+
+        public void PostProcessSettings()
+        {
+            Settings current = Settings.Current;
+            string directoryName = Path.GetDirectoryName(GetType().Assembly.ManifestModule.FullyQualifiedName);
+            if (!Path.IsPathRooted(current.InputPath))
+            {
+                current.InputPath = Path.GetFullPath(Path.Combine(directoryName, current.InputPath));
+            }
+            if (!Path.IsPathRooted(current.DataRoot))
+            {
+                current.DataRoot = Path.GetFullPath(Path.Combine(directoryName, current.DataRoot));
+            }
+            if (!Path.IsPathRooted(current.SchemaPath))
+            {
+                current.SchemaPath = Path.GetFullPath(Path.Combine(directoryName, current.SchemaPath));
+            }
+            if (string.IsNullOrEmpty(current.OutputDirectory))
+            {
+                current.OutputDirectory = Path.GetDirectoryName(current.InputPath);
+            }
+            else if (!Path.IsPathRooted(current.OutputDirectory))
+            {
+                current.OutputDirectory = Path.GetFullPath(Path.Combine(directoryName, current.OutputDirectory));
+            }
+            if (string.IsNullOrEmpty(current.IntermediateOutputDirectory) || !current.LinkedStreams)
+            {
+                current.IntermediateOutputDirectory = current.OutputDirectory;
+            }
+            current.UseSessionCache = current.CacheLevel > 1;
+            current.UseBuildCache = current.CacheLevel > 0;
+            if (current.UseBuildCache && string.IsNullOrEmpty(current.BuildCacheDirectory))
+            {
+                current.BuildCacheDirectory = Path.Combine(current.OutputDirectory, "cache");
+            }
+            if (current.UseSessionCache && string.IsNullOrEmpty(current.SessionCacheDirectory))
+            {
+                current.SessionCacheDirectory = current.OutputDirectory;
+            }
+            current.BigEndian = current.TargetPlatform != TargetPlatform.Win32;
+            string artPaths = null;
+            string audioPaths = null;
+            string dataPaths = null;
+            if (!string.IsNullOrEmpty(current.BuildConfigurationName))
+            {
+                BuildConfiguration buildConfiguration = null;
+                if (current.BuildConfigurations != null)
+                {
+                    foreach (BuildConfiguration bcn in current.BuildConfigurations)
+                    {
+                        if (bcn.Name.Equals(current.BuildConfigurationName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            buildConfiguration = bcn;
+                            break;
+                        }
+                    }
+                }
+                if (buildConfiguration is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "Invalid build configuration '{0}' specified.", current.BuildConfigurationName);
+                }
+                artPaths = buildConfiguration.ArtPaths;
+                audioPaths = buildConfiguration.AudioPaths;
+                dataPaths = buildConfiguration.DataPaths;
+                current.Postfix = buildConfiguration.Postfix;
+                current.StreamPostfix = !buildConfiguration.AppendPostfixToStream
+                                     || buildConfiguration.StreamPostfix != null
+                                     || string.IsNullOrEmpty(buildConfiguration.Postfix) ? (buildConfiguration.StreamPostfix ?? string.Empty) : "_" + buildConfiguration.Postfix;
+                if (string.IsNullOrEmpty(artPaths) && string.IsNullOrEmpty(dataPaths) && string.IsNullOrEmpty(audioPaths) && string.IsNullOrEmpty(current.Postfix))
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "No search paths or postfix for configuration {0} specified", current.BuildConfigurationName);
+                }
+            }
+            else
+            {
+                current.Postfix = null;
+            }
+            if (artPaths is null)
+            {
+                artPaths = Settings.Current.DefaultArtPaths;
+            }
+            if (audioPaths is null)
+            {
+                audioPaths = Settings.Current.DefaultAudioPaths;
+            }
+            if (dataPaths is null)
+            {
+                dataPaths = Settings.Current.DefaultDataPaths;
+            }
+            if (string.IsNullOrEmpty(artPaths) || string.IsNullOrEmpty(audioPaths) || string.IsNullOrEmpty(dataPaths))
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "No search paths for selected configuration specified.");
+            }
+            current.ArtPaths = ProcessPaths(artPaths);
+            current.AudioPaths = ProcessPaths(audioPaths);
+            current.DataPaths = ProcessPaths(dataPaths);
         }
     }
 }

@@ -1,11 +1,13 @@
-﻿using System.Runtime.InteropServices;
+﻿using Relo;
+using System.Runtime.InteropServices;
+using AnsiString = Relo.String<sbyte>;
 
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct CommandButton
     {
-        public String<sbyte> Name;
+        public AnsiString Name;
         public uint Index;
         public unsafe ClientRandomVariable* InitialDelay;
     }
@@ -14,7 +16,7 @@ namespace SageBinaryData
     public struct CommandSet
     {
         public BaseAssetType Base;
-        public String<sbyte> Name;
+        public AnsiString Name;
         public int InitialVisible;
         public List<CommandButton> CommandButton;
     }

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BinaryAssetBuilder.Core\BinaryAssetBuilder.Core.csproj" />
+    <ProjectReference Include="..\SageBinaryData\SageBinaryData.csproj" />
   </ItemGroup>
 
 </Project>

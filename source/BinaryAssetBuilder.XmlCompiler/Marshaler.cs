@@ -1,7 +1,9 @@
 ﻿using Relo;
 using SageBinaryData;
 using System;
+using AnsiString = Relo.String<sbyte>;
 using SMarshal = System.Runtime.InteropServices.Marshal;
+using WideString = Relo.String<char>;
 
 public static partial class Marshaler
 {
@@ -94,7 +96,29 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(string text, String<sbyte>* objT, Tracker state)
+    private static unsafe void Marshal<T>(string text, T* objT, Tracker state) where T : unmanaged, Enum
+    {
+        if (Enum.TryParse(text, false, out T value))
+        {
+            T result = (T)Enum.Parse(typeof(T), text, false);
+            if (state.IsBigEndian)
+            {
+                state.InplaceEndianToPlatform((uint*)&result);
+            }
+            *objT = result;
+        }
+    }
+
+    private static unsafe void Marshal<T>(Value value, T* objT, Tracker state) where T : unmanaged, Enum
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(string text, AnsiString* objT, Tracker state)
     {
         uint length = (uint)text.Length;
         uint textLength = length;
@@ -119,20 +143,7 @@ public static partial class Marshaler
         SMarshal.FreeHGlobal(hText);
     }
 
-    private static unsafe void Marshal<T>(string text, T* objT, Tracker state) where T : unmanaged, Enum
-    {
-        if (Enum.TryParse(text, false, out T value))
-        {
-            T result = (T)Enum.Parse(typeof(T), text, false);
-            if (state.IsBigEndian)
-            {
-                state.InplaceEndianToPlatform((uint*)&result);
-            }
-            *objT = result;
-        }
-    }
-
-    private static unsafe void Marshal<T>(Value value, T* objT, Tracker state) where T : unmanaged, Enum
+    private static unsafe void Marshal(Value value, AnsiString* objT, Tracker state)
     {
         if (value is null)
         {
@@ -141,7 +152,32 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(Value value, String<sbyte>* objT, Tracker state)
+    private static unsafe void Marshal(string text, WideString* objT, Tracker state)
+    {
+        uint length = (uint)text.Length;
+        uint textLength = length;
+        if (state.IsBigEndian)
+        {
+            state.InplaceEndianToPlatform(&textLength);
+        }
+        objT->Length = (int)textLength;
+        using Tracker.Context context = state.Push((void**)&objT->Target, 2u, length);
+        char* str = objT->Target;
+        IntPtr hText = SMarshal.StringToHGlobalUni(text);
+        char* pText = (char*)hText;
+        int c;
+        do
+        {
+            *str = *pText;
+            ++pText;
+            c = *str;
+            ++str;
+        }
+        while (c != 0);
+        SMarshal.FreeHGlobal(hText);
+    }
+
+    private static unsafe void Marshal(Value value, WideString* objT, Tracker state)
     {
         if (value is null)
         {

@@ -20,4 +20,8 @@
     <DefineConstants>TRACE;WIN32</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj" />
+  </ItemGroup>
+
 </Project>
