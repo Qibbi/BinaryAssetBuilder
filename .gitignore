@@ -10,6 +10,8 @@ test*.manifest
 test.bin
 test.relo
 test.imp
+test.big
+blb/
 cache/
 test/
 BinaryAssetBuilder.SessionCache.*
