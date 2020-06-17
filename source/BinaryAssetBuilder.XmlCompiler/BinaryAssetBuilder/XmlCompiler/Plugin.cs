@@ -14,7 +14,7 @@ namespace BinaryAssetBuilder.XmlCompiler
         public unsafe delegate void MarshalDelegate<T>(Node node, T* objT, Tracker state) where T : unmanaged;
 
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(XmlCompiler), "Marshals XML data into binary data structures.");
-        private static readonly int _win32 = 0;
+        // private static readonly int _win32 = 0;
         private static readonly int _xbox360 = 2;
         private static readonly int _xmlCompilerVersion = 1;
         private static readonly IDictionary<uint, MethodInfo> _handleMethods = new SortedDictionary<uint, MethodInfo>();
@@ -81,6 +81,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(LogicCommand);
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
+                    break;
+                case 0x94D4D96Eu:
+                    result.Type = typeof(WeaponTemplate);
+                    result.TypeName = nameof(WeaponTemplate);
+                    result.ProcessingHash = num ^ 0xE3996069u;
+                    result.TypeHash = 0xE3996069u;
                     break;
                 case 0x9A104B07u:
                     result.Type = typeof(CommandSet);

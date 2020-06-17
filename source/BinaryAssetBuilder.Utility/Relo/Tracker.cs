@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Relo
@@ -29,7 +30,7 @@ namespace Relo
         {
             private Tracker _parent;
 
-            internal Context(Tracker parent)
+            internal unsafe Context(Tracker parent)
             {
                 _parent = parent;
             }
@@ -83,7 +84,7 @@ namespace Relo
             return (uint)(_blocks.Count - 1);
         }
 
-        public unsafe void InplaceEndianToPlatform(uint* value)
+        private unsafe void ByteSwap32(uint* value)
         {
             byte* pValue = (byte*)value;
             uint result;
@@ -93,6 +94,15 @@ namespace Relo
             pResult[2] = pValue[1];
             pResult[3] = *pValue;
             *value = result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void InplaceEndianToPlatform(uint* value)
+        {
+            if (IsBigEndian)
+            {
+                ByteSwap32(value);
+            }
         }
 
         public unsafe Context Push(void** pointerLocation, uint objectSize, uint objectCount)
@@ -158,15 +168,9 @@ namespace Relo
                         {
                             uint from = bookmarks[relocation.Index] + relocation.From;
                             *relocationBuffer = from;
-                            if (IsBigEndian)
-                            {
-                                InplaceEndianToPlatform(relocationBuffer);
-                            }
+                            InplaceEndianToPlatform(relocationBuffer);
                             uint to = bookmarks[(int)relocation.To];
-                            if (IsBigEndian)
-                            {
-                                InplaceEndianToPlatform(&to);
-                            }
+                            InplaceEndianToPlatform(&to);
                             *(uint*)(instanceBuffer + from) = to;
                             relocationBuffer++;
                         }
@@ -183,15 +187,9 @@ namespace Relo
                         {
                             uint from = bookmarks[import.Index] + import.From;
                             *importsBuffer = from;
-                            if (IsBigEndian)
-                            {
-                                InplaceEndianToPlatform(importsBuffer);
-                            }
+                            InplaceEndianToPlatform(importsBuffer);
                             uint to = import.To;
-                            if (IsBigEndian)
-                            {
-                                InplaceEndianToPlatform(&to);
-                            }
+                            InplaceEndianToPlatform(&to);
                             *(uint*)(instanceBuffer + from) = to;
                             importsBuffer++;
                         }

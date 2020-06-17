@@ -10,7 +10,7 @@ namespace Relo
 
     // U is the AssetFactory, ex. typedef AssetReference<BaseAssetType, RenderAssetFactory> RenderObjectReference;
     [StructLayout(LayoutKind.Sequential)]
-    public struct AssetReference<T, U> where T : unmanaged
+    public struct AssetReference<T, U> where T : unmanaged where U : unmanaged
     {
         public unsafe T* Reference;
     }

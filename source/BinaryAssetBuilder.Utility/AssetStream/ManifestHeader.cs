@@ -5,8 +5,8 @@ namespace AssetStream
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct ManifestHeader
     {
-        [MarshalAs(UnmanagedType.U1)] public bool IsBigEndian;
-        [MarshalAs(UnmanagedType.U1)] public bool IsLinked;
+        public SageBool IsBigEndian;
+        public SageBool IsLinked;
         public ushort Version;
         public uint StreamChecksum;
         public uint AllTypesHash;

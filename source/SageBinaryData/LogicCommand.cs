@@ -44,6 +44,7 @@ namespace SageBinaryData
         OK_FOR_MULTI_EXECUTE
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct LogicCommandOptionsBitFlags
     {
         public const int Count = 10;
