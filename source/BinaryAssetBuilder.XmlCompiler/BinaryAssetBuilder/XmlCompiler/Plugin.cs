@@ -100,6 +100,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x6D148BD7u;
                     result.TypeHash = 0x6D148BD7u;
                     break;
+                case 0xECC2A1D3u:
+                    result.Type = typeof(LocomotorTemplate);
+                    result.TypeName = nameof(LocomotorTemplate);
+                    result.ProcessingHash = num ^ 0xBD8F61A4u;
+                    result.TypeHash = 0xBD8F61A4u;
+                    break;
                 default:
                     result.TypeName = "<unknown>";
                     result.ProcessingHash = 0u;

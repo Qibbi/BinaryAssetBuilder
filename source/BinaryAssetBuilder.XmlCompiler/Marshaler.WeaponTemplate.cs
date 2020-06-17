@@ -80,7 +80,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.PartitionFilterTestType), "EXTENTS_3D"), &objT->PartitionFilterTestType, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.PartitionFilterTestType), nameof(PartitionManagerDistTestType.EXTENTS_3D)), &objT->PartitionFilterTestType, state);
         Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.ForbiddenTargetObjectStatus), null), &objT->ForbiddenTargetObjectStatus, state);
         Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.ForbiddenTargetModelCondition), null), &objT->ForbiddenTargetModelCondition, state);
         Marshal(node.GetChildNode(nameof(WeaponEffectNugget.SpecialObjectFilter), null), &objT->SpecialObjectFilter, state);
@@ -220,7 +220,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.InfoWarType), "NONE"), &objT->InfoWarType, state);
+        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.InfoWarType), nameof(InfoWarEffect.NONE)), &objT->InfoWarType, state);
         Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.RadarJamRadius), "0"), &objT->RadarJamRadius, state);
         Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.RadarJamDuration), "0s"), &objT->RadarJamDuration, state);
         Marshal(node, (WeaponEffectNugget*)objT, state);
@@ -315,7 +315,7 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WarheadTemplate), null), &objT->WarheadTemplate, state);
         Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.ProjectileTemplate), null), &objT->ProjectileTemplate, state);
-        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WeaponLaunchBoneSlotOverride), "NO_WEAPON"), &objT->WeaponLaunchBoneSlotOverride, state);
+        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WeaponLaunchBoneSlotOverride), nameof(WeaponSlotType.NO_WEAPON)), &objT->WeaponLaunchBoneSlotOverride, state);
         Marshal(node.GetChildNode(nameof(ProjectileNuggetType.AttackOffset), null), &objT->AttackOffset, state);
         Marshal(node.GetChildNodes(nameof(ProjectileNuggetType.VeterancyProjectiles)), &objT->VeterancyProjectiles, state);
         Marshal(node, (WeaponEffectNugget*)objT, state);
@@ -339,10 +339,10 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(DamageNuggetType.FlankingBonus), "0"), &objT->FlankingBonus, state);
         Marshal(node.GetAttributeValue(nameof(DamageNuggetType.FlankedScalar), "1"), &objT->FlankedScalar, state);
         Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DelayTimeSeconds), "0s"), &objT->DelayTimeSeconds, state);
-        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DamageType), "UNDEFINED"), &objT->DamageType, state);
-        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DeathType), "NORMAL"), &objT->DeathType, state);
-        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DamageFXType), "UNDEFINED"), &objT->DamageFXType, state);
-        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DamageSubType), "NORMAL"), &objT->DamageSubType, state);
+        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DamageType), nameof(DamageType.UNDEFINED)), &objT->DamageType, state);
+        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DeathType), nameof(DeathType.NORMAL)), &objT->DeathType, state);
+        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DamageFXType), nameof(DamageFXType.UNDEFINED)), &objT->DamageFXType, state);
+        Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DamageSubType), nameof(DamageSubType.NORMAL)), &objT->DamageSubType, state);
         Marshal(node.GetAttributeValue(nameof(DamageNuggetType.OnlyKillOwnerWhenTriggered), "false"), &objT->OnlyKillOwnerWhenTriggered, state);
         Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DrainLifeMultiplier), "1"), &objT->DrainLifeMultiplier, state);
         Marshal(node.GetAttributeValue(nameof(DamageNuggetType.DrainLife), "false"), &objT->DrainLife, state);
@@ -608,15 +608,18 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.LockWhenUsing), "false"), &objT->LockWhenUsing, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.BombardType), "false"), &objT->BombardType, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.UseInnateAttributes), "false"), &objT->UseInnateAttributes, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.PreAttackType), "PER_SHOT"), &objT->PreAttackType, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ReAcquireDetailType), "PER_SHOT"), &objT->ReAcquireDetailType, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.AutoReloadsClip), "AUTO"), &objT->AutoReloadsClip, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.PreAttackType), nameof(WeaponPrefireType.PER_SHOT)), &objT->PreAttackType, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ReAcquireDetailType), nameof(WeaponReAcquireDetailType.PER_SHOT)), &objT->ReAcquireDetailType, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.AutoReloadsClip), nameof(WeaponReloadType.AUTO)), &objT->AutoReloadsClip, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.SingleAmmoReloadedNotFullSound), ""), &objT->SingleAmmoReloadedNotFullSound, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ClipReloadedSound), ""), &objT->ClipReloadedSound, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.RadiusDamageAffects), "ALLIES ENEMIES NEUTRALS"), &objT->RadiusDamageAffects, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.RadiusDamageAffects),
+                                       $"{nameof(WeaponAffectsType.ALLIES)} {nameof(WeaponAffectsType.ENEMIES)} {nameof(WeaponAffectsType.NEUTRALS)}"),
+                &objT->RadiusDamageAffects,
+                state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FXTrigger), null), &objT->FXTrigger, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ProjectileCollidesWith), "STRUCTURES"), &objT->ProjectileCollidesWith, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.AntiMask), "ANTI_GROUND"), &objT->AntiMask, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ProjectileCollidesWith), nameof(WeaponCollideType.STRUCTURES)), &objT->ProjectileCollidesWith, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.AntiMask), nameof(WpnAntiT.ANTI_GROUND)), &objT->AntiMask, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.StopFiringOnCanBeInvisible), "false"), &objT->StopFiringOnCanBeInvisible, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ProjectileStreamName), null), &objT->ProjectileStreamName, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ContactWeapon), "false"), &objT->ContactWeapon, state);

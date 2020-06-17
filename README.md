@@ -9,7 +9,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TestTexture
 * [ ] TestTextureCollection
 * [x] WeaponTemplate                                          0x94D4D96E
-* [ ] LocomotorTemplate                                       0xBD8F61A4
+* [x] LocomotorTemplate                                       0xBD8F61A4
 * [ ] GameObject
 * [ ] FXParticleSystemTemplate
 * [ ] Weather

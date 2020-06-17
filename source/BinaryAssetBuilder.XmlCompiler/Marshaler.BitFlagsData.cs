@@ -26,7 +26,7 @@ public static partial class Marshaler
             }
             if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
             {
-                for (int idx = 0; idx < InfoWarEffectBitFlags.NumSpans; ++idx)
+                for (int idx = 0; idx < AttributeModifierCategoryBitFlags.NumSpans; ++idx)
                 {
                     objT->Value[idx] = uint.MaxValue;
                 }
@@ -177,6 +177,65 @@ public static partial class Marshaler
     }
 
     public static unsafe void Marshal(Value value, KindOfBitFlags* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+    public static unsafe void Marshal(string text, LocomotorSurfaceBitFlags* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        for (int idy = 0; idy < tokens.Length; ++idy)
+        {
+            string token = tokens[idy];
+            bool includeToken = true;
+            if (token[0] == '+')
+            {
+                includeToken = true;
+            }
+            else if (token[0] == '-')
+            {
+                includeToken = false;
+            }
+            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
+            {
+                for (int idx = 0; idx < LocomotorSurfaceBitFlags.NumSpans; ++idx)
+                {
+                    objT->Value[idx] = uint.MaxValue;
+                }
+                continue;
+            }
+            Surface value = (Surface)(-1);
+            Marshal(token, &value, state);
+            if (value != (Surface)(-1))
+            {
+                uint uintValue = (uint)value;
+                if (uintValue < LocomotorSurfaceBitFlags.Count)
+                {
+                    if (includeToken)
+                    {
+                        objT->Value[uintValue / LocomotorSurfaceBitFlags.BitsInSpan] |= (uint)(1 << (int)(uintValue % LocomotorSurfaceBitFlags.BitsInSpan));
+                    }
+                    else
+                    {
+                        objT->Value[uintValue / LocomotorSurfaceBitFlags.BitsInSpan] ^= (uint)(1 << (int)(uintValue % LocomotorSurfaceBitFlags.BitsInSpan));
+                    }
+                }
+            }
+        }
+        for (int idx = 0; idx < LocomotorSurfaceBitFlags.NumSpans; ++idx)
+        {
+            state.InplaceEndianToPlatform(&objT->Value[idx]);
+        }
+    }
+
+    public static unsafe void Marshal(Value value, LocomotorSurfaceBitFlags* objT, Tracker state)
     {
         if (value is null)
         {
