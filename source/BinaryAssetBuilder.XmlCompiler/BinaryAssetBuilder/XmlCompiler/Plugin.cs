@@ -118,6 +118,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xBD8F61A4u;
                     result.TypeHash = 0xBD8F61A4u;
                     break;
+                case 0xF7CE0BBDu:
+                    result.Type = typeof(ShadowMap);
+                    result.TypeName = nameof(ShadowMap);
+                    result.ProcessingHash = num ^ 0xC6389FA6u;
+                    result.TypeHash = 0xC6389FA6u;
+                    break;
                 default:
                     result.TypeName = "<unknown>";
                     result.ProcessingHash = 0u;

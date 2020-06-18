@@ -13,7 +13,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] GameObject
 * [ ] FXParticleSystemTemplate
 * [x] Weather                                                   0x368A8BA2
-* [ ] ShadowMap
+* [x] ShadowMap                                                 0xC6389FA6
 * [ ] WaterTransparency
 * [ ] Texture
 * [ ] OnDemandTexture
