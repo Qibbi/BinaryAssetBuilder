@@ -94,6 +94,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x3CFF78A1u;
                     result.TypeHash = 0x3CFF78A1u;
                     break;
+                case 0x1F9865CEu:
+                    result.Type = typeof(IntelDB);
+                    result.TypeName = nameof(IntelDB);
+                    result.ProcessingHash = num ^ 0xFBB64F90u;
+                    result.TypeHash = 0xFBB64F90u;
+                    break;
                 case 0xEC066D65u:
                     result.Type = typeof(LogicCommandSet);
                     result.TypeName = nameof(LogicCommandSet);

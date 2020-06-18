@@ -8,7 +8,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TestGameObject
 * [ ] TestTexture
 * [ ] TestTextureCollection
-* [x] WeaponTemplate                                          0x94D4D96E
+* [x] WeaponTemplate                                          0xE3996069
 * [x] LocomotorTemplate                                       0xBD8F61A4
 * [ ] GameObject
 * [ ] FXParticleSystemTemplate
@@ -63,7 +63,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MusicScriptConditionNugget_And
 * [ ] MusicScriptTrack
 * [ ] LocalBuildListMonitor
-* [x] MpGameRules                                             0x2C358B80
+* [x] MpGameRules                                             0xEDDBB607
 * [ ] ExperienceLevelTemplate
 * [ ] MissionObjectiveList
 * [ ] StringHashTable
@@ -90,7 +90,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TargetingInTurretArcCompare
 * [ ] Road
 * [ ] Environment
-* [x] LogicCommand                                            0x7D464170
+* [x] LogicCommand                                            0x97D0A46E
 * [x] LogicCommandSet                                         0x6D148BD7
 * [ ] MiscAudio
 * [ ] AudioSettings
@@ -112,7 +112,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] InGameUIPlayerPowerCommandSlots
 * [ ] InGameUIUnitAbilityCommandSlots
 * [ ] GameSCriptList
-* [ ] IntelDB
+* [x] IntelDB                                               0xFBB64F90
 * [ ] BootupDisplaySequence
 * [ ] UnitTypeIcon
 * [ ] ImageSequence

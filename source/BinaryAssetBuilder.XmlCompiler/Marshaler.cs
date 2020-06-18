@@ -125,20 +125,20 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    public const int AngleMaxPostfixes = 2;
-    public static readonly char[] AnglePostFixes = new[] { 'r', 'd' };
-    public static readonly float[] AngleMultipliers = new[] { 1.0f, PI / 180.0f };
+    private const int _angleMaxPostfixes = 2;
+    private static readonly char[] _anglePostFixes = new[] { 'r', 'd' };
+    private static readonly float[] _angleMultipliers = new[] { 1.0f, PI / 180.0f };
 
     private static unsafe void Marshal(string text, Angle* objT, Tracker state)
     {
         float multiplier = 1.0f;
         int index = -1;
-        for (int idx = 0; idx < AngleMaxPostfixes; ++idx)
+        for (int idx = 0; idx < _angleMaxPostfixes; ++idx)
         {
-            index = text.IndexOf(AnglePostFixes[idx]);
+            index = text.IndexOf(_anglePostFixes[idx]);
             if (index >= 0)
             {
-                multiplier = AngleMultipliers[idx];
+                multiplier = _angleMultipliers[idx];
                 break;
             }
         }
@@ -161,20 +161,20 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    public const int TimeMaxPostfixes = 2;
-    public static readonly string[] TimePostFixes = new[] { "ms", "s" };
-    public static readonly float[] TimeMultipliers = new[] { 0.001f, 1.0f };
+    private const int _timeMaxPostfixes = 2;
+    private static readonly string[] _timePostFixes = new[] { "ms", "s" };
+    private static readonly float[] _timeMultipliers = new[] { 0.001f, 1.0f };
 
     private static unsafe void Marshal(string text, Time* objT, Tracker state)
     {
         float multiplier = 1.0f;
         int index = -1;
-        for (int idx = 0; idx < TimeMaxPostfixes; ++idx)
+        for (int idx = 0; idx < _timeMaxPostfixes; ++idx)
         {
-            index = text.IndexOf(TimePostFixes[idx]);
+            index = text.IndexOf(_timePostFixes[idx]);
             if (index >= 0)
             {
-                multiplier = TimeMultipliers[idx];
+                multiplier = _timeMultipliers[idx];
                 break;
             }
         }

@@ -12,7 +12,7 @@ public static partial class Marshaler
     private static readonly System.Collections.Generic.Dictionary<Type, Delegate> _marshalListItemMethods = new System.Collections.Generic.Dictionary<Type, Delegate>();
     private static readonly System.Collections.Generic.Dictionary<Type, Delegate> _marshalPolymorphicListItemMethods = new System.Collections.Generic.Dictionary<Type, Delegate>();
 
-    public static unsafe void Marshal<T>(List list, List<T>* objT, Tracker state) where T : unmanaged
+    private static unsafe void Marshal<T>(List list, List<T>* objT, Tracker state) where T : unmanaged
     {
         if (list is null)
         {
@@ -47,7 +47,7 @@ public static partial class Marshaler
         }
     }
 
-    public static unsafe void Marshal<T>(List list, List<AssetReference<T>>* objT, Tracker state) where T : unmanaged
+    private static unsafe void Marshal<T>(List list, List<AssetReference<T>>* objT, Tracker state) where T : unmanaged
     {
         if (list is null)
         {
@@ -67,7 +67,7 @@ public static partial class Marshaler
         }
     }
 
-    public static unsafe void MarshalPolymorphicType<T, U>(Node node, U** objT, Tracker state) where T : unmanaged where U : unmanaged, IPolymophic
+    private static unsafe void MarshalPolymorphicType<T, U>(Node node, U** objT, Tracker state) where T : unmanaged where U : unmanaged, IPolymophic
     {
         using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(T), 1u))
         {
@@ -93,7 +93,7 @@ public static partial class Marshaler
         *(uint*)*objT = typeId;
     }
 
-    public static unsafe void MarshalUnknownPolymorphicType<T>(Node node, T** objT, Tracker state) where T : unmanaged, IPolymophic
+    private static unsafe void MarshalUnknownPolymorphicType<T>(Node node, T** objT, Tracker state) where T : unmanaged, IPolymophic
     {
         using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(T), 1u))
         {
@@ -119,7 +119,7 @@ public static partial class Marshaler
         *(uint*)*objT = typeId;
     }
 
-    public static unsafe void Marshal<T>(List list, PolymorphicList<T>* objT, Tracker state) where T : unmanaged
+    private static unsafe void Marshal<T>(List list, PolymorphicList<T>* objT, Tracker state) where T : unmanaged
     {
         if (list is null)
         {
@@ -154,7 +154,7 @@ public static partial class Marshaler
         }
     }
 
-    public static unsafe void Marshal<T>(Node node, PolymorphicList<T>* objT, Tracker state) where T : unmanaged
+    private static unsafe void Marshal<T>(Node node, PolymorphicList<T>* objT, Tracker state) where T : unmanaged
     {
         if (node is null)
         {

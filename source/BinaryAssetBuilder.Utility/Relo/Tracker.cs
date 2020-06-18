@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Relo
 {
@@ -81,6 +82,7 @@ namespace Relo
             Block block = new Block(blockSize);
             _blocks.Add(block);
             _instanceBufferSize += blockSize;
+            Thread.MemoryBarrier();
             return (uint)(_blocks.Count - 1);
         }
 
