@@ -70,11 +70,29 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             switch (typeId)
             {
+                case 0x064B2184u:
+                    result.Type = typeof(ConnectionLineManager);
+                    result.TypeName = nameof(ConnectionLineManager);
+                    result.ProcessingHash = num ^ 0x7AEB73B2u;
+                    result.TypeHash = 0x7AEB73B2u;
+                    break;
+                case 0x0CAD7864u:
+                    result.Type = typeof(DLContent);
+                    result.TypeName = nameof(DLContent);
+                    result.ProcessingHash = num ^ 0x4E1A5713u;
+                    result.TypeHash = 0x4E1A5713u;
+                    break;
                 case 0x1F9865CEu:
                     result.Type = typeof(IntelDB);
                     result.TypeName = nameof(IntelDB);
                     result.ProcessingHash = num ^ 0xFBB64F90u;
                     result.TypeHash = 0xFBB64F90u;
+                    break;
+                case 0x21BA45A7u:
+                    result.Type = typeof(ImageSequence);
+                    result.TypeName = nameof(ImageSequence);
+                    result.ProcessingHash = num ^ 0x217CF953u;
+                    result.TypeHash = 0x217CF953u;
                     break;
                 case 0x2B49BF71u:
                     result.Type = typeof(Achievement);
@@ -88,6 +106,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xEDDBB607u;
                     result.TypeHash = 0xEDDBB607u;
                     break;
+                case 0x56626220u:
+                    result.Type = typeof(PackedTextureImage);
+                    result.TypeName = nameof(PackedTextureImage);
+                    result.ProcessingHash = num ^ 0x2FAEB748u;
+                    result.TypeHash = 0x2FAEB748u;
+                    break;
                 case 0x582FDC2Au:
                     result.Type = typeof(WaterTransparency);
                     result.TypeName = nameof(WaterTransparency);
@@ -99,6 +123,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(LogicCommand);
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
+                    break;
+                case 0x9053D603u:
+                    result.Type = typeof(UnitOverlayIconSettings);
+                    result.TypeName = nameof(UnitOverlayIconSettings);
+                    result.ProcessingHash = num ^ 0xDFC78E66u;
+                    result.TypeHash = 0xDFC78E66u;
                     break;
                 case 0x90D951ADu:
                     result.Type = typeof(Weather);
@@ -129,6 +159,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(HotKeySlot);
                     result.ProcessingHash = num ^ 0x1AC54E60u;
                     result.TypeHash = 0x1AC54E60u;
+                    break;
+                case 0xD99C40A9u:
+                    result.Type = typeof(PhaseEffect);
+                    result.TypeName = nameof(PhaseEffect);
+                    result.ProcessingHash = num ^ 0x4877D566u;
+                    result.TypeHash = 0x4877D566u;
                     break;
                 case 0xEC066D65u:
                     result.Type = typeof(LogicCommandSet);

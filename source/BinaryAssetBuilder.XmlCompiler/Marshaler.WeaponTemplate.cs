@@ -436,7 +436,7 @@ public static partial class Marshaler
         {
             return;
         }
-        uint typeId = 0;
+        uint typeId = 0u;
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {

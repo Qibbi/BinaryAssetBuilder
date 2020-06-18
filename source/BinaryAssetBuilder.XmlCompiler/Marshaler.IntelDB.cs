@@ -21,5 +21,6 @@ public static partial class Marshaler
             return;
         }
         Marshal(node.GetChildNodes(nameof(IntelDB.IntelDBEntry)), &objT->IntelDBEntry, state);
+        Marshal(node, (BaseAssetType*)objT, state);
     }
 }

@@ -78,7 +78,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] AudioLOD
 * [ ] VideoEventList
 * [ ] UIConfigList
-* [ ] PackedTextureImage
+* [x] PackedTextureImage                                        0x2FAEB748
 * [ ] OnDemandTextureImage
 * [ ] TerrainTextureAtlas
 * [ ] Mouse
@@ -115,16 +115,12 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] IntelDB                                                   0xFBB64F90
 * [ ] BootupDisplaySequence
 * [ ] UnitTypeIcon
-* [ ] ImageSequence
-* [ ] UnitOverlayIconSettings
+* [x] ImageSequence                                             0x217CF953
+* [x] UnitOverlayIconSettings                                   0xDFC78E66
 * [x] TheVersion                                                0xF659EF49
-* [ ] ConquerCardDefinitionUnit
-* [ ] ConquerCardDefinitionStructure
-* [ ] ConquerCardDefinitionPower
-* [ ] ConquerCardDefinitionDeck
-* [ ] DLContent
-* [ ] PhaseEffect
-* [ ] ConnectionLineManager
+* [x] DLContent                                                 0x4E1A5713
+* [x] PhaseEffect                                               0x4877D566
+* [x] ConnectionLineManager                                     0x7AEB73B2
 * [x] InGameUIFixedElementHotKeySlotMap                         0x475EA260
 
 ### Tiberium Wars Only Types

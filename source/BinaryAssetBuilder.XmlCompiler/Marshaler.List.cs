@@ -47,6 +47,26 @@ public static partial class Marshaler
         }
     }
 
+    private static unsafe void Marshal<T>(List list, List<TypedAssetId<T>>* objT, Tracker state) where T : unmanaged
+    {
+        if (list is null)
+        {
+            return;
+        }
+        uint count = (uint)list.GetCount();
+        uint listCount = count;
+        state.InplaceEndianToPlatform(&listCount);
+        objT->Count = listCount;
+        if (count != 0u)
+        {
+            using Tracker.Context context = state.Push((void**)&objT->Items, (uint)sizeof(TypedAssetId<T>), count);
+            for (uint idx = 0; idx < count; ++idx)
+            {
+                Marshal(list.GetNextNode(), &objT->Items[idx], state);
+            }
+        }
+    }
+
     private static unsafe void Marshal<T>(List list, List<AssetReference<T>>* objT, Tracker state) where T : unmanaged
     {
         if (list is null)

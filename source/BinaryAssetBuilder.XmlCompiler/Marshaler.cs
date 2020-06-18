@@ -31,6 +31,15 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(Node node, SageBool* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, byte* objT, Tracker state)
     {
         *objT = byte.Parse(text);
@@ -99,6 +108,15 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, int* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal(string text, float* objT, Tracker state)
@@ -341,6 +359,16 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(Coord2D.x), "0.0"), &objT->x, state);
         Marshal(node.GetAttributeValue(nameof(Coord2D.y), "0.0"), &objT->y, state);
+    }
+
+    private static unsafe void Marshal(Node node, ICoord2D* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ICoord2D.x), "0.0"), &objT->x, state);
+        Marshal(node.GetAttributeValue(nameof(ICoord2D.y), "0.0"), &objT->y, state);
     }
 
     private static unsafe void Marshal(Node node, Coord2D** objT, Tracker state)
