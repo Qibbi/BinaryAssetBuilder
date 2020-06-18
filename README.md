@@ -8,11 +8,11 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TestGameObject
 * [ ] TestTexture
 * [ ] TestTextureCollection
-* [x] WeaponTemplate                                          0xE3996069
-* [x] LocomotorTemplate                                       0xBD8F61A4
+* [x] WeaponTemplate                                            0xE3996069
+* [x] LocomotorTemplate                                         0xBD8F61A4
 * [ ] GameObject
 * [ ] FXParticleSystemTemplate
-* [ ] Weather
+* [x] Weather                                                   0x368A8BA2
 * [ ] ShadowMap
 * [ ] WaterTransparency
 * [ ] Texture
@@ -63,7 +63,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MusicScriptConditionNugget_And
 * [ ] MusicScriptTrack
 * [ ] LocalBuildListMonitor
-* [x] MpGameRules                                             0xEDDBB607
+* [x] MpGameRules                                               0xEDDBB607
 * [ ] ExperienceLevelTemplate
 * [ ] MissionObjectiveList
 * [ ] StringHashTable
@@ -90,8 +90,8 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TargetingInTurretArcCompare
 * [ ] Road
 * [ ] Environment
-* [x] LogicCommand                                            0x97D0A46E
-* [x] LogicCommandSet                                         0x6D148BD7
+* [x] LogicCommand                                              0x97D0A46E
+* [x] LogicCommandSet                                           0x6D148BD7
 * [ ] MiscAudio
 * [ ] AudioSettings
 * [ ] CrowdResponse
@@ -112,7 +112,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] InGameUIPlayerPowerCommandSlots
 * [ ] InGameUIUnitAbilityCommandSlots
 * [ ] GameSCriptList
-* [x] IntelDB                                               0xFBB64F90
+* [x] IntelDB                                                   0xFBB64F90
 * [ ] BootupDisplaySequence
 * [ ] UnitTypeIcon
 * [ ] ImageSequence
@@ -134,7 +134,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MP3AmbientStream
 * [ ] UnitAbilityButtonTemplateStore
 * [ ] PlayerPowerButtonTemplateStore
-* [x] CommandSet                                              0x3CFF78A1
+* [x] CommandSet                                                0x3CFF78A1
 
 ### Kane's Wrath Only Types
 * [ ] UnitAbilityButtonTemplate

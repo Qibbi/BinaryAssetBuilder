@@ -82,6 +82,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
                     break;
+                case 0x90D951ADu:
+                    result.Type = typeof(Weather);
+                    result.TypeName = nameof(Weather);
+                    result.ProcessingHash = num ^ 0x368A8BA2u;
+                    result.TypeHash = 0x368A8BA2u;
+                    break;
                 case 0x94D4D96Eu:
                     result.Type = typeof(WeaponTemplate);
                     result.TypeName = nameof(WeaponTemplate);
