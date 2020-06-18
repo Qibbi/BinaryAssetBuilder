@@ -130,6 +130,7 @@ namespace Relo
         public void Pop()
         {
             _stack.RemoveAt(_stack.Count - 1);
+            Thread.MemoryBarrier();
         }
 
         public unsafe bool MakeRelocatable(Chunk chunk)
