@@ -1,10 +1,11 @@
 ﻿using BinaryAssetBuilder.Core;
+using System;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace BinaryAssetBuilder
 {
-    public class Settings
+    public class Settings : ICloneable
     {
         public static Settings Current;
 
@@ -49,5 +50,10 @@ namespace BinaryAssetBuilder
         [OptionalCommandLineOption("bps"), Description("Base stream upon which to do a patch"), XmlIgnore] public string BasePatchStream { get; set; }
         [OptionalCommandLineOption("pc"), Description("If true, referenced streams will not be compiled if their .manifest output is available"), XmlAttribute("usePrecompiled")] public bool UsePrecompiled { get; set; }
         [OptionalCommandLineOption("vf"), Description("If true, generates a .version file for each stream containing the stream suffix used"), XmlAttribute("versionFiles")] public bool VersionFiles { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

@@ -76,7 +76,6 @@ namespace BinaryAssetBuilder
         {
             try
             {
-                MetricManager.AddListener(new ConsoleMetricsListener());
                 MetricManager.OpenSession();
                 _tracer.Message($"{nameof(BinaryAssetBuilder)} started");
                 PluginRegistry pluginRegistry = new PluginRegistry(Settings.Current.Plugins, Settings.Current.TargetPlatform);
@@ -163,6 +162,7 @@ namespace BinaryAssetBuilder
                         throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "Data root not set in application configuration file.");
                     }
                     _pauseOnError = Settings.Current.PauseOnError;
+                    MetricManager.AddListener(new ConsoleMetricsListener());
                     if (_buildWindow != null)
                     {
                         _workThread = new Thread(new ThreadStart(DoBuildData));
