@@ -70,11 +70,29 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             switch (typeId)
             {
+                case 0x1F9865CEu:
+                    result.Type = typeof(IntelDB);
+                    result.TypeName = nameof(IntelDB);
+                    result.ProcessingHash = num ^ 0xFBB64F90u;
+                    result.TypeHash = 0xFBB64F90u;
+                    break;
+                case 0x2B49BF71u:
+                    result.Type = typeof(Achievement);
+                    result.TypeName = nameof(Achievement);
+                    result.ProcessingHash = num ^ 0xC8D16E6Du;
+                    result.TypeHash = 0xC8D16E6Du;
+                    break;
                 case 0x2C358B80u:
                     result.Type = typeof(MpGameRules);
                     result.TypeName = nameof(MpGameRules);
                     result.ProcessingHash = num ^ 0xEDDBB607u;
                     result.TypeHash = 0xEDDBB607u;
+                    break;
+                case 0x582FDC2Au:
+                    result.Type = typeof(WaterTransparency);
+                    result.TypeName = nameof(WaterTransparency);
+                    result.ProcessingHash = num ^ 0x331DA6CEu;
+                    result.TypeHash = 0x331DA6CEu;
                     break;
                 case 0x7D464170u:
                     result.Type = typeof(LogicCommand);
@@ -100,11 +118,17 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x3CFF78A1u;
                     result.TypeHash = 0x3CFF78A1u;
                     break;
-                case 0x1F9865CEu:
-                    result.Type = typeof(IntelDB);
-                    result.TypeName = nameof(IntelDB);
-                    result.ProcessingHash = num ^ 0xFBB64F90u;
-                    result.TypeHash = 0xFBB64F90u;
+                case 0x928F51E4u:
+                    result.Type = typeof(InGameUIFixedElementHotKeySlotMap);
+                    result.TypeName = nameof(InGameUIFixedElementHotKeySlotMap);
+                    result.ProcessingHash = num ^ 0x475EA260u;
+                    result.TypeHash = 0x475EA260u;
+                    break;
+                case 0xA6E6BBA7u:
+                    result.Type = typeof(HotKeySlot);
+                    result.TypeName = nameof(HotKeySlot);
+                    result.ProcessingHash = num ^ 0x1AC54E60u;
+                    result.TypeHash = 0x1AC54E60u;
                     break;
                 case 0xEC066D65u:
                     result.Type = typeof(LogicCommandSet);
@@ -123,6 +147,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(ShadowMap);
                     result.ProcessingHash = num ^ 0xC6389FA6u;
                     result.TypeHash = 0xC6389FA6u;
+                    break;
+                case 0xFC82DC06u:
+                    result.Type = typeof(TheVersion);
+                    result.TypeName = nameof(TheVersion);
+                    result.ProcessingHash = num ^ 0xF659EF49u;
+                    result.TypeHash = 0xF659EF49u;
                     break;
                 default:
                     result.TypeName = "<unknown>";

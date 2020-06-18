@@ -31,6 +31,20 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(string text, byte* objT, Tracker state)
+    {
+        *objT = byte.Parse(text);
+    }
+
+    private static unsafe void Marshal(Value value, byte* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, uint* objT, Tracker state)
     {
         if (text.Length == 0)
@@ -222,7 +236,7 @@ public static partial class Marshaler
         uint textLength = length;
         state.InplaceEndianToPlatform(&textLength);
         objT->Length = (int)textLength;
-        using Tracker.Context context = state.Push((void**)&objT->Target, 1u, length);
+        using Tracker.Context context = state.Push((void**)&objT->Target, 1u, length + 1);
         sbyte* str = objT->Target;
         IntPtr hText = SMarshal.StringToHGlobalAnsi(text);
         sbyte* pText = (sbyte*)hText;
@@ -268,7 +282,7 @@ public static partial class Marshaler
         uint textLength = length;
         state.InplaceEndianToPlatform(&textLength);
         objT->Length = (int)textLength;
-        using Tracker.Context context = state.Push((void**)&objT->Target, 2u, length);
+        using Tracker.Context context = state.Push((void**)&objT->Target, 2u, length + 2);
         char* str = objT->Target;
         IntPtr hText = SMarshal.StringToHGlobalUni(text);
         char* pText = (char*)hText;
@@ -358,6 +372,18 @@ public static partial class Marshaler
         }
         using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Coord3D), 1u);
         Marshal(node, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, Color* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(Color.R), "0"), &objT->R, state);
+        Marshal(node.GetAttributeValue(nameof(Color.G), "0"), &objT->G, state);
+        Marshal(node.GetAttributeValue(nameof(Color.B), "0"), &objT->B, state);
+        Marshal(node.GetAttributeValue(nameof(Color.A), "255"), &objT->A, state);
     }
 
     private static unsafe void Marshal(Node node, RandomVariable* objT, Tracker state)

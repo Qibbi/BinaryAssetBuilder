@@ -39,6 +39,16 @@ namespace SageBinaryData
 #pragma warning restore IDE1006 // Naming Styles
     }
 
+    // Both Color3 and Color4 map to this
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Color
+    {
+        public byte R;
+        public byte G;
+        public byte B;
+        public byte A;
+    }
+
     public enum DistributionType
     {
         CONSTANT,

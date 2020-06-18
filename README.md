@@ -14,7 +14,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] FXParticleSystemTemplate
 * [x] Weather                                                   0x368A8BA2
 * [x] ShadowMap                                                 0xC6389FA6
-* [ ] WaterTransparency
+* [x] WaterTransparency                                         0x331DA6CE
 * [ ] Texture
 * [ ] OnDemandTexture
 * [ ] W3DMesh
@@ -82,7 +82,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] OnDemandTextureImage
 * [ ] TerrainTextureAtlas
 * [ ] Mouse
-* [ ] Achievement
+* [x] Achievement                                               0xC8D16E6D
 * [ ] StanceTemplate
 * [ ] TargetingCompareList
 * [ ] TargetingDistanceCompare
@@ -102,7 +102,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] AptDatData
 * [ ] AptGeometryData
 * [ ] MappableKey
-* [ ] HotKeySlot
+* [x] HotKeySlot                                                0x1AC54E60
 * [ ] DefaultHotKeys
 * [ ] InGameUIGroupSelectionCommandSlots
 * [ ] InGameUILookAtCommandSlots
@@ -117,7 +117,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] UnitTypeIcon
 * [ ] ImageSequence
 * [ ] UnitOverlayIconSettings
-* [ ] TheVersion
+* [x] TheVersion                                                0xF659EF49
 * [ ] ConquerCardDefinitionUnit
 * [ ] ConquerCardDefinitionStructure
 * [ ] ConquerCardDefinitionPower
@@ -125,7 +125,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] DLContent
 * [ ] PhaseEffect
 * [ ] ConnectionLineManager
-* [ ] InGameUIFixedElementHotKeySlotMap
+* [x] InGameUIFixedElementHotKeySlotMap                         0x475EA260
 
 ### Tiberium Wars Only Types
 * [ ] AudioFileMP3Passthrough
