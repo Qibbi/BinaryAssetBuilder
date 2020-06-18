@@ -78,6 +78,7 @@ namespace Relo
 
         private unsafe uint Allocate(uint count, uint elementSize)
         {
+            Thread.MemoryBarrier();
             uint blockSize = (uint)((((int)count * (int)elementSize) + 3) & -4);
             Block block = new Block(blockSize);
             _blocks.Add(block);
@@ -129,6 +130,7 @@ namespace Relo
 
         public void Pop()
         {
+            Thread.MemoryBarrier();
             _stack.RemoveAt(_stack.Count - 1);
             Thread.MemoryBarrier();
         }
