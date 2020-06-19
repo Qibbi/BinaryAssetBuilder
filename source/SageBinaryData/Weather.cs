@@ -79,7 +79,7 @@ namespace SageBinaryData
     public struct WeatherData
     {
         public WeatherType id;
-        public AssetReference<BaseAudioEventInfo, AudioEventInfo> Sound;
+        public AssetReference<BaseAudioEventInfo> Sound;
         public SageBool HasLightning;
     }
 

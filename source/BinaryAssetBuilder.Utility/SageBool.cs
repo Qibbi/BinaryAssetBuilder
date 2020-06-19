@@ -19,6 +19,11 @@ public struct SageBool : IComparable<SageBool>, IComparable, IEquatable<SageBool
         return x.Value != y.Value;
     }
 
+    public static bool operator !(SageBool x)
+    {
+        return x.Value;
+    }
+
     public static implicit operator SageBool(bool x)
     {
         return new SageBool { Value = x };

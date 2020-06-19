@@ -21,7 +21,7 @@ namespace SageBinaryData
     public struct PhaseEffect
     {
         public BaseInheritableAsset Base;
-        public AssetReference<BaseRenderAssetType, RenderAssetFactory> PhaseMaskModel;
+        public AssetReference<BaseRenderAssetType> PhaseMaskModel;
         public FXShaderMaterial PhaseStateShader;
         public CameraShift CameraShift;
     }

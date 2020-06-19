@@ -2,7 +2,7 @@
 {
     public interface IAssetBuilderPlugin : IAssetBuilderPluginBase
     {
-        AssetBuffer ProcessInstance(InstanceDeclaration instance);
+        AssetBuffer ProcessInstance(InstanceDeclaration declaration);
 
         uint GetAllTypesHash();
 

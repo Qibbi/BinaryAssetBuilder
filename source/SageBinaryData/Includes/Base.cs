@@ -99,6 +99,11 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct AudioEventInfo
+    {
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct SoundOrEvaEvent
     {
         public unsafe AssetReference<BaseAudioEventInfo, AudioEventInfo>* Sound;

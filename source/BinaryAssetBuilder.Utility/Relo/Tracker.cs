@@ -87,6 +87,16 @@ namespace Relo
             return (uint)(_blocks.Count - 1);
         }
 
+        private unsafe void ByteSwap16(ushort* value)
+        {
+            byte* pValue = (byte*)value;
+            ushort result;
+            byte* pResult = (byte*)&result;
+            *pResult = pValue[1];
+            pResult[1] = *pValue;
+            *value = result;
+        }
+
         private unsafe void ByteSwap32(uint* value)
         {
             byte* pValue = (byte*)value;
@@ -97,6 +107,15 @@ namespace Relo
             pResult[2] = pValue[1];
             pResult[3] = *pValue;
             *value = result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void InplaceEndianToPlatform(ushort* value)
+        {
+            if (IsBigEndian)
+            {
+                ByteSwap16(value);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
