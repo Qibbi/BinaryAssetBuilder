@@ -12,23 +12,27 @@ namespace BinaryAssetBuilder.Core
             return templatePath == "*" ? baseDirectory : Path.GetFullPath(Path.Combine(Settings.Current.DataRoot, templatePath));
         }
 
-        private static string SearchPaths(string baseDirectory, string path, string[] includePaths)
+        private static string SearchPaths(string baseDirectory, string path, params string[] includePaths)
         {
             string result = null;
-            if (includePaths.Length > 1)
+            foreach (string includePath in includePaths)
             {
-                foreach (string includePath in includePaths)
+                string testPath = includePath == "*" ? baseDirectory : includePath;
+                if (!string.IsNullOrEmpty(Settings.Current.Postfix))
                 {
-                    result = ShPath.Canonicalize(Path.Combine(includePath == "*" ? baseDirectory : includePath, path));
+                    result = ShPath.Canonicalize(Path.Combine(testPath,
+                                                 Path.GetDirectoryName(path),
+                                                 $"{Path.GetFileNameWithoutExtension(path)}_{Settings.Current.Postfix}{Path.GetExtension(path)}"));
                     if (File.Exists(result))
                     {
-                        return result;
+                        break;
                     }
                 }
-            }
-            else if (includePaths.Length > 0)
-            {
-                result = ShPath.Canonicalize(Path.Combine(includePaths[0] == "*" ? baseDirectory : includePaths[0], path));
+                result = Path.GetFullPath(Path.Combine(testPath, path));
+                if (File.Exists(result))
+                {
+                    break;
+                }
             }
             return result;
         }
@@ -54,7 +58,7 @@ namespace BinaryAssetBuilder.Core
                 string[] pathArray = targetPath.Split(_splitCharacters);
                 if (pathArray.Length == 1)
                 {
-                    result = Path.GetFullPath(Path.Combine(baseDirectory, targetPath));
+                    result = ShPath.Canonicalize(Path.Combine(baseDirectory, targetPath));
                 }
                 else
                 {
@@ -73,13 +77,13 @@ namespace BinaryAssetBuilder.Core
                                 string testPath = artPath == "*" ? baseDirectory : Path.Combine(artPath, str.Substring(0, 2));
                                 if (!string.IsNullOrEmpty(Settings.Current.Postfix))
                                 {
-                                    result = Path.GetFullPath(Path.Combine(testPath, $"{Path.GetFileNameWithoutExtension(str)}_{Settings.Current.Postfix}{Path.GetExtension(str)}"));
+                                    result = ShPath.Canonicalize(Path.Combine(testPath, $"{Path.GetFileNameWithoutExtension(str)}_{Settings.Current.Postfix}{Path.GetExtension(str)}"));
                                     if (File.Exists(result))
                                     {
                                         break;
                                     }
                                 }
-                                result = Path.GetFullPath(Path.Combine(testPath, str));
+                                result = ShPath.Canonicalize(Path.Combine(testPath, str));
                                 if (File.Exists(result))
                                 {
                                     break;
@@ -101,7 +105,7 @@ namespace BinaryAssetBuilder.Core
                     }
                     else if (lower == "root")
                     {
-                        result = Path.GetFullPath(Path.Combine(Settings.Current.DataRoot, str));
+                        result = SearchPaths(baseDirectory, str, Settings.Current.DataRoot); ;
                     }
                     else
                     {
