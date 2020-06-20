@@ -2,14 +2,12 @@
 using Relo;
 using SageBinaryData;
 using System;
-using System.Runtime.InteropServices;
 
 internal class CompressedAdaptiveDelta
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Frame
+    public class Frame
     {
-        public unsafe fixed byte Values[17];
+        public sbyte[] Values = new sbyte[17];
     }
 
     private static readonly float[] _filterTable = new[]
@@ -98,9 +96,9 @@ internal class CompressedAdaptiveDelta
         }
     }
 
-    private unsafe float CompressFrame(Frame* dest, int filter, float[] values, float* curPrevValue, bool* excessError, float maxError)
+    private unsafe float CompressFrame(Frame dest, int filter, float[] values, float* curPrevValue, bool* excessError, float maxError)
     {
-        dest->Values[0] = (byte)filter;
+        dest.Values[0] = (sbyte)filter;
         int maxScale = _numBits != 4 ? 128 : 8;
         float currentValue = values[0];
         float comulativeDelta = 0.0f;
@@ -109,10 +107,10 @@ internal class CompressedAdaptiveDelta
         {
             filterScale /= 16.0f;
         }
-        float num5 = 1.0f / filterScale;
+        float oneOverScale = 1.0f / filterScale;
         for (int idx = 1; idx <= 16; ++idx)
         {
-            int currentDelta = (int)(float)Math.Floor((Math.Abs((double)(values[idx] - currentValue)) * num5) + 0.5);
+            int currentDelta = (int)(float)Math.Floor((Math.Abs((double)(values[idx] - currentValue)) * oneOverScale) + 0.5);
             if ((double)values[idx] < currentValue)
             {
                 currentDelta = -currentDelta;
@@ -126,7 +124,7 @@ internal class CompressedAdaptiveDelta
                 currentDelta = maxScale - 1;
             }
             float delta = (float)Math.Abs((double)(currentValue + (currentDelta * filterScale) - values[idx]));
-            dest->Values[idx] = (byte)currentDelta;
+            dest.Values[idx] = (sbyte)currentDelta;
             currentValue += currentDelta * filterScale;
             comulativeDelta += delta;
             if (excessError != null && delta > maxError)
@@ -155,18 +153,16 @@ internal class CompressedAdaptiveDelta
             _pivot = (short)srcChannel->Pivot
         };
         float maxDelta = 0.0f;
-        SrcFrame lastFrame = srcFrames[^1];
-        foreach (SrcFrame srcFrame in srcFrames)
+        for (int idx = 0; idx < srcFrames.Count - 1; ++idx)
         {
-            if (srcFrame != lastFrame)
+            SrcFrame frame = srcFrames[idx];
+            SrcFrame nextFrame = srcFrames[idx + 1];
+            for (int pos = 0; pos < frame.Values.Count; ++pos)
             {
-                for (int pos = 0; pos < srcFrame.Values.Count; ++pos)
+                float delta = Math.Abs(nextFrame.Values[pos] - frame.Values[pos]);
+                if (delta > maxDelta)
                 {
-                    float delta = (float)Math.Abs((double)(srcFrame.Values[pos] - lastFrame.Values[pos]));
-                    if (delta > maxDelta)
-                    {
-                        maxDelta = delta;
-                    }
+                    maxDelta = delta;
                 }
             }
         }
@@ -182,10 +178,10 @@ internal class CompressedAdaptiveDelta
         {
             compressed._numBits = (idx * 4) + 4;
             compressed._frames.Clear();
-            float[] frameValues = new float[4];
+            float[] animationState = new float[4];
             for (int pos = 0; pos < frameSize; ++pos)
             {
-                frameValues[pos] = compressed._values[pos];
+                animationState[pos] = compressed._values[pos];
             }
             excessDelta = false;
             int num2 = 1;
@@ -198,7 +194,7 @@ internal class CompressedAdaptiveDelta
                     for (int pos = 0; pos < frameSize; ++pos)
                     {
                         float[] array = new float[17];
-                        array[0] = frameValues[pos];
+                        array[0] = animationState[pos];
                         for (int idy = 0; idy < 16; ++idy)
                         {
                             int num6 = srcFrames.Count;
@@ -215,18 +211,18 @@ internal class CompressedAdaptiveDelta
                         float blockDelta = float.MaxValue;
                         for (int idf = 0; idf < 256; ++idf)
                         {
-                            Frame frame;
-                            float delta = compressed.CompressFrame(&frame, idf, array, null, null, 0.0f);
+                            Frame frame = new Frame();
+                            float delta = compressed.CompressFrame(frame, idf, array, null, null, 0.0f);
                             if ((double)delta < blockDelta)
                             {
                                 selectedFilter = idf;
                                 blockDelta = delta;
                             }
                         }
-                        Frame finalFrame;
-                        fixed (float* pFrameValues = &frameValues[0])
+                        Frame finalFrame = new Frame();
+                        fixed (float* pFrameValues = &animationState[0])
                         {
-                            compressed.CompressFrame(&finalFrame, selectedFilter, array, &pFrameValues[pos], &excessDelta, settings.MaxAdaptiveDeltaError);
+                            compressed.CompressFrame(finalFrame, selectedFilter, array, &pFrameValues[pos], &excessDelta, settings.MaxAdaptiveDeltaError);
                             compressed._frames.Add(finalFrame);
                         }
                     }
@@ -259,6 +255,7 @@ internal class CompressedAdaptiveDelta
 
     public unsafe void WriteOut(Tracker state, AnimationChannelDelta** objT)
     {
+        throw new NotImplementedException();
         using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnimationChannelDelta), 1u))
         {
 

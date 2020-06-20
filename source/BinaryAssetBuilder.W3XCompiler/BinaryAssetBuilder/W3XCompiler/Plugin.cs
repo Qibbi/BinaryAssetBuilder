@@ -88,10 +88,10 @@ namespace BinaryAssetBuilder.W3XCompiler
                 switch (_platform)
                 {
                     case TargetPlatform.Win32:
-                        compressionSettings.MaxTranslationError = 0.001f; // 1.0f / 500.0f;
-                        compressionSettings.MaxRotationError = 0.01f; // 3.0f / 1000.0f;
+                        compressionSettings.MaxTranslationError = 1.0f / 500.0f;
+                        compressionSettings.MaxRotationError = 3.0f / 1000.0f;
                         compressionSettings.MaxVisibilityError = 0.01f;
-                        compressionSettings.MaxAdaptiveDeltaError = 0.03f; // 1.0f / 1000.0f;
+                        compressionSettings.MaxAdaptiveDeltaError = 1.0f / 1000.0f;
                         compressionSettings.ForceReductionRate = 1.0f;
                         compressionSettings.AllowTimeCoded = true;
                         compressionSettings.AllowAdaptiveDelta = true;
@@ -135,6 +135,7 @@ namespace BinaryAssetBuilder.W3XCompiler
             for (int currentChannel = 0; currentChannel < channelCount; ++currentChannel)
             {
                 AnimationChannelBase* source = animation->Channels.Items[currentChannel];
+                int firstFrame = (int)source->FirstFrame;
                 System.Collections.Generic.List<SrcFrame> srcFrames = new System.Collections.Generic.List<SrcFrame>();
                 switch (source->TypeId)
                 {
@@ -168,8 +169,8 @@ namespace BinaryAssetBuilder.W3XCompiler
                         for (int idx = 0; idx < channelScalar->Frame.Count; ++idx)
                         {
                             AnimationChannelScalarFrame* scalarFrame = &channelScalar->Frame.Items[idx];
-                            srcFrames[idx].Values = new System.Collections.Generic.List<float> { scalarFrame->Value };
-                            srcFrames[idx].BinaryMove = scalarFrame->BinaryMove;
+                            srcFrames[idx + firstFrame].Values = new System.Collections.Generic.List<float> { scalarFrame->Value };
+                            srcFrames[idx + firstFrame].BinaryMove = scalarFrame->BinaryMove;
                         }
                         break;
                     case 0xF642DD20u:
@@ -190,14 +191,14 @@ namespace BinaryAssetBuilder.W3XCompiler
                         for (int idx = 0; idx < channelQuaternion->Frame.Count; ++idx)
                         {
                             AnimationChannelQuaternionFrame* quaternionFrame = &channelQuaternion->Frame.Items[idx];
-                            srcFrames[idx].Values = new System.Collections.Generic.List<float>
+                            srcFrames[idx + firstFrame].Values = new System.Collections.Generic.List<float>
                             {
                                 quaternionFrame->Value.X,
                                 quaternionFrame->Value.Y,
                                 quaternionFrame->Value.Z,
                                 quaternionFrame->Value.W
                             };
-                            srcFrames[idx].BinaryMove = quaternionFrame->BinaryMove;
+                            srcFrames[idx + firstFrame].BinaryMove = quaternionFrame->BinaryMove;
                         }
                         break;
                     default:

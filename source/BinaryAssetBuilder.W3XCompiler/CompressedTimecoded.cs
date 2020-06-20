@@ -19,6 +19,6 @@ internal class CompressedTimecoded
 
     public unsafe void WriteOut(Tracker state, AnimationChannelTimecoded** objT)
     {
-
+        throw new NotImplementedException();
     }
 }
