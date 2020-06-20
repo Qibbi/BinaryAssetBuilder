@@ -88,10 +88,10 @@ namespace BinaryAssetBuilder.W3XCompiler
                 switch (_platform)
                 {
                     case TargetPlatform.Win32:
-                        compressionSettings.MaxTranslationError = 1.0f / 500.0f;
-                        compressionSettings.MaxRotationError = 3.0f / 1000.0f;
+                        compressionSettings.MaxTranslationError = 0.001f; // 1.0f / 500.0f;
+                        compressionSettings.MaxRotationError = 0.01f; // 3.0f / 1000.0f;
                         compressionSettings.MaxVisibilityError = 0.01f;
-                        compressionSettings.MaxAdaptiveDeltaError = 1.0f / 1000.0f;
+                        compressionSettings.MaxAdaptiveDeltaError = 0.03f; // 1.0f / 1000.0f;
                         compressionSettings.ForceReductionRate = 1.0f;
                         compressionSettings.AllowTimeCoded = true;
                         compressionSettings.AllowAdaptiveDelta = true;
@@ -134,56 +134,70 @@ namespace BinaryAssetBuilder.W3XCompiler
             animationRuntime->Channels.Count = channelCountRuntime;
             for (int currentChannel = 0; currentChannel < channelCount; ++currentChannel)
             {
-                SrcFrame frame = new SrcFrame();
                 AnimationChannelBase* source = animation->Channels.Items[currentChannel];
-                SrcFrame.Value frameValue = new SrcFrame.Value();
-                frame.Values.Add(frameValue);
+                System.Collections.Generic.List<SrcFrame> srcFrames = new System.Collections.Generic.List<SrcFrame>();
                 switch (source->TypeId)
                 {
                     case 0x50D28EF5u:
                         AnimationChannelScalar* channelScalar = (AnimationChannelScalar*)source;
+                        SrcFrame srcFrame = new SrcFrame
+                        {
+                            Position = 0,
+                            BinaryMove = false
+                        };
                         switch (source->Type)
                         {
                             case AnimationChannelType.XTranslation:
                             case AnimationChannelType.YTranslation:
                             case AnimationChannelType.ZTranslation:
-                                frameValue.V.Add(0.0f);
+                                srcFrame.Values.Add(0.0f);
                                 break;
                             case AnimationChannelType.Visibility:
-                                frameValue.V.Add(1.0f);
+                                srcFrame.Values.Add(1.0f);
                                 break;
                             default:
                                 throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Unknown animation channel usage {0}", source->Type);
                         }
-                        for (uint idx = 0; idx < animation->NumFrames; ++idx)
+                        srcFrames.Capacity = (int)animation->NumFrames;
+                        for (int idx = 0; idx < animation->NumFrames; ++idx)
                         {
-                            frame.Values.Add(new SrcFrame.Value());
+                            SrcFrame frame = srcFrame.Clone() as SrcFrame;
+                            frame.Position = idx;
+                            srcFrames.Add(frame);
                         }
                         for (int idx = 0; idx < channelScalar->Frame.Count; ++idx)
                         {
                             AnimationChannelScalarFrame* scalarFrame = &channelScalar->Frame.Items[idx];
-                            frame.Values[idx].V.Add(scalarFrame->Value);
-                            frame.Values[idx].BinaryMove = scalarFrame->BinaryMove;
+                            srcFrames[idx].Values = new System.Collections.Generic.List<float> { scalarFrame->Value };
+                            srcFrames[idx].BinaryMove = scalarFrame->BinaryMove;
                         }
                         break;
                     case 0xF642DD20u:
                         AnimationChannelQuaternion* channelQuaternion = (AnimationChannelQuaternion*)source;
-                        frameValue.V.Add(0.0f);
-                        frameValue.V.Add(0.0f);
-                        frameValue.V.Add(0.0f);
-                        frameValue.V.Add(1.0f);
-                        for (uint idx = 0; idx < animation->NumFrames; ++idx)
+                        srcFrame = new SrcFrame
                         {
-                            frame.Values.Add(new SrcFrame.Value());
+                            Position = 0,
+                            Values = new System.Collections.Generic.List<float> { 0.0f, 0.0f, 0.0f, 1.0f },
+                            BinaryMove = false
+                        };
+                        srcFrames.Capacity = (int)animation->NumFrames;
+                        for (int idx = 0; idx < animation->NumFrames; ++idx)
+                        {
+                            SrcFrame frame = srcFrame.Clone() as SrcFrame;
+                            frame.Position = idx;
+                            srcFrames.Add(frame);
                         }
                         for (int idx = 0; idx < channelQuaternion->Frame.Count; ++idx)
                         {
                             AnimationChannelQuaternionFrame* quaternionFrame = &channelQuaternion->Frame.Items[idx];
-                            frame.Values[idx].V.Add(quaternionFrame->Value.X);
-                            frame.Values[idx].V.Add(quaternionFrame->Value.Y);
-                            frame.Values[idx].V.Add(quaternionFrame->Value.Z);
-                            frame.Values[idx].V.Add(quaternionFrame->Value.W);
-                            frame.Values[idx].BinaryMove = quaternionFrame->BinaryMove;
+                            srcFrames[idx].Values = new System.Collections.Generic.List<float>
+                            {
+                                quaternionFrame->Value.X,
+                                quaternionFrame->Value.Y,
+                                quaternionFrame->Value.Z,
+                                quaternionFrame->Value.W
+                            };
+                            srcFrames[idx].BinaryMove = quaternionFrame->BinaryMove;
                         }
                         break;
                     default:
@@ -193,11 +207,11 @@ namespace BinaryAssetBuilder.W3XCompiler
                 CompressedAdaptiveDelta compressedAdaptiveDelta = null;
                 if (compressionSettings.AllowAdaptiveDelta)
                 {
-                    compressedAdaptiveDelta = CompressedAdaptiveDelta.Compress(source, frame, ref compressionSettings);
+                    compressedAdaptiveDelta = CompressedAdaptiveDelta.Compress(source, srcFrames, ref compressionSettings);
                 }
                 if (compressedAdaptiveDelta is null || compressionSettings.AllowTimeCoded)
                 {
-                    compressedTimecoded = CompressedTimecoded.Compress(source, frame, ref compressionSettings);
+                    compressedTimecoded = CompressedTimecoded.Compress(source, srcFrames, ref compressionSettings);
                 }
                 if (compressedAdaptiveDelta is null || compressedTimecoded != null && compressedTimecoded.EstimateSize() < compressedAdaptiveDelta.EstimateSize())
                 {

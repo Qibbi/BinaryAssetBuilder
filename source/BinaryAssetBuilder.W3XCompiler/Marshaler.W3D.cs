@@ -67,7 +67,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(AnimationChannelScalar.Frame), null), &objT->Frame, state);
+        Marshal(node.GetChildNodes(nameof(AnimationChannelScalar.Frame)), &objT->Frame, state);
         Marshal(node, (AnimationChannelBase*)objT, state);
     }
 
@@ -87,7 +87,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(AnimationChannelQuaternion.Frame), null), &objT->Frame, state);
+        Marshal(node.GetChildNodes(nameof(AnimationChannelQuaternion.Frame)), &objT->Frame, state);
         Marshal(node, (AnimationChannelBase*)objT, state);
     }
 

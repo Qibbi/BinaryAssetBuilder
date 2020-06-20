@@ -21,7 +21,7 @@ public struct SageBool : IComparable<SageBool>, IComparable, IEquatable<SageBool
 
     public static bool operator !(SageBool x)
     {
-        return x.Value;
+        return !x.Value;
     }
 
     public static implicit operator SageBool(bool x)

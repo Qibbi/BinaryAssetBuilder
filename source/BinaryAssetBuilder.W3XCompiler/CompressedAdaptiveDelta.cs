@@ -9,7 +9,7 @@ internal class CompressedAdaptiveDelta
     [StructLayout(LayoutKind.Sequential)]
     public struct Frame
     {
-        public unsafe fixed sbyte Values[17];
+        public unsafe fixed byte Values[17];
     }
 
     private static readonly float[] _filterTable = new[]
@@ -81,12 +81,12 @@ internal class CompressedAdaptiveDelta
     };
 
     private AnimationChannelType _type; // 0
-    private ushort _pivot; // 4
+    private short _pivot; // 4
     private float _scale; // 8
     private System.Collections.Generic.List<float> _values = new System.Collections.Generic.List<float>(); // 12-28
-    private int _numBytes; // 28
+    private int _numBits; // 28
     private System.Collections.Generic.List<Frame> _frames = new System.Collections.Generic.List<Frame>(); // 32 - 48
-    private int _count; // 48
+    private int _vectorLen; // 48
 
     static CompressedAdaptiveDelta()
     {
@@ -98,13 +98,13 @@ internal class CompressedAdaptiveDelta
         }
     }
 
-    private unsafe float CompressFrame(Frame* dest, sbyte filter, float[] values, float* curPrevValue, bool* excessError, float maxError)
+    private unsafe float CompressFrame(Frame* dest, int filter, float[] values, float* curPrevValue, bool* excessError, float maxError)
     {
-        dest->Values[0] = filter;
-        int maxScale = _numBytes != 4 ? 128 : 8;
+        dest->Values[0] = (byte)filter;
+        int maxScale = _numBits != 4 ? 128 : 8;
         float currentValue = values[0];
         float comulativeDelta = 0.0f;
-        float filterScale = _filterTable[filter * 4] * _scale;
+        float filterScale = _filterTable[filter] * _scale;
         if (maxScale == 128)
         {
             filterScale /= 16.0f;
@@ -126,10 +126,10 @@ internal class CompressedAdaptiveDelta
                 currentDelta = maxScale - 1;
             }
             float delta = (float)Math.Abs((double)(currentValue + (currentDelta * filterScale) - values[idx]));
-            dest->Values[idx] = (sbyte)currentDelta;
+            dest->Values[idx] = (byte)currentDelta;
             currentValue += currentDelta * filterScale;
             comulativeDelta += delta;
-            if ((IntPtr)excessError != IntPtr.Zero && delta > maxError)
+            if (excessError != null && delta > maxError)
             {
                 *excessError = true;
             }
@@ -141,84 +141,127 @@ internal class CompressedAdaptiveDelta
         return comulativeDelta;
     }
 
-    public static unsafe CompressedAdaptiveDelta Compress(AnimationChannelBase* srcChannel, SrcFrame srcFrame, ref W3DAnimation.CompressionSetting settings)
+    public static unsafe CompressedAdaptiveDelta Compress(AnimationChannelBase* srcChannel,
+                                                          System.Collections.Generic.List<SrcFrame> srcFrames,
+                                                          ref W3DAnimation.CompressionSetting settings)
     {
-        if (srcFrame.Values.Count < 2)
+        if (srcFrames.Count < 2)
         {
             return null;
         }
-        CompressedAdaptiveDelta result = new CompressedAdaptiveDelta
+        CompressedAdaptiveDelta compressed = new CompressedAdaptiveDelta
         {
             _type = srcChannel->Type,
-            _pivot = srcChannel->Pivot
+            _pivot = (short)srcChannel->Pivot
         };
         float maxDelta = 0.0f;
-        int valuesCount = srcFrame.Values.Count;
-        for (int idx = 0; idx < srcFrame.Values.Count - 1; ++idx)
+        SrcFrame lastFrame = srcFrames[^1];
+        foreach (SrcFrame srcFrame in srcFrames)
         {
-            int vCount = srcFrame.Values[idx].V.Count;
-            for (int idy = 0; idx < vCount; ++idy)
+            if (srcFrame != lastFrame)
             {
-                float delta = Math.Abs(srcFrame.Values[idx].V[idy] - srcFrame.Values[idx + 1].V[idy]);
-                if (delta > maxDelta)
+                for (int pos = 0; pos < srcFrame.Values.Count; ++pos)
                 {
-                    maxDelta = delta;
-                }
-            }
-        }
-        result._scale = maxDelta / 7.0f;
-        result._count = valuesCount;
-        for (int idx = 0; idx < result._count; ++idx)
-        {
-            result._values.Add(srcFrame.Values[idx].V[)
-        }
-        bool flag;
-        for (int idx = 0; idx < 2; ++idx)
-        {
-            result._numBytes = (idx * 4) + 4;
-            int num2 = 1;
-            for (int idy = srcFrame.Values.Count; idy > 0; --idy)
-            {
-                for (int idz = 0; idz < valuesCount; ++idz)
-                {
-                    for (int idw = 0; idw < 16; ++idw)
+                    float delta = (float)Math.Abs((double)(srcFrame.Values[pos] - lastFrame.Values[pos]));
+                    if (delta > maxDelta)
                     {
-                        int num6 = valuesCount;
-                        if (num2 + idw >= num6)
-                        {
-
-                        }
+                        maxDelta = delta;
                     }
                 }
             }
         }
-
-        float[] values = new float[17];
-
-        int selectedFilter = -1;
-        float delta = float.MaxValue;
-        for (int filter = 0; filter < 256; ++filter)
+        compressed._scale = maxDelta / 7.0f;
+        int frameSize = srcFrames[0].Values.Count;
+        compressed._vectorLen = frameSize;
+        for (int pos = 0; pos < frameSize; ++pos)
         {
-            Frame frame;
-            float currentDelta = result.CompressFrame(&frame, (sbyte)filter, values, null, null, 0.0f);
-            if (currentDelta < delta)
+            compressed._values.Add(srcFrames[0].Values[pos]);
+        }
+        bool excessDelta = false;
+        for (int idx = 0; idx < 2; ++idx)
+        {
+            compressed._numBits = (idx * 4) + 4;
+            compressed._frames.Clear();
+            float[] frameValues = new float[4];
+            for (int pos = 0; pos < frameSize; ++pos)
             {
-                selectedFilter = filter;
-                delta = currentDelta;
+                frameValues[pos] = compressed._values[pos];
+            }
+            excessDelta = false;
+            int num2 = 1;
+            int num3 = (srcFrames.Count + 15) / 16;
+            while (true)
+            {
+                int num5 = num3--;
+                if (num5 != 0)
+                {
+                    for (int pos = 0; pos < frameSize; ++pos)
+                    {
+                        float[] array = new float[17];
+                        array[0] = frameValues[pos];
+                        for (int idy = 0; idy < 16; ++idy)
+                        {
+                            int num6 = srcFrames.Count;
+                            if (num2 + idy >= num6)
+                            {
+                                array[idy + 1] = array[idy];
+                            }
+                            else
+                            {
+                                array[idy + 1] = srcFrames[num2 + idy].Values[pos];
+                            }
+                        }
+                        int selectedFilter = -1;
+                        float blockDelta = float.MaxValue;
+                        for (int idf = 0; idf < 256; ++idf)
+                        {
+                            Frame frame;
+                            float delta = compressed.CompressFrame(&frame, idf, array, null, null, 0.0f);
+                            if ((double)delta < blockDelta)
+                            {
+                                selectedFilter = idf;
+                                blockDelta = delta;
+                            }
+                        }
+                        Frame finalFrame;
+                        fixed (float* pFrameValues = &frameValues[0])
+                        {
+                            compressed.CompressFrame(&finalFrame, selectedFilter, array, &pFrameValues[pos], &excessDelta, settings.MaxAdaptiveDeltaError);
+                            compressed._frames.Add(finalFrame);
+                        }
+                    }
+                    num2 += 16;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (!excessDelta)
+            {
+                break;
             }
         }
-        Frame newFrame = new Frame();
-        result.CompressFrame(newFrame, selectedFilter, values, values[pos], &flag, settings.MaxAdaptiveDeltaError);
-        result._frames.Add(newFrame);
+        if (excessDelta)
+        {
+            return null;
+        }
+        return compressed;
     }
 
     public int EstimateSize()
     {
-
+        int frameSize = _values.Count * (_numBits / 8);
+        int numValues = _values.Count;
+        int numFrames = _frames.Count;
+        return (numValues * 4) + (frameSize * numFrames);
     }
 
     public unsafe void WriteOut(Tracker state, AnimationChannelDelta** objT)
     {
+        using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnimationChannelDelta), 1u))
+        {
 
+        }
     }
 }

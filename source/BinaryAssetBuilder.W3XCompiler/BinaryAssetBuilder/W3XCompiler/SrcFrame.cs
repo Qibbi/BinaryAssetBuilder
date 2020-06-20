@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BinaryAssetBuilder.W3XCompiler
 {
-    internal class SrcFrame
+    internal class SrcFrame : ICloneable
     {
-        public class Value
-        {
-            public List<float> V = new List<float>();
-            public bool BinaryMove;
-        }
+        public int Position;
+        public List<float> Values = new List<float>();
+        public bool BinaryMove;
 
-        public List<Value> Values { get; } = new List<Value>();
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }
