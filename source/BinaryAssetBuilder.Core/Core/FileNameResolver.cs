@@ -58,7 +58,7 @@ namespace BinaryAssetBuilder.Core
                 string[] pathArray = targetPath.Split(_splitCharacters);
                 if (pathArray.Length == 1)
                 {
-                    result = ShPath.Canonicalize(Path.Combine(baseDirectory, targetPath));
+                    result = SearchPaths(baseDirectory, targetPath, baseDirectory);
                 }
                 else
                 {
