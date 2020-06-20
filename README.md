@@ -20,7 +20,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] W3DMesh
 * [ ] W3DContainer
 * [ ] W3DHierarchy
-* [ ] W3DAnimation
+* [x] W3DAnimation                                              0xCC069193
 * [ ] W3DCollisionBox
 * [ ] ArmyDefinition
 * [ ] AIPersonalityDefinition

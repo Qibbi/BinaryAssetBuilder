@@ -78,13 +78,13 @@ internal class CompressedAdaptiveDelta
         0.0f, 0.0f, 0.0f, 0.0f
     };
 
-    private AnimationChannelType _type; // 0
-    private short _pivot; // 4
-    private float _scale; // 8
-    private System.Collections.Generic.List<float> _values = new System.Collections.Generic.List<float>(); // 12-28
-    private int _numBits; // 28
-    private System.Collections.Generic.List<Frame> _frames = new System.Collections.Generic.List<Frame>(); // 32 - 48
-    private int _vectorLen; // 48
+    private AnimationChannelType _type;
+    private short _pivot;
+    private float _scale;
+    private readonly System.Collections.Generic.List<float> _init = new System.Collections.Generic.List<float>();
+    private int _numBits;
+    private readonly System.Collections.Generic.List<Frame> _compressedValues = new System.Collections.Generic.List<Frame>();
+    private int _vectorLen;
 
     static CompressedAdaptiveDelta()
     {
@@ -147,7 +147,7 @@ internal class CompressedAdaptiveDelta
         {
             return null;
         }
-        CompressedAdaptiveDelta compressed = new CompressedAdaptiveDelta
+        CompressedAdaptiveDelta result = new CompressedAdaptiveDelta
         {
             _type = srcChannel->Type,
             _pivot = (short)srcChannel->Pivot
@@ -166,22 +166,22 @@ internal class CompressedAdaptiveDelta
                 }
             }
         }
-        compressed._scale = maxDelta / 7.0f;
+        result._scale = maxDelta / 7.0f;
         int frameSize = srcFrames[0].Values.Count;
-        compressed._vectorLen = frameSize;
+        result._vectorLen = frameSize;
         for (int pos = 0; pos < frameSize; ++pos)
         {
-            compressed._values.Add(srcFrames[0].Values[pos]);
+            result._init.Add(srcFrames[0].Values[pos]);
         }
         bool excessDelta = false;
         for (int idx = 0; idx < 2; ++idx)
         {
-            compressed._numBits = (idx * 4) + 4;
-            compressed._frames.Clear();
+            result._numBits = (idx * 4) + 4;
+            result._compressedValues.Clear();
             float[] animationState = new float[4];
             for (int pos = 0; pos < frameSize; ++pos)
             {
-                animationState[pos] = compressed._values[pos];
+                animationState[pos] = result._init[pos];
             }
             excessDelta = false;
             int num2 = 1;
@@ -212,7 +212,7 @@ internal class CompressedAdaptiveDelta
                         for (int idf = 0; idf < 256; ++idf)
                         {
                             Frame frame = new Frame();
-                            float delta = compressed.CompressFrame(frame, idf, array, null, null, 0.0f);
+                            float delta = result.CompressFrame(frame, idf, array, null, null, 0.0f);
                             if ((double)delta < blockDelta)
                             {
                                 selectedFilter = idf;
@@ -222,8 +222,8 @@ internal class CompressedAdaptiveDelta
                         Frame finalFrame = new Frame();
                         fixed (float* pFrameValues = &animationState[0])
                         {
-                            compressed.CompressFrame(finalFrame, selectedFilter, array, &pFrameValues[pos], &excessDelta, settings.MaxAdaptiveDeltaError);
-                            compressed._frames.Add(finalFrame);
+                            result.CompressFrame(finalFrame, selectedFilter, array, &pFrameValues[pos], &excessDelta, settings.MaxAdaptiveDeltaError);
+                            result._compressedValues.Add(finalFrame);
                         }
                     }
                     num2 += 16;
@@ -242,23 +242,84 @@ internal class CompressedAdaptiveDelta
         {
             return null;
         }
-        return compressed;
+        return result;
     }
 
     public int EstimateSize()
     {
-        int frameSize = _values.Count * (_numBits / 8);
-        int numValues = _values.Count;
-        int numFrames = _frames.Count;
+        int frameSize = _init.Count * (_numBits / 8);
+        int numValues = _init.Count;
+        int numFrames = _compressedValues.Count;
         return (numValues * 4) + (frameSize * numFrames);
     }
 
     public unsafe void WriteOut(Tracker state, AnimationChannelDelta** objT)
     {
-        throw new NotImplementedException();
-        using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnimationChannelDelta), 1u))
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnimationChannelDelta), 1u);
+        uint typeId = 0x77F97305u;
+        state.InplaceEndianToPlatform(&typeId);
+        AnimationChannelDelta* result = *objT;
+        result->Base.TypeId = typeId;
+        uint type = (uint)_type;
+        state.InplaceEndianToPlatform(&type);
+        result->Base.Type = (AnimationChannelType)type;
+        System.Collections.Generic.List<Frame> frames = _compressedValues;
+        uint numFrames = (uint)(frames.Count / _vectorLen * 16);
+        state.InplaceEndianToPlatform(&numFrames);
+        result->Base.NumFrames = numFrames;
+        uint vectorLen = (uint)_vectorLen;
+        state.InplaceEndianToPlatform(&vectorLen);
+        result->Base.VectorLen = vectorLen;
+        ushort pivot = (ushort)_pivot;
+        state.InplaceEndianToPlatform(&pivot);
+        result->Base.Pivot = pivot;
+        float scale = _scale;
+        state.InplaceEndianToPlatform((uint*)&scale);
+        result->Scale = scale;
+        uint numBits = (uint)_numBits;
+        state.InplaceEndianToPlatform(&numBits);
+        result->NumBits = numBits;
+        uint initCount = (uint)_init.Count;
+        state.InplaceEndianToPlatform(&initCount);
+        result->Init.Count = initCount;
+        int initLength = _init.Count;
+        using (Tracker.Context contextInit = state.Push((void**)&result->Init.Items, sizeof(float), (uint)initLength))
         {
-
+            for (int idx = 0; idx < initLength; ++idx)
+            {
+                float init = _init[idx];
+                state.InplaceEndianToPlatform((uint*)&init);
+                result->Init.Items[idx] = init;
+            }
+        }
+        int blockSize = _numBits != 4 ? 17 : 9;
+        System.Collections.Generic.List<Frame> compressedValues = _compressedValues;
+        uint bufferSize = (uint)(_compressedValues.Count * blockSize);
+        uint resultBufferSize = bufferSize;
+        state.InplaceEndianToPlatform(&resultBufferSize);
+        result->CompressedValues.Count = resultBufferSize;
+        using Tracker.Context contextValues = state.Push((void**)&result->CompressedValues.Items, sizeof(sbyte), bufferSize);
+        byte* values = result->CompressedValues.Items;
+        foreach (Frame frame in compressedValues)
+        {
+            *values = (byte)frame.Values[0];
+            ++values;
+            if (_numBits != 4)
+            {
+                fixed (sbyte* pFrame = &frame.Values[0])
+                {
+                    BinaryAssetBuilder.Native.MsVcRt.MemCpy((IntPtr)values, (IntPtr)pFrame + 1, new BinaryAssetBuilder.Native.SizeT(16));
+                    values += 16;
+                }
+            }
+            else
+            {
+                for (int idx = 0; idx < 16; idx += 2)
+                {
+                    *values = (byte)((frame.Values[idx + 1] & 0xF) | (frame.Values[idx + 2] << 4));
+                    ++values;
+                }
+            }
         }
     }
 }

@@ -58,7 +58,7 @@ namespace BinaryAssetBuilder.W3XCompiler
                 result.Type = typeof(W3DAnimation);
                 result.TypeName = nameof(W3DAnimation);
                 result.ProcessingHash = 0xC55CB6D8u;
-                result.TypeHash = 0xCC069193;
+                result.TypeHash = 0xCC069193u;
             }
             return result;
         }
@@ -214,7 +214,7 @@ namespace BinaryAssetBuilder.W3XCompiler
                 {
                     compressedTimecoded = CompressedTimecoded.Compress(source, srcFrames, ref compressionSettings);
                 }
-                if (compressedAdaptiveDelta is null || compressedTimecoded != null && compressedTimecoded.EstimateSize() < compressedAdaptiveDelta.EstimateSize())
+                if (compressedAdaptiveDelta is null || (compressedTimecoded != null && compressedTimecoded.EstimateSize() < compressedAdaptiveDelta.EstimateSize()))
                 {
                     compressedTimecoded.WriteOut(trackerRuntime, (AnimationChannelTimecoded**)&animationRuntime->Channels.Items[currentChannel]);
                 }

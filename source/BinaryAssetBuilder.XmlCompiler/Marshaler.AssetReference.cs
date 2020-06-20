@@ -77,6 +77,7 @@ public static partial class Marshaler
         {
             return;
         }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AssetReference<T, U>), 1u);
         Marshal(value, *objT, state);
     }
 }
