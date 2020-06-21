@@ -114,7 +114,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] GameSCriptList
 * [x] IntelDB                                                   0xFBB64F90
 * [ ] BootupDisplaySequence
-* [ ] UnitTypeIcon
+* [x] UnitTypeIcon                                              0xF7AB74BE
 * [x] ImageSequence                                             0x217CF953
 * [x] UnitOverlayIconSettings                                   0xDFC78E66
 * [x] TheVersion                                                0xF659EF49

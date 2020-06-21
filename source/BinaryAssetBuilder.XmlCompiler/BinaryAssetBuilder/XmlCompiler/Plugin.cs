@@ -160,6 +160,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x1AC54E60u;
                     result.TypeHash = 0x1AC54E60u;
                     break;
+                case 0xD76B50C7u:
+                    result.Type = typeof(UnitTypeIcon);
+                    result.TypeName = nameof(UnitTypeIcon);
+                    result.ProcessingHash = num ^ 0xF7AB74BEu;
+                    result.TypeHash = 0xF7AB74BEu;
+                    break;
                 case 0xD99C40A9u:
                     result.Type = typeof(PhaseEffect);
                     result.TypeName = nameof(PhaseEffect);

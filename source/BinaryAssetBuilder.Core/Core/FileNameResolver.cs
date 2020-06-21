@@ -105,7 +105,7 @@ namespace BinaryAssetBuilder.Core
                     }
                     else if (lower == "root")
                     {
-                        result = SearchPaths(baseDirectory, str, Settings.Current.DataRoot); ;
+                        result = SearchPaths(baseDirectory, str, Settings.Current.DataRoot);
                     }
                     else
                     {
