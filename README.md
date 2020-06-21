@@ -111,9 +111,9 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] InGameUISideBarCommandSlots
 * [ ] InGameUIPlayerPowerCommandSlots
 * [ ] InGameUIUnitAbilityCommandSlots
-* [ ] GameSCriptList
+* [x] GameScriptList                                            0x5AC6FA18
 * [x] IntelDB                                                   0xFBB64F90
-* [ ] BootupDisplaySequence
+* [x] BootupDisplaySequence                                     0x84C1C2F0
 * [x] UnitTypeIcon                                              0xF7AB74BE
 * [x] ImageSequence                                             0x217CF953
 * [x] UnitOverlayIconSettings                                   0xDFC78E66

@@ -160,6 +160,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x1AC54E60u;
                     result.TypeHash = 0x1AC54E60u;
                     break;
+                case 0xC8E41828u:
+                    result.Type = typeof(BootupDisplaySequence);
+                    result.TypeName = nameof(BootupDisplaySequence);
+                    result.ProcessingHash = num ^ 0x84C1C2F0u;
+                    result.TypeHash = 0x84C1C2F0u;
+                    break;
                 case 0xD76B50C7u:
                     result.Type = typeof(UnitTypeIcon);
                     result.TypeName = nameof(UnitTypeIcon);
@@ -171,6 +177,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(PhaseEffect);
                     result.ProcessingHash = num ^ 0x4877D566u;
                     result.TypeHash = 0x4877D566u;
+                    break;
+                case 0xDEBF8788u:
+                    result.Type = typeof(GameScriptList);
+                    result.TypeName = nameof(GameScriptList);
+                    result.ProcessingHash = num ^ 0x5AC6FA18u;
+                    result.TypeHash = 0x5AC6FA18u;
                     break;
                 case 0xEC066D65u:
                     result.Type = typeof(LogicCommandSet);

@@ -319,6 +319,15 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(Node node, AnsiString** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, WideString* objT, Tracker state)
     {
         uint length = (uint)text.Length;
@@ -363,6 +372,15 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, WideString** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal(Node node, RGBColor* objT, Tracker state)
@@ -480,7 +498,8 @@ public static partial class Marshaler
 
     private static unsafe void Marshal<T>(string text, TypedAssetId<T>* objT, Tracker state) where T : unmanaged
     {
-        uint id = FastHash.GetHashCode(text);
+        HashProvider.RecordHash(HashProvider.PoidTableName, text);
+        uint id = FastHash.GetHashCode(text.ToLower());
         state.InplaceEndianToPlatform(&id);
         objT->InstanceId = id;
     }
@@ -495,6 +514,32 @@ public static partial class Marshaler
     }
 
     private static unsafe void Marshal<T>(Node node, TypedAssetId<T>* objT, Tracker state) where T : unmanaged
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
+    private static unsafe void Marshal(string text, StringHash* objT, Tracker state)
+    {
+        HashProvider.RecordHash(HashProvider.StringHashTableName, text);
+        uint id = FastHash.GetHashCode(text);
+        state.InplaceEndianToPlatform(&id);
+        objT->InstanceId = id;
+    }
+
+    private static unsafe void Marshal(Value value, StringHash* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, StringHash* objT, Tracker state)
     {
         if (node is null)
         {
