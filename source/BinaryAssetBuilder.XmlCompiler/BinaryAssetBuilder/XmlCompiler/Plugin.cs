@@ -82,6 +82,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x4E1A5713u;
                     result.TypeHash = 0x4E1A5713u;
                     break;
+                case 0x1E0FC59Eu:
+                    result.Type = typeof(InGameUIPlayerPowerCommandSlots);
+                    result.TypeName = nameof(InGameUIPlayerPowerCommandSlots);
+                    result.ProcessingHash = num ^ 0x4AB425C6u;
+                    result.TypeHash = 0x4AB425C6u;
+                    break;
                 case 0x1F9865CEu:
                     result.Type = typeof(IntelDB);
                     result.TypeName = nameof(IntelDB);
@@ -93,6 +99,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(ImageSequence);
                     result.ProcessingHash = num ^ 0x217CF953u;
                     result.TypeHash = 0x217CF953u;
+                    break;
+                case 0x245EB4F9u:
+                    result.Type = typeof(InGameUIVoiceChatCommandSlots);
+                    result.TypeName = nameof(InGameUIVoiceChatCommandSlots);
+                    result.ProcessingHash = num ^ 0x3592E352u;
+                    result.TypeHash = 0x3592E352u;
                     break;
                 case 0x2B49BF71u:
                     result.Type = typeof(Achievement);
@@ -106,6 +118,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xEDDBB607u;
                     result.TypeHash = 0xEDDBB607u;
                     break;
+                case 0x395A0FD6u:
+                    result.Type = typeof(InGameUILookAtCommandSlots);
+                    result.TypeName = nameof(InGameUILookAtCommandSlots);
+                    result.ProcessingHash = num ^ 0x8F9F9918u;
+                    result.TypeHash = 0x8F9F9918u;
+                    break;
                 case 0x56626220u:
                     result.Type = typeof(PackedTextureImage);
                     result.TypeName = nameof(PackedTextureImage);
@@ -117,6 +135,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(WaterTransparency);
                     result.ProcessingHash = num ^ 0x331DA6CEu;
                     result.TypeHash = 0x331DA6CEu;
+                    break;
+                case 0x6114137Eu:
+                    result.Type = typeof(InGameUIGroupSelectionCommandSlots);
+                    result.TypeName = nameof(InGameUIGroupSelectionCommandSlots);
+                    result.ProcessingHash = num ^ 0xF6CE1A68u;
+                    result.TypeHash = 0xF6CE1A68u;
                     break;
                 case 0x7D464170u:
                     result.Type = typeof(LogicCommand);
@@ -142,6 +166,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xE3996069u;
                     result.TypeHash = 0xE3996069u;
                     break;
+                case 0x98EE2743u:
+                    result.Type = typeof(InGameUISideBarCommandSlots);
+                    result.TypeName = nameof(InGameUISideBarCommandSlots);
+                    result.ProcessingHash = num ^ 0xAF956455u;
+                    result.TypeHash = 0xAF956455u;
+                    break;
                 case 0x9A104B07u:
                     result.Type = typeof(CommandSet);
                     result.TypeName = nameof(CommandSet);
@@ -159,6 +189,18 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(HotKeySlot);
                     result.ProcessingHash = num ^ 0x1AC54E60u;
                     result.TypeHash = 0x1AC54E60u;
+                    break;
+                case 0xA78E592Eu:
+                    result.Type = typeof(InGameUIUnitAbilityCommandSlots);
+                    result.TypeName = nameof(InGameUIUnitAbilityCommandSlots);
+                    result.ProcessingHash = num ^ 0x9DAA4182u;
+                    result.TypeHash = 0x9DAA4182u;
+                    break;
+                case 0xA7A65DACu:
+                    result.Type = typeof(InGameUITacticalCommandSlots);
+                    result.TypeName = nameof(InGameUITacticalCommandSlots);
+                    result.ProcessingHash = num ^ 0xC24AEFF1u;
+                    result.TypeHash = 0xC24AEFF1u;
                     break;
                 case 0xC8E41828u:
                     result.Type = typeof(BootupDisplaySequence);

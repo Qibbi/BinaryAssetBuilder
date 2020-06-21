@@ -3,7 +3,6 @@ using SageBinaryData;
 
 public static partial class Marshaler
 {
-
     public static unsafe void Marshal(Node node, GameScriptParameterBase* objT, Tracker state)
     {
         if (node is null)
