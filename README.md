@@ -66,7 +66,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] MpGameRules                                               0xEDDBB607
 * [ ] ExperienceLevelTemplate
 * [ ] MissionObjectiveList
-* [ ] StringHashTable
+* [x] StringHashTable                                           0x2C112832
 * [ ] InGameUISettings
 * [ ] DamageFX
 * [ ] MultiplayerSettings

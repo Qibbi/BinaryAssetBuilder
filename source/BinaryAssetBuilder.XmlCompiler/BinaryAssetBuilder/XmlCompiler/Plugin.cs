@@ -82,6 +82,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x4E1A5713u;
                     result.TypeHash = 0x4E1A5713u;
                     break;
+                case 0x11E5CF64u:
+                    result.Type = typeof(StringHashTable);
+                    result.TypeName = nameof(StringHashTable);
+                    result.ProcessingHash = num ^ 0x2C112832u;
+                    result.TypeHash = 0x2C112832u;
+                    break;
                 case 0x1E0FC59Eu:
                     result.Type = typeof(InGameUIPlayerPowerCommandSlots);
                     result.TypeName = nameof(InGameUIPlayerPowerCommandSlots);
