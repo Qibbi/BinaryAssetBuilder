@@ -124,6 +124,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x8F9F9918u;
                     result.TypeHash = 0x8F9F9918u;
                     break;
+                case 0x5080A5D8u:
+                    result.Type = typeof(MappableKey);
+                    result.TypeName = nameof(MappableKey);
+                    result.ProcessingHash = num ^ 0xE005A668u;
+                    result.TypeHash = 0xE005A668u;
+                    break;
                 case 0x56626220u:
                     result.Type = typeof(PackedTextureImage);
                     result.TypeName = nameof(PackedTextureImage);
@@ -225,6 +231,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(GameScriptList);
                     result.ProcessingHash = num ^ 0x5AC6FA18u;
                     result.TypeHash = 0x5AC6FA18u;
+                    break;
+                case 0xDEFCA2F6:
+                    result.Type = typeof(DefaultHotKeys);
+                    result.TypeName = nameof(DefaultHotKeys);
+                    result.ProcessingHash = num ^ 0x0E12479Du;
+                    result.TypeHash = 0x0E12479Du;
                     break;
                 case 0xEC066D65u:
                     result.Type = typeof(LogicCommandSet);

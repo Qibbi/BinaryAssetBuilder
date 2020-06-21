@@ -65,6 +65,66 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    public static unsafe void Marshal(string text, HotKeyModifierFlags* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        for (int idy = 0; idy < tokens.Length; ++idy)
+        {
+            string token = tokens[idy];
+            bool includeToken = true;
+            if (token[0] == '+')
+            {
+                includeToken = true;
+            }
+            else if (token[0] == '-')
+            {
+                includeToken = false;
+            }
+            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
+            {
+                for (int idx = 0; idx < HotKeyModifierFlags.NumSpans; ++idx)
+                {
+                    objT->Value[idx] = uint.MaxValue;
+                }
+                continue;
+            }
+            HotKeyModifier value = (HotKeyModifier)(-1);
+            Marshal(token, &value, state);
+            if (value != (HotKeyModifier)(-1))
+            {
+                uint uintValue = (uint)value;
+                if (uintValue < HotKeyModifierFlags.Count)
+                {
+                    if (includeToken)
+                    {
+                        objT->Value[uintValue / HotKeyModifierFlags.BitsInSpan] |= (uint)(1 << (int)(uintValue % HotKeyModifierFlags.BitsInSpan));
+                    }
+                    else
+                    {
+                        objT->Value[uintValue / HotKeyModifierFlags.BitsInSpan] ^= (uint)(1 << (int)(uintValue % HotKeyModifierFlags.BitsInSpan));
+                    }
+                }
+            }
+        }
+        for (int idx = 0; idx < HotKeyModifierFlags.NumSpans; ++idx)
+        {
+            state.InplaceEndianToPlatform(&objT->Value[idx]);
+        }
+    }
+
+    public static unsafe void Marshal(Value value, HotKeyModifierFlags* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     public static unsafe void Marshal(string text, InfoWarEffectBitFlags* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
@@ -184,6 +244,7 @@ public static partial class Marshaler
         }
         Marshal(value.GetText(), objT, state);
     }
+
     public static unsafe void Marshal(string text, LocomotorSurfaceBitFlags* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);

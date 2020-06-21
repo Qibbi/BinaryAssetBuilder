@@ -101,9 +101,9 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] AptConstData
 * [ ] AptDatData
 * [ ] AptGeometryData
-* [ ] MappableKey
+* [x] MappableKey                                               0xE005A668
 * [x] HotKeySlot                                                0x1AC54E60
-* [ ] DefaultHotKeys
+* [x] DefaultHotKeys                                            0x0E12479D
 * [x] InGameUIGroupSelectionCommandSlots                        0xF6CE1A68
 * [x] InGameUILookAtCommandSlots                                0x8F9F9918
 * [x] InGameUITacticalCommandSlots                              0xC24AEFF1
