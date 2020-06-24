@@ -97,10 +97,10 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] CrowdResponse
 * [ ] MapMetaData
 * [ ] LargeGroupAudioMap
-* [ ] AptAptData
-* [ ] AptConstData
-* [ ] AptDatData
-* [ ] AptGeometryData
+* [x] AptAptData                                                0x36866072
+* [x] AptConstData                                              0x1CE8E595
+* [x] AptDatData                                                0x3BF7FEB9
+* [x] AptGeometryData                                           0x58F89E8B
 * [x] MappableKey                                               0xE005A668
 * [x] HotKeySlot                                                0x1AC54E60
 * [x] DefaultHotKeys                                            0x0E12479D

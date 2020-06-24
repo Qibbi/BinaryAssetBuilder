@@ -2,9 +2,10 @@
 
 namespace Relo
 {
-    [StructLayout(LayoutKind.Sequential, Size = 8)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct DataBlob
     {
-        // TODO:
+        public unsafe void* Data;
+        public uint Size;
     }
 }

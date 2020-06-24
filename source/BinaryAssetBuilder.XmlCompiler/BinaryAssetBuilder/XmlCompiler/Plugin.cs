@@ -130,6 +130,24 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x8F9F9918u;
                     result.TypeHash = 0x8F9F9918u;
                     break;
+                case 0x3A9CE0B0u:
+                    result.Type = typeof(AptConstData);
+                    result.TypeName = nameof(AptConstData);
+                    result.ProcessingHash = num ^ 0x1CE8E595u;
+                    result.TypeHash = 0x1CE8E595u;
+                    break;
+                case 0x3DAA8C20u:
+                    result.Type = typeof(AptGeometryData);
+                    result.TypeName = nameof(AptGeometryData);
+                    result.ProcessingHash = num ^ 0x58F89E8Bu;
+                    result.TypeHash = 0x58F89E8Bu;
+                    break;
+                case 0x423395E1u:
+                    result.Type = typeof(AptDatData);
+                    result.TypeName = nameof(AptDatData);
+                    result.ProcessingHash = num ^ 0x3BF7FEB9u;
+                    result.TypeHash = 0x3BF7FEB9u;
+                    break;
                 case 0x5080A5D8u:
                     result.Type = typeof(MappableKey);
                     result.TypeName = nameof(MappableKey);
@@ -153,6 +171,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(InGameUIGroupSelectionCommandSlots);
                     result.ProcessingHash = num ^ 0xF6CE1A68u;
                     result.TypeHash = 0xF6CE1A68u;
+                    break;
+                case 0x6C41E6DCu:
+                    result.Type = typeof(AptAptData);
+                    result.TypeName = nameof(AptAptData);
+                    result.ProcessingHash = num ^ 0x36866072u;
+                    result.TypeHash = 0x36866072u;
                     break;
                 case 0x7D464170u:
                     result.Type = typeof(LogicCommand);
