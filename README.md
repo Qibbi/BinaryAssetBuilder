@@ -96,7 +96,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] AudioSettings
 * [ ] CrowdResponse
 * [ ] MapMetaData
-* [ ] LargeGroupAudioMap
+* [x] LargeGroupAudioMap                                        0x9CBC0553
 * [x] AptAptData                                                0x36866072
 * [x] AptConstData                                              0x1CE8E595
 * [x] AptDatData                                                0x3BF7FEB9

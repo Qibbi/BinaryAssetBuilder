@@ -254,6 +254,40 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(string text, Duration* objT, Tracker state)
+    {
+        uint result = uint.Parse(text);
+        result = (uint)Math.Ceiling(result * LOGICFRAMES_PER_MSEC_REAL);
+        state.InplaceEndianToPlatform(&result);
+        objT->Value = result;
+    }
+
+    private static unsafe void Marshal(Value value, Duration* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(string text, Velocity* objT, Tracker state)
+    {
+        float result = float.Parse(text);
+        result *= SECONDS_PER_LOGICFRAME_REAL;
+        state.InplaceEndianToPlatform((uint*)&result);
+        objT->Value = result;
+    }
+
+    private static unsafe void Marshal(Value value, Velocity* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     private static unsafe void Marshal<T>(string text, T* objT, Tracker state) where T : unmanaged, Enum
     {
         if (Enum.TryParse(text, false, out T value))
@@ -539,7 +573,7 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(Node node, StringHash* objT, Tracker state)
+    public static unsafe void Marshal(Node node, StringHash* objT, Tracker state)
     {
         if (node is null)
         {

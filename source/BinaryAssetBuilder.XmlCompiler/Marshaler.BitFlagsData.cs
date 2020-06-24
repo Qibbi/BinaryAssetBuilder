@@ -425,6 +425,16 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    public static unsafe void Marshal(Value value, ModelConditionBitFlags** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(ModelConditionBitFlags), 1u);
+        Marshal(value, *objT, state);
+    }
+
     public static unsafe void Marshal(string text, ObjectFilterRelationshipBitMask* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
@@ -543,6 +553,16 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    public static unsafe void Marshal(Value value, ObjectStatusBitFlags** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(ObjectStatusBitFlags), 1u);
+        Marshal(value, *objT, state);
     }
 
     public static unsafe void Marshal(string text, WeaponAffectsBitFlags* objT, Tracker state)

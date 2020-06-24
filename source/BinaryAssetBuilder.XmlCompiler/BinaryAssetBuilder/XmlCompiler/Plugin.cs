@@ -100,6 +100,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xFBB64F90u;
                     result.TypeHash = 0xFBB64F90u;
                     break;
+                case 0x1FD451BFu:
+                    result.Type = typeof(LargeGroupAudioMap);
+                    result.TypeName = nameof(LargeGroupAudioMap);
+                    result.ProcessingHash = num ^ 0x9CBC0553u;
+                    result.TypeHash = 0x9CBC0553u;
+                    break;
                 case 0x21BA45A7u:
                     result.Type = typeof(ImageSequence);
                     result.TypeName = nameof(ImageSequence);
