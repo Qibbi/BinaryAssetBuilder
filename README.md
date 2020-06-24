@@ -95,7 +95,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MiscAudio
 * [ ] AudioSettings
 * [ ] CrowdResponse
-* [ ] MapMetaData
+* [x] MapMetaData                                               0x59013A51
 * [x] LargeGroupAudioMap                                        0x9CBC0553
 * [x] AptAptData                                                0x36866072
 * [x] AptConstData                                              0x1CE8E595

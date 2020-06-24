@@ -172,6 +172,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x331DA6CEu;
                     result.TypeHash = 0x331DA6CEu;
                     break;
+                case 0x5F969146u:
+                    result.Type = typeof(MapMetaDataType);
+                    result.TypeName = nameof(MapMetaDataType);
+                    result.ProcessingHash = num ^ 0x59013A51u;
+                    result.TypeHash = 0x59013A51u;
+                    break;
                 case 0x6114137Eu:
                     result.Type = typeof(InGameUIGroupSelectionCommandSlots);
                     result.TypeName = nameof(InGameUIGroupSelectionCommandSlots);
