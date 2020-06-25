@@ -23,4 +23,14 @@ public static partial class Marshaler
         using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnsiString), 1u);
         Marshal(node, *objT, state);
     }
+
+    public static unsafe void Marshal(Node node, AudioVolumeSliderMultiplier* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(AudioVolumeSliderMultiplier.Slider), null), &objT->Slider, state);
+        Marshal(node.GetAttributeValue(nameof(AudioVolumeSliderMultiplier.Multiplier), null), &objT->Multiplier, state);
+    }
 }

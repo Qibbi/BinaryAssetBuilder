@@ -88,6 +88,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x2C112832u;
                     result.TypeHash = 0x2C112832u;
                     break;
+                case 0x17E53184u:
+                    result.Type = typeof(CrowdResponse);
+                    result.TypeName = nameof(CrowdResponse);
+                    result.ProcessingHash = num ^ 0x66FB33A0u;
+                    result.TypeHash = 0x66FB33A0u;
+                    break;
                 case 0x1E0FC59Eu:
                     result.Type = typeof(InGameUIPlayerPowerCommandSlots);
                     result.TypeName = nameof(InGameUIPlayerPowerCommandSlots);
@@ -160,6 +166,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xE005A668u;
                     result.TypeHash = 0xE005A668u;
                     break;
+                case 0x5608EE71u:
+                    result.Type = typeof(AudioSettings);
+                    result.TypeName = nameof(AudioSettings);
+                    result.ProcessingHash = num ^ 0x89AA7DDEu;
+                    result.TypeHash = 0x89AA7DDEu;
+                    break;
                 case 0x56626220u:
                     result.Type = typeof(PackedTextureImage);
                     result.TypeName = nameof(PackedTextureImage);
@@ -189,6 +201,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(AptAptData);
                     result.ProcessingHash = num ^ 0x36866072u;
                     result.TypeHash = 0x36866072u;
+                    break;
+                case 0x7B6AE7D5u:
+                    result.Type = typeof(MiscAudio);
+                    result.TypeName = nameof(MiscAudio);
+                    result.ProcessingHash = num ^ 0xFA4817E2u;
+                    result.TypeHash = 0xFA4817E2u;
                     break;
                 case 0x7D464170u:
                     result.Type = typeof(LogicCommand);

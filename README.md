@@ -92,9 +92,9 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] Environment
 * [x] LogicCommand                                              0x97D0A46E
 * [x] LogicCommandSet                                           0x6D148BD7
-* [ ] MiscAudio
-* [ ] AudioSettings
-* [ ] CrowdResponse
+* [x] MiscAudio                                                 0xFA4817E2
+* [x] AudioSettings                                             0x89AA7DDE
+* [x] CrowdResponse                                             0x66FB33A0
 * [x] MapMetaData                                               0x59013A51
 * [x] LargeGroupAudioMap                                        0x9CBC0553
 * [x] AptAptData                                                0x36866072
