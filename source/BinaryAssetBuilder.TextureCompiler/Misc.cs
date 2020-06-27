@@ -12,10 +12,10 @@
     public static unsafe bool HasConstantAlphaChannel(NVImage<RGBA_t>* image)
     {
         uint size = (uint)(image->Width * image->Height);
-        RGBA_t* data = image->Data;
+        RGBA_t* data = image->Pixels;
         for (uint idx = 0; idx < size; ++idx)
         {
-            if (image->Data[idx].A != data->A)
+            if (image->Pixels[idx].A != data->A)
             {
                 return false;
             }
@@ -28,7 +28,7 @@
         uint size = (uint)(image->Width * image->Height);
         for (uint idx = 0; idx < size; ++idx)
         {
-            RGBA_t pixel = image->Data[idx];
+            RGBA_t pixel = image->Pixels[idx];
             if (pixel.A != 0 && pixel.A != byte.MaxValue)
             {
                 return false;

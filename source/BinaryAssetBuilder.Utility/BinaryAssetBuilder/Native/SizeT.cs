@@ -22,6 +22,16 @@ namespace BinaryAssetBuilder.Native
             _value = (uint)size;
         }
 
+        public SizeT(ulong size)
+        {
+            _value = (uint)size;
+        }
+
+        public SizeT(long size)
+        {
+            _value = (uint)size;
+        }
+
         public static bool operator ==(SizeT x, SizeT y)
         {
             return x._value == y._value;

@@ -1,4 +1,7 @@
 ﻿using BinaryAssetBuilder.Core;
+using BinaryAssetBuilder.Native;
+using Native;
+using Relo;
 using System;
 using System.Runtime.InteropServices;
 
@@ -15,6 +18,11 @@ namespace BinaryAssetBuilder.TextureCompiler
 
         private uint _hashCode;
         private TargetPlatform _platform;
+        private Direct3D _d3d;
+        private D3DDevice _d3dDevice;
+        private IntPtr _hBuffer;
+
+        private unsafe SimpleBuffer* _pBuffer => (SimpleBuffer*)_hBuffer;
 
         private unsafe bool IsValidTexture(InstanceDeclaration declaration, NVImage<RGBA_t>* image)
         {
@@ -39,7 +47,7 @@ namespace BinaryAssetBuilder.TextureCompiler
                 {
                     if (Misc.HasConstantAlphaChannel(image))
                     {
-                        if (image->Data[0].A == byte.MaxValue)
+                        if (image->Pixels[0].A == byte.MaxValue)
                         {
                             return inFormat;
                         }
@@ -88,9 +96,46 @@ namespace BinaryAssetBuilder.TextureCompiler
             return result;
         }
 
-        public void Initialize(object configObject, TargetPlatform targetPlatform)
+        public unsafe void Initialize(object configObject, TargetPlatform targetPlatform)
         {
-            throw new System.NotImplementedException();
+            _hashCode = HashProvider.GetTypeHash(GetType());
+            _platform = targetPlatform;
+            if (_platform != TargetPlatform.Win32)
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Texture compiler is PC only.");
+            }
+            _d3d = new Direct3D();
+            D3DPresentParameters pp = new D3DPresentParameters();
+            MsVcRt.MemSet((IntPtr)(&pp), 0, new SizeT(sizeof(D3DPresentParameters)));
+            pp.BackBufferWidth = 640;
+            pp.BackBufferHeight = 480;
+            pp.BackBufferFormat = D3DFormat.D3DFMT_A8R8G8B8; // 0x18280186 is XBOX 360 equivalent
+            pp.BackBufferCount = 1;
+            pp.MultiSampleType = D3DMultiSampleType.D3DMULTISAMPLE_NONE;
+            pp.MultiSampleQuality = 0;
+            pp.SwapEffect = D3DSwapEffect.D3DSWAPEFFECT_DISCARD;
+            pp.EnableAutoDepthStencil = true;
+            pp.AutoDepthStencilFormat = D3DFormat.D3DFMT_D32; // 0x2D200196 is XBOX 360, but unknown, just chose D32
+            pp.PresentationInterval = 1;
+            _d3d.CreateDevice(0u, D3DDeviceType.D3DDEVTYPE_HAL, IntPtr.Zero, 0, (IntPtr)(&pp), out _d3dDevice);
+            _hBuffer = Marshal.AllocHGlobal(sizeof(SimpleBuffer));
+        }
+
+        public unsafe void FinalizeTracker(Tracker tracker, AssetBuffer buffer)
+        {
+            Relo.Chunk chunk = new Relo.Chunk();
+            tracker.MakeRelocatable(chunk);
+            buffer.InstanceData = chunk.InstanceBuffer;
+            buffer.RelocationData = chunk.RelocationBuffer;
+            buffer.ImportsData = chunk.ImportsBuffer;
+        }
+
+        public unsafe void CompressAndEmbed(Tracker tracker, TextureFileData* textureData, NVImage<RGBA_t>* image, NVCompressionOptions* options)
+        {
+            _pBuffer->Reset();
+            options->UserData = (void*)_hBuffer;
+            NVErrorCode result = 
+            // TODO: NVErrorCode nvErrorCode = NVDDS.NVDXTCompress(image, options, )
         }
 
         public AssetBuffer ProcessInstance(InstanceDeclaration declaration)
@@ -110,6 +155,12 @@ namespace BinaryAssetBuilder.TextureCompiler
         public void Dispose()
         {
             throw new NotImplementedException();
+        }
+
+        ~Plugin()
+        {
+            _d3dDevice.Dispose();
+            _d3d.Dispose();
         }
     }
 }
