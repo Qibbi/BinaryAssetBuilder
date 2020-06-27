@@ -199,17 +199,7 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct DeathBitFlags
     {
-        public const int Count = 25;
-        public const int BitsInSpan = 32;
-        public const int NumSpans = (Count + (BitsInSpan - 1)) / BitsInSpan;
-
-        public unsafe fixed uint Value[NumSpans];
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DamageBitFlags
-    {
-        public const int Count = 34;
+        public const int Count = 26;
         public const int BitsInSpan = 32;
         public const int NumSpans = (Count + (BitsInSpan - 1)) / BitsInSpan;
 

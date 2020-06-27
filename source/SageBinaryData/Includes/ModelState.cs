@@ -664,7 +664,7 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct ModelConditionBitFlags
     {
-        public const int Count = 653;
+        public const int Count = 655;
         public const int BitsInSpan = 32;
         public const int NumSpans = (Count + (BitsInSpan - 1)) / BitsInSpan;
 
