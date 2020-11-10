@@ -456,6 +456,29 @@ public static partial class Marshaler
         Marshal(node, (RGBColor*)objT, state);
     }
 
+    private static unsafe void Marshal(Node node, Color3f* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(Color3f.r), null), &objT->r, state);
+        Marshal(node.GetAttributeValue(nameof(Color3f.g), null), &objT->g, state);
+        Marshal(node.GetAttributeValue(nameof(Color3f.b), null), &objT->b, state);
+    }
+
+    private static unsafe void Marshal(Node node, Color4f* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(Color4f.r), null), &objT->r, state);
+        Marshal(node.GetAttributeValue(nameof(Color4f.g), null), &objT->g, state);
+        Marshal(node.GetAttributeValue(nameof(Color4f.b), null), &objT->b, state);
+        Marshal(node.GetAttributeValue(nameof(Color4f.a), null), &objT->a, state);
+    }
+
     private static unsafe void Marshal(Node node, Coord2D* objT, Tracker state)
     {
         if (node is null)

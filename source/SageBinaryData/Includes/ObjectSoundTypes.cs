@@ -1,4 +1,4 @@
-﻿namespace SageBinaryData.Includes
+﻿namespace SageBinaryData
 {
     public enum ThingTemplateVoiceType
     {

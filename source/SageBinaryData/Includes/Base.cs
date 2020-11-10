@@ -21,6 +21,27 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct Color3f
+    {
+#pragma warning disable IDE1006 // Naming Styles
+        public float r;
+        public float g;
+        public float b;
+#pragma warning restore IDE1006 // Naming Styles;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Color4f
+    {
+#pragma warning disable IDE1006 // Naming Styles
+        public float r;
+        public float g;
+        public float b;
+        public float a;
+#pragma warning restore IDE1006 // Naming Styles;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct Coord2D
     {
 #pragma warning disable IDE1006 // Naming Styles
