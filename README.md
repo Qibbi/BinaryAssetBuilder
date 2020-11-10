@@ -81,9 +81,9 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] PackedTextureImage                                        0x2FAEB748
 * [ ] OnDemandTextureImage
 * [ ] TerrainTextureAtlas
-* [ ] Mouse
+* [x] Mouse                                                     0x73FE99B0
 * [x] Achievement                                               0xC8D16E6D
-* [ ] StanceTemplate
+* [x] StanceTemplate                                            0x5C6E0E41
 * [x] TargetingCompareList                                      0x57CA5C81
 * [x] TargetingDistanceCompare                                  0xED45F096
 * [x] TargetingCombatChainCompare                               0x553808EF

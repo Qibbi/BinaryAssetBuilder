@@ -160,6 +160,15 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(Node node, float* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, Percentage* objT, Tracker state)
     {
         int index = text.IndexOf('%');
@@ -336,6 +345,15 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, AnsiString* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal(string text, AnsiString** objT, Tracker state)
