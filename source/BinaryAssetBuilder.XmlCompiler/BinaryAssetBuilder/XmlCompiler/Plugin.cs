@@ -274,6 +274,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x475EA260u;
                     result.TypeHash = 0x475EA260u;
                     break;
+                case 0x9684C743u:
+                    result.Type = typeof(StanceTemplate);
+                    result.TypeName = nameof(StanceTemplate);
+                    result.ProcessingHash = num ^ 0x5C6E0E41u;
+                    result.TypeHash = 0x5C6E0E41u;
+                    break;
                 case 0xA6E6BBA7u:
                     result.Type = typeof(HotKeySlot);
                     result.TypeName = nameof(HotKeySlot);
