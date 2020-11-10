@@ -84,11 +84,11 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] Mouse
 * [x] Achievement                                               0xC8D16E6D
 * [ ] StanceTemplate
-* [ ] TargetingCompareList
-* [ ] TargetingDistanceCompare
-* [ ] TargetingCombatChainCompare
-* [ ] TargetingInTurretArcCompare
-* [ ] Road
+* [x] TargetingCompareList                                      0x57CA5C81
+* [x] TargetingDistanceCompare                                  0xED45F096
+* [x] TargetingCombatChainCompare                               0x553808EF
+* [x] TargetingInTurretArcCompare                               0xCD24391A
+* [x] Road                                                      0xDCF3C28B
 * [x] Environment                                               0x878C42E0
 * [x] LogicCommand                                              0x97D0A46E
 * [x] LogicCommandSet                                           0x6D148BD7

@@ -70,6 +70,12 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             switch (typeId)
             {
+                case 0x0559C032u:
+                    result.Type = typeof(TargetingCombatChainCompare);
+                    result.TypeName = nameof(TargetingCombatChainCompare);
+                    result.ProcessingHash = num ^ 0x553808EFu;
+                    result.TypeHash = 0x553808EFu;
+                    break;
                 case 0x064B2184u:
                     result.Type = typeof(ConnectionLineManager);
                     result.TypeName = nameof(ConnectionLineManager);
@@ -208,6 +214,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x36866072u;
                     result.TypeHash = 0x36866072u;
                     break;
+                case 0x77AC3B08u:
+                    result.Type = typeof(TargetingInTurretArcCompare);
+                    result.TypeName = nameof(TargetingInTurretArcCompare);
+                    result.ProcessingHash = num ^ 0xCD24391Au;
+                    result.TypeHash = 0xCD24391Au;
+                    break;
                 case 0x7B6AE7D5u:
                     result.Type = typeof(MiscAudio);
                     result.TypeName = nameof(MiscAudio);
@@ -219,6 +231,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(LogicCommand);
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
+                    break;
+                case 0x8CA5A7D7u:
+                    result.Type = typeof(TargetingDistanceCompare);
+                    result.TypeName = nameof(TargetingDistanceCompare);
+                    result.ProcessingHash = num ^ 0xED45F096u;
+                    result.TypeHash = 0xED45F096u;
                     break;
                 case 0x9053D603u:
                     result.Type = typeof(UnitOverlayIconSettings);
@@ -274,11 +292,23 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xC24AEFF1u;
                     result.TypeHash = 0xC24AEFF1u;
                     break;
+                case 0xBE06A9E5u:
+                    result.Type = typeof(TargetingCompareList);
+                    result.TypeName = nameof(TargetingCompareList);
+                    result.ProcessingHash = num ^ 0x57CA5C81u;
+                    result.TypeHash = 0x57CA5C81u;
+                    break;
                 case 0xC8E41828u:
                     result.Type = typeof(BootupDisplaySequence);
                     result.TypeName = nameof(BootupDisplaySequence);
                     result.ProcessingHash = num ^ 0x84C1C2F0u;
                     result.TypeHash = 0x84C1C2F0u;
+                    break;
+                case 0xD19D90C6u:
+                    result.Type = typeof(Road);
+                    result.TypeName = nameof(Road);
+                    result.ProcessingHash = num ^ 0xDCF3C28Bu;
+                    result.TypeHash = 0xDCF3C28Bu;
                     break;
                 case 0xD76B50C7u:
                     result.Type = typeof(UnitTypeIcon);
