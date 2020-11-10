@@ -89,7 +89,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TargetingCombatChainCompare
 * [ ] TargetingInTurretArcCompare
 * [ ] Road
-* [ ] Environment
+* [x] Environment                                               0x878C42E0
 * [x] LogicCommand                                              0x97D0A46E
 * [x] LogicCommandSet                                           0x6D148BD7
 * [x] MiscAudio                                                 0xFA4817E2

@@ -124,6 +124,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x3592E352u;
                     result.TypeHash = 0x3592E352u;
                     break;
+                case 0x2893E309u:
+                    result.Type = typeof(SageBinaryData.Environment);
+                    result.TypeName = nameof(SageBinaryData.Environment);
+                    result.ProcessingHash = num ^ 0x878C42E0u;
+                    result.TypeHash = 0x878C42E0u;
+                    break;
                 case 0x2B49BF71u:
                     result.Type = typeof(Achievement);
                     result.TypeName = nameof(Achievement);
