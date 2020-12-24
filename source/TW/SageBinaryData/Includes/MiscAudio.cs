@@ -1,0 +1,96 @@
+﻿using Relo;
+using System.Runtime.InteropServices;
+
+namespace SageBinaryData
+{
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MiscAudio
+    {
+        public BaseAssetType Base;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RadarNotifyHarvesterUnderAttackSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RadarNotifyStructureUnderAttackSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RadarNotifyInfiltrationSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RadarNotifyOnlineSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RadarNotifyOfflineSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GenericRadarEvent;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BeaconPlacementSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BeaconPlacementFailed;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> DefectorTimerTickSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> DefectorTimerDingSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> AllCheerSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> NoCanDoSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> StealthDiscoveredSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> StealthNeutralizedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> MoneyDepositSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> MoneyWithdrawSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> LowPower;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> SufficientPower;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BuildingDisabled;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BuildingReenabled;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VehicleDisabled;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VehicleReenabled;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> SplatterVehiclePilotsBrain;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> CrateHeal;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> CrateShroud;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> CrateFreeUnit;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> CrateMoney;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> UnitPromoted;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RepairSparks;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> EnterCloseCombat;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> ExitCloseCombat;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> IncomingChatNotification;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> PrivateMessageNotification;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BuddyMessageNotification;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> EnabledHotKeyPressed;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> DisabledHotKeyPressed;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> DisabledButtonClicked;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> LowLODShellMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> HighLODShellMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> ScoreScreenMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> ShellMapLoadMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> FullScreenSubMenuMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> SaveFileLoadMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> CreditsMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VolumeSampleMusic;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VolumeSampleSoundFX;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VolumeSampleVoice;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VolumeSampleAmbient;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> VolumeSampleMovie;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> MissionBriefingCharacterClick;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> ComboBoxClick;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GameSpyCommunicatorOpen;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> MPSecondsCountdownBeep;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RIFThingTemplateReloadedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RIFObjectsRefreshedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> FastForwardModeOn;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> FastForwardModeOff;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> RallyPointSet;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> UnableToSetRallyPoint;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> PlanningModeOrderGiven;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BuildingPlacementSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> BadBuildingPlacementSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> WallPlacementSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> AircraftWheelScreech;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> LockonTickSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> TargetObjectWithSpecialPowerSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> ObjectiveCompleteSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiFixedButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiBuildQueueButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiSelectionRefinementButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiFactorySelectionButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiTogglePowerObjectClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiToggleRepairObjectClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiSellObjectClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiCommandButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiCommandButtonRightClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiDisabledCommandButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiDisabledCommandButtonRightClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiPlayerPowerButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiPauseDialogButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiPauseDialogButtonMouseOverSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiPauseDialogButtonMouseOutSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiYesNoDialogButtonClickedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiYesNoDialogButtonMouseOverSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> GuiYesNoDialogButtonMouseOutSound;
+    }
+}
