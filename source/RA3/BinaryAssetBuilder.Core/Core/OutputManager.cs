@@ -21,6 +21,7 @@ namespace BinaryAssetBuilder.Core
         private readonly TargetPlatform _targetPlatform;
         private readonly bool _isLinked;
         private readonly bool _validOldOutputInstances;
+        private string _basePatchStreamRelativePath = string.Empty;
         private readonly string _manifestFile;
         private readonly string _oldManifestFile;
         private readonly string _versionFile;
@@ -39,7 +40,9 @@ namespace BinaryAssetBuilder.Core
                              IEnumerable<OutputAsset> lastOutputInstances,
                              string outputDirectory,
                              string intermediateOutputDirectory,
-                             string basePatchStream)
+                             string basePatchStream,
+                             string baseStreamRelativePath,
+                             string[] baseStreamSearchPaths)
         {
             DocumentProcessor = documentProcessor;
             OutputDirectory = outputDirectory;
@@ -51,7 +54,7 @@ namespace BinaryAssetBuilder.Core
             TargetPlatformCacheRoot = Settings.Current.UseBuildCache ? Path.Combine(Settings.Current.BuildCacheDirectory, _targetPlatform.ToString()) : null;
             _manifestFile = OutputDirectory + ".manifest";
             _oldManifestFile = OutputDirectory + ".old.manifest";
-            _versionFile = OutputDirectory + ".version";
+            _versionFile = OutputDirectory.Remove(OutputDirectory.LastIndexOf(Settings.Current.CustomPostfix)) + ".version";
             if (File.Exists(_oldManifestFile))
             {
                 File.Delete(_oldManifestFile);
@@ -83,20 +86,42 @@ namespace BinaryAssetBuilder.Core
                     _oldOutputInstances.Add(lastOutputInstance.Handle.FileBase, lastOutputInstance);
                 }
             }
-            if (basePatchStream is null || !File.Exists(basePatchStream))
+            if (basePatchStream is null)
             {
                 return;
             }
-            ProcessBasePatchStream(basePatchStream);
+            ProcessBasePatchStream(basePatchStream, baseStreamRelativePath, baseStreamSearchPaths);
         }
 
-        private void ProcessBasePatchStream(string basePatchStream)
+        private void ProcessBasePatchStream(string basePatchStream, string baseStreamRelativePath, string[] baseStreamSearchPaths)
         {
             Manifest manifest = new Manifest();
-            string[] patchSearchPaths = new[] { Settings.Current.OutputDirectory };
+            List<string> patchSearchPaths = new List<string>();
+            if (baseStreamSearchPaths != null)
+            {
+                patchSearchPaths.AddRange(baseStreamSearchPaths);
+            }
+            patchSearchPaths.Add(Settings.Current.OutputDirectory);
+            string currentBasePatchStream = basePatchStream;
+            if (!File.Exists(currentBasePatchStream))
+            {
+                foreach (string searchPath in patchSearchPaths)
+                {
+                    string path = Path.Combine(searchPath, basePatchStream);
+                    if (File.Exists(path))
+                    {
+                        currentBasePatchStream = path;
+                        break;
+                    }
+                }
+            }
+            if (!File.Exists(currentBasePatchStream))
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.FileNotFound, "Specified manifest could not be found: {0}", currentBasePatchStream);
+            }
             try
             {
-                manifest.Load(basePatchStream, patchSearchPaths);
+                manifest.Load(currentBasePatchStream, patchSearchPaths.ToArray());
             }
             catch
             {
@@ -104,6 +129,7 @@ namespace BinaryAssetBuilder.Core
                 return;
             }
             BasePatchStream = basePatchStream;
+            _basePatchStreamRelativePath = baseStreamRelativePath;
             BasePatchStreamAssets = new SortedDictionary<string, AssetHeader>();
             foreach (Asset asset in manifest.Assets)
             {
@@ -224,6 +250,7 @@ namespace BinaryAssetBuilder.Core
             uint maxInstanceChunkSize = 0;
             uint maxRelocationChunkSize = 0;
             uint maxImportsChunkSize = 0;
+            int lastBaseStreamPosition = -1;
             AssetEntry assetEntry = new AssetEntry();
             NameBuffer nameBuffer = new NameBuffer();
             NameBuffer sourceFileNameBuffer = new NameBuffer();
@@ -231,6 +258,7 @@ namespace BinaryAssetBuilder.Core
             UInt32Buffer assetReferenceBuffer = new UInt32Buffer();
             foreach (InstanceDeclaration outputInstance in document.OutputInstances)
             {
+                ExtendedTypeInformation extendedTypeInformation = DocumentProcessor.Plugins.GetExtendedTypeInformation(outputInstance.Handle.TypeId);
                 BinaryAsset binaryAsset = GetBinaryAsset(outputInstance, true);
                 ++assetsCount;
                 int length = assetReferenceBuffer.Length;
@@ -251,11 +279,19 @@ namespace BinaryAssetBuilder.Core
                 assetEntry.AssetReferenceCount = outputInstance.ReferencedInstances.Count;
                 assetEntry.NameOffset = nameBuffer.AddName(outputInstance.Handle.Name);
                 assetEntry.SourceFileNameOffset = sourceFileNameBuffer.AddName(outputInstance.Document.LogicalSourcePath);
-                if (binaryAsset.GetLocation(AssetLocation.BasePatchStream, AssetLocationOption.None) == AssetLocation.BasePatchStream)
+                assetEntry.IsTokenized = extendedTypeInformation.IsTokenized;
+                int baseStreamPosition = BasePatchStreamManifest is null ? -1 : BasePatchStreamManifest.GetBaseStreamPosition(assetEntry);
+                AssetLocation location = binaryAsset.GetLocation(AssetLocation.BasePatchStream, AssetLocationOption.None);
+                if (location == AssetLocation.BasePatchStream && lastBaseStreamPosition >= baseStreamPosition && baseStreamPosition >= 0 && Settings.Current.LinkedStreams)
+                {
+                    _tracer.TraceInfo("Duplicating base stream asset {0} in patch stream due to ordering change.", outputInstance.Handle.FullName);
+                }
+                if (location == AssetLocation.BasePatchStream && lastBaseStreamPosition < baseStreamPosition && baseStreamPosition >= 0 && Settings.Current.LinkedStreams)
                 {
                     assetEntry.InstanceDataSize = 0;
                     assetEntry.RelocationDataSize = 0;
                     assetEntry.ImportsDataSize = 0;
+                    lastBaseStreamPosition = baseStreamPosition;
                 }
                 else
                 {
@@ -273,7 +309,7 @@ namespace BinaryAssetBuilder.Core
             {
                 if (inclusionItem.Type == InclusionType.Reference)
                 {
-                    string str = inclusionItem.Document is null ? DocumentProcessor.GetExpectedOutputManifest(document, inclusionItem)
+                    string str = inclusionItem.Document is null ? DocumentProcessor.GetExpectedOutputManifest(inclusionItem.PhysicalPath)
                                                                 : inclusionItem.Document.SourcePathFromRoot + ".manifest";
                     if (Path.IsPathRooted(str))
                     {
@@ -308,6 +344,7 @@ namespace BinaryAssetBuilder.Core
                 nameBuffer.SaveToStream(fileStream);
                 sourceFileNameBuffer.SaveToStream(fileStream);
             }
+            stream.Close();
         }
 
         public void LinkStream(AssetDeclarationDocument document)

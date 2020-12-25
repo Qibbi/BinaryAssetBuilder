@@ -147,24 +147,16 @@ namespace BinaryAssetBuilder.Core
                 {
                     return;
                 }
-                XmlAttribute id = value.Attributes["id"];
-                if (id != null)
+                _current.Handle = new InstanceHandle(value.Name, (value.Attributes["id"] ?? throw new BinaryAssetBuilderException(ErrorCode.NoIdAttributeForAsset,
+                                                                                                                                  "Node of type {0} in file://{1} has no id attribute",
+                                                                                                                                  value.Name,
+                                                                                                                                  _current.Document.SourcePath)).Value);
+                XmlAttribute inheritFrom = value.Attributes["inheritFrom"];
+                if (inheritFrom != null && inheritFrom.Value != string.Empty)
                 {
-                    _current.Handle = new InstanceHandle(value.Name, id.Value);
-                    XmlAttribute inheritFrom = value.Attributes["inheritFrom"];
-                    if (inheritFrom != null && inheritFrom.Value != string.Empty)
-                    {
-                        _current.InheritFromHandle = inheritFrom.Value.Contains(':') ? new InstanceHandle(inheritFrom.Value) : new InstanceHandle(value.Name, inheritFrom.Value);
-                    }
-                    value.Attributes.Remove(inheritFrom);
+                    _current.InheritFromHandle = inheritFrom.Value.Contains(':') ? new InstanceHandle(inheritFrom.Value) : new InstanceHandle(value.Name, inheritFrom.Value);
                 }
-                else
-                {
-                    throw new BinaryAssetBuilderException(ErrorCode.NoIdAttributeForAsset,
-                                                          "Node of type {0} in file://{1} has no id attribute",
-                                                          value.Name,
-                                                          _current.Document.SourcePath);
-                }
+                value.Attributes.Remove(inheritFrom);
             }
         }
         public bool IsInheritable { get => _current.IsInheritable; set => _current.IsInheritable = value; }

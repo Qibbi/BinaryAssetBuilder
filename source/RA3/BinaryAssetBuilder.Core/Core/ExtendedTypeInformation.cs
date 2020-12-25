@@ -9,6 +9,8 @@ namespace BinaryAssetBuilder.Core
         public uint TypeHash { get; set; }
         public uint ProcessingHash { get; set; }
         public bool HasCustomData { get; set; }
+        public bool IsTokenized { get; set; }
+        public bool UseBuildCache { get; set; }
         public Type Type { get; set; }
     }
 }

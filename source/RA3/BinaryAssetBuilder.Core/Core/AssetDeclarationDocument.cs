@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAssetBuilder.Utility;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +15,12 @@ namespace BinaryAssetBuilder.Core
     [Serializable]
     public class AssetDeclarationDocument : IXmlSerializable
     {
+        private enum LoadType
+        {
+            InplaceLoad,
+            FromScratch
+        }
+
         private class XmlNodeWithMetaData
         {
             public XmlNode Node;
@@ -82,7 +89,7 @@ namespace BinaryAssetBuilder.Core
         }
 
         [Serializable]
-        private class LastState : IXmlSerializable
+        private class LastState
         {
             public uint DocumentHash;
             public uint DependentFileHash;
@@ -93,10 +100,7 @@ namespace BinaryAssetBuilder.Core
             public List<Definition> SelfDefines;
             public List<InstanceDeclaration> SelfInstances;
             public List<DefinitionPair> UsedDefines;
-
-            public LastState()
-            {
-            }
+            public List<string> StreamHints;
 
             public LastState(CurrentState current)
             {
@@ -118,34 +122,10 @@ namespace BinaryAssetBuilder.Core
                     });
                 }
                 UsedDefines = new List<DefinitionPair>(list);
+                StreamHints = current.StreamHints.Count > 0 ? new List<string>(current.StreamHints) : null;
             }
 
-            private void ReadOldStrings(XmlReader reader)
-            {
-                string[] sValues = XmlHelper.ReadStringArrayElement(reader, "s");
-                string[] pValues = XmlHelper.ReadStringArrayElement(reader, "p");
-                if (sValues != null)
-                {
-                    foreach (string stringhash in sValues)
-                    {
-                        HashProvider.RecordHash(HashProvider.StringHashTableName, stringhash);
-                    }
-                }
-                if (pValues != null)
-                {
-                    foreach (string poid in pValues)
-                    {
-                        HashProvider.RecordHash(HashProvider.PoidTableName, poid);
-                    }
-                }
-            }
-
-            public XmlSchema GetSchema()
-            {
-                return null;
-            }
-
-            public void ReadXml(XmlReader reader)
+            public LastState(XmlReader reader)
             {
                 reader.MoveToAttribute("d");
                 string[] values = reader.Value.Split(';');
@@ -160,6 +140,8 @@ namespace BinaryAssetBuilder.Core
                 ReadOldStrings(reader);
                 object obj = XmlHelper.ReadStringArrayElement(reader, "sf");
                 DependentFiles = obj is null ? null : new List<string>(obj as string[]);
+                obj = XmlHelper.ReadStringArrayElement(reader, "dsf");
+                StreamHints = obj is null ? null : new List<string>(obj as string[]);
                 obj = XmlHelper.ReadCollection(reader, "iic", typeof(InclusionItem));
                 InclusionItems = obj is null ? null : new List<InclusionItem>(obj as InclusionItem[]);
                 obj = XmlHelper.ReadCollection(reader, "oac", typeof(OutputAsset));
@@ -171,7 +153,26 @@ namespace BinaryAssetBuilder.Core
                 obj = XmlHelper.ReadCollection(reader, "udc", typeof(DefinitionPair));
                 UsedDefines = obj is null ? null : new List<DefinitionPair>(obj as DefinitionPair[]);
                 reader.Read();
+            }
 
+            private void ReadOldStrings(XmlReader reader)
+            {
+                string[] sValues = XmlHelper.ReadStringArrayElement(reader, "s");
+                string[] pValues = XmlHelper.ReadStringArrayElement(reader, "p");
+                if (sValues != null)
+                {
+                    foreach (string stringhash in sValues)
+                    {
+                        HashProvider.RecordHash("STRINGHASH", stringhash);
+                    }
+                }
+                if (pValues != null)
+                {
+                    foreach (string poid in pValues)
+                    {
+                        HashProvider.RecordHash("POID", poid);
+                    }
+                }
             }
 
             public void WriteXml(XmlWriter writer)
@@ -179,6 +180,7 @@ namespace BinaryAssetBuilder.Core
                 writer.WriteStartElement("ad");
                 writer.WriteAttributeString("d", $"{DocumentHash};{DependentFileHash};{IncludePathHash}");
                 XmlHelper.WriteStringArrayElement(writer, "sf", DependentFiles?.ToArray());
+                XmlHelper.WriteStringArrayElement(writer, "dsf", StreamHints?.ToArray());
                 XmlHelper.WriteCollection(writer, "iic", InclusionItems);
                 XmlHelper.WriteCollection(writer, "oac", OutputAssets);
                 XmlHelper.WriteCollection(writer, "sdc", SelfDefines);
@@ -221,6 +223,7 @@ namespace BinaryAssetBuilder.Core
             public XmlDocument XmlDocument;
             public XmlNamespaceManager NamespaceManager;
             public DocumentProcessor DocumentProcessor;
+            public List<string> StreamHints;
             public LinkedList<XmlNodeWithMetaData> NodeSourceInfoSet;
             public IDictionary<InstanceHandle, InstanceDeclaration> OutputInstanceSet;
             public XmlReader XmlReader;
@@ -260,6 +263,7 @@ namespace BinaryAssetBuilder.Core
             {
                 InclusionItems = last.InclusionItems != null ? new List<InclusionItem>(last.InclusionItems) : new List<InclusionItem>();
                 DependentFiles = last.DependentFiles != null ? new List<string>(last.DependentFiles) : new List<string>();
+                StreamHints = last.StreamHints != null ? new List<string>(last.StreamHints) : new List<string>();
                 UsedDefines = new SortedDictionary<string, string>();
                 if (last.UsedDefines != null)
                 {
@@ -289,6 +293,7 @@ namespace BinaryAssetBuilder.Core
                 UsedDefines = new SortedDictionary<string, string>();
                 SelfDefines = new List<Definition>();
                 SelfInstances = new InstanceSet();
+                StreamHints = new List<string>();
                 State = DocumentState.None;
             }
         }
@@ -327,6 +332,7 @@ namespace BinaryAssetBuilder.Core
         public XmlNamespaceManager NamespaceManager => _current.NamespaceManager;
         public string SourceDirectory => _current.SourceDirectory;
         public bool VerificationErrors => _current.VerificationErrors;
+        public List<string> StreamHints => _last.StreamHints;
         public bool Processing
         {
             get => _current != null && _current.Processing;
@@ -340,6 +346,110 @@ namespace BinaryAssetBuilder.Core
         public AssetDeclarationDocument(DocumentProcessor documentProcessor, FileHashItem hashItem, string logicalPath, string configuration)
         {
             Open(documentProcessor, hashItem, logicalPath, configuration);
+        }
+
+        private static InstanceDeclaration FindInstance(Asset baseAsset, List<InstanceDeclaration> instances)
+        {
+            foreach (InstanceDeclaration instance in instances)
+            {
+                if (baseAsset.TypeId == instance.Handle.TypeId && baseAsset.InstanceId == instance.Handle.InstanceId)
+                {
+                    return instance;
+                }
+            }
+            return null;
+        }
+
+        private static void StableSort_InitializeFromBaseManifest(OutputManager outputManager, List<InstanceDeclaration> outputInstances, List<InstanceDeclaration> finalList)
+        {
+            foreach (Asset asset in outputManager.BasePatchStreamManifest.Assets)
+            {
+                InstanceDeclaration instance = FindInstance(asset, outputInstances);
+                if (instance != null)
+                {
+                    if (outputManager.GetBinaryAsset(instance, false).GetLocation(AssetLocation.BasePatchStream, AssetLocationOption.None) == AssetLocation.BasePatchStream)
+                    {
+                        _tracer.TraceInfo("Using base stream instance {0}:{1}", instance.Handle.TypeName, instance.Handle.InstanceName);
+                        finalList.Add(instance);
+                        outputInstances.Remove(instance);
+                    }
+                    else
+                    {
+                        _tracer.TraceInfo("Using patched instance {0}:{1}", instance.Handle.TypeName, instance.Handle.InstanceName);
+                    }
+                }
+            }
+        }
+
+        private static int StableSort_CalcInsertPosition(List<InstanceDeclaration> finalList, InstanceDeclaration instance, TypeDepComapre compare)
+        {
+            int index = 0;
+            int a = 0;
+            int b = 0;
+            int c = 0;
+            uint typeId = 0;
+            uint lastTypeId = 0;
+            bool flag = false;
+            foreach (InstanceDeclaration x in finalList)
+            {
+                if ((int)x.Handle.TypeId != (int)lastTypeId)
+                {
+                    b = a;
+                    lastTypeId = x.Handle.TypeId;
+                }
+                if (instance.AllDependentInstances != null && instance.AllDependentInstances.Contains(x.Handle))
+                {
+                    index = a + 1;
+                    c = index;
+                    if ((int)instance.Handle.TypeId != (int)x.Handle.TypeId)
+                    {
+                        flag = false;
+                        typeId = x.Handle.TypeId;
+                    }
+                }
+                else
+                {
+                    if (x.AllDependentInstances != null && x.AllDependentInstances.Contains(instance.Handle))
+                    {
+                        if (b > c)
+                        {
+                            if ((int)instance.Handle.TypeId != (int)x.Handle.TypeId)
+                            {
+                                index = b;
+                                break;
+                            }
+                            break;
+                        }
+                        break;
+                    }
+                    if ((int)instance.Handle.TypeId == (int)x.Handle.TypeId)
+                    {
+                        if (!flag)
+                        {
+                            index = a;
+                            flag = true;
+                        }
+                        if (string.Compare(instance.Handle.InstanceName, x.Handle.InstanceName) > 0)
+                        {
+                            index = a + 1;
+                        }
+                    }
+                    else if ((int)x.Handle.TypeId == (int)typeId)
+                    {
+                        index = a + 1;
+                    }
+                    else
+                    {
+                        typeId = 0u;
+                        if (compare.Compare(instance, x) > 0)
+                        {
+                            index = a + 1;
+                        }
+                    }
+                }
+                ++a;
+            }
+            return index;
         }
 
         private bool TryGetFileHashItem(string logicalPath, out FileHashItem item)
@@ -391,7 +501,7 @@ namespace BinaryAssetBuilder.Core
         private void Load(string reason)
         {
             _current.FromScratch();
-            InternalLoad(reason, true);
+            InternalLoad(reason, LoadType.FromScratch);
         }
 
         private void GatherUnvalidatedTags()
@@ -462,7 +572,7 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
-        private void InternalLoad(string reason, bool loadFromScratch)
+        private void InternalLoad(string reason, LoadType type)
         {
             SetChanged(reason);
             if (State == DocumentState.Shallow)
@@ -473,10 +583,10 @@ namespace BinaryAssetBuilder.Core
             {
                 _tracer.TraceInfo("Loading 'file://{0}'.", SourcePath);
             }
-            LoadXml(loadFromScratch);
+            LoadXml(type == LoadType.FromScratch);
             GatherUnvalidatedTags();
             GatherDefines();
-            if (loadFromScratch)
+            if (type != LoadType.InplaceLoad)
             {
                 GatherUnvalidatedIncludes();
             }
@@ -613,15 +723,58 @@ namespace BinaryAssetBuilder.Core
             instance.PrevalidationXmlHash = HashProvider.GetTextHash(instance.XmlNode.OuterXml);
         }
 
+        private XmlElement ReconstructAssetDeclaration(InstanceDeclaration instance)
+        {
+            XmlElement assetDeclaration = XmlDocument.CreateElement("AssetDeclaration", Settings.Current.AssetNamespace);
+            XmlElement tags = XmlDocument.CreateElement("Tags", Settings.Current.AssetNamespace);
+            XmlElement tag = XmlDocument.CreateElement("Tag", Settings.Current.AssetNamespace);
+            XmlAttribute name = XmlDocument.CreateAttribute("name");
+            name.Value = "SourceXml";
+            XmlAttribute tagAttribute = XmlDocument.CreateAttribute("tag");
+            tagAttribute.Value = LogicalSourcePath;
+            tag.Attributes.Append(name);
+            tag.Attributes.Append(tagAttribute);
+            tags.AppendChild(tag);
+            assetDeclaration.AppendChild(tags);
+            assetDeclaration.AppendChild(instance.XmlNode);
+            return assetDeclaration;
+        }
+
+        private void OutputIntermediateXml(InstanceDeclaration instance)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
+                NewLineOnAttributes = true,
+                Encoding = Encoding.UTF8,
+                Indent = true,
+                IndentChars = "    "
+            };
+            string outputDir = Path.Combine(Settings.Current.IntermediateOutputDirectory, "FinalXml_" + Settings.Current.TargetPlatform.ToString());
+            string assetName = Path.Combine(instance.Handle.TypeName, instance.Handle.InstanceName);
+            Directory.CreateDirectory(outputDir);
+            Directory.CreateDirectory(Path.Combine(outputDir, instance.Handle.TypeName));
+            string outputfileName = Path.Combine(outputDir, assetName + Path.GetExtension(LogicalSourcePath));
+            try
+            {
+                XmlWriter writer = XmlWriter.Create(outputfileName, settings);
+                ReconstructAssetDeclaration(instance).WriteTo(writer);
+                writer.Close();
+            }
+            catch (Exception ex)
+            {
+                _tracer.TraceWarning("Warning: Unable to output {0}, reason: {1}", assetName, ex.Message);
+            }
+        }
+
         private void ValidateInstances()
         {
             StringCollection derivedTypes = _current.DocumentProcessor.SchemaSet.GetDerivedTypes("BaseInheritableAsset");
             foreach (InstanceDeclaration selfInstance in _current.SelfInstances)
             {
                 ExtendedTypeInformation extendedTypeInformation = _current.DocumentProcessor.Plugins.GetExtendedTypeInformation(selfInstance.Handle.TypeId);
-                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, 10u.ToString());
+                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, DocumentProcessor.Version.ToString());
                 selfInstance.Handle.TypeHash = extendedTypeInformation.TypeHash;
-                selfInstance.Handle.InstanceHash = HashProvider.GetTextHash(textHash, selfInstance.XmlNode.OuterXml);
+                selfInstance.Handle.InstanceHash = HashProvider.GetXmlHash(textHash, selfInstance.XmlNode);
                 selfInstance.ProcessingHash = extendedTypeInformation.ProcessingHash;
                 if (derivedTypes != null)
                 {
@@ -637,21 +790,9 @@ namespace BinaryAssetBuilder.Core
                 }
                 if (Settings.Current.OutputIntermediateXml)
                 {
-                    XmlWriterSettings settings = new XmlWriterSettings
-                    {
-                        NewLineOnAttributes = true,
-                        Encoding = Encoding.ASCII,
-                        Indent = true,
-                        IndentChars = "    "
-                    };
-                    string outputDir = Path.Combine(Settings.Current.OutputDirectory, "FinalXml");
-                    string assetName = selfInstance.Handle.TypeName + "." + selfInstance.Handle.InstanceName;
-                    Directory.CreateDirectory(outputDir);
-                    XmlWriter writer = XmlWriter.Create(Path.Combine(outputDir, assetName + ".xml"), settings);
-                    selfInstance.XmlNode.WriteTo(writer);
-                    writer.Close();
+                    OutputIntermediateXml(selfInstance);
                 }
-                XPathNodeIterator xPathNodeIterator = selfInstance.XmlNode.CreateNavigator().SelectDescendants("", "uri:ea.com:eala:asset", true);
+                XPathNodeIterator xPathNodeIterator = selfInstance.XmlNode.CreateNavigator().SelectDescendants("", SchemaSet.XmlNamespace, true);
                 using MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
                 foreach (XPathNavigator navigator in xPathNodeIterator)
@@ -705,6 +846,89 @@ namespace BinaryAssetBuilder.Core
             return null;
         }
 
+        private void HandleAssetReferenceType(XPathNavigator navigator, ref InstanceDeclaration instance, BinaryWriter refTypeWriter, bool isAssetRef)
+        {
+            string instanceName = navigator.Value.Trim().Split('\\')[0];
+            if (string.IsNullOrEmpty(instanceName))
+            {
+                return;
+            }
+            InstanceHandle instanceHandle = new InstanceHandle(instanceName);
+            string refTypeName = null;
+            if (navigator.SchemaInfo.SchemaElement != null)
+            {
+                refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaElement.UnhandledAttributes);
+            }
+            else if (navigator.SchemaInfo.SchemaAttribute != null)
+            {
+                refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaAttribute.UnhandledAttributes);
+            }
+            if (refTypeName is null && navigator.SchemaInfo.SchemaType != null)
+            {
+                refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaType.UnhandledAttributes);
+                if (refTypeName is null && navigator.SchemaInfo.SchemaType.DerivedBy == XmlSchemaDerivationMethod.Extension)
+                {
+                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaType.BaseXmlSchemaType.UnhandledAttributes);
+                }
+            }
+            if (refTypeName is null)
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                      "Asset reference to '{0}' in '{1}' does not have type (xas:refType missing in schema).",
+                                                      instanceName,
+                                                      instance);
+            }
+            refTypeWriter.Write(HashProvider.GetCaseSenstitiveSymbolHash(refTypeName));
+            if (instanceHandle.TypeId == 0u)
+            {
+                instanceHandle.TypeName = refTypeName;
+            }
+            else if (isAssetRef)
+            {
+                XmlSchemaType xmlType = _current.DocumentProcessor.SchemaSet.GetXmlType(instanceHandle.TypeName);
+                XmlSchemaType otherType = _current.DocumentProcessor.SchemaSet.GetXmlType(refTypeName);
+                if (otherType is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                          "Unable to establish schema type of underlying reference type '{0}'. Make sure it's defined and included in the schema set.",
+                                                          refTypeName);
+                }
+                if (xmlType is null)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                          "Unable to establish schema type of referenced instance '{0}'. Make sure it's defined and included in the schema set.",
+                                                          instanceHandle.Name);
+                }
+                if (!XmlSchemaType.IsDerivedFrom(xmlType, otherType, XmlSchemaDerivationMethod.None))
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
+                                                          "Type of instance '{0}' referenced from '{1}' does not appear to be equal to or derived from required reference type '{2}'.",
+                                                          instanceHandle.Name,
+                                                          instance.Handle.Name,
+                                                          refTypeName);
+                }
+            }
+            if (isAssetRef)
+            {
+                instance.ReferencedInstances.Add(instanceHandle);
+                navigator.SetValue($"{instanceName}\\{instance.ReferencedInstances.Count - 1}");
+            }
+            else
+            {
+                instance.WeakReferencedInstances.Add(instanceHandle);
+            }
+        }
+
+        private void HandleFileReferenceType(XPathNavigator navigator, ref InstanceDeclaration instance)
+        {
+            string lower = navigator.Value.Trim().ToLower();
+            TryGetFileHashItem(lower, out FileHashItem fileItem);
+            string path = fileItem.Path.ToLower();
+            _current.DependentFiles.Add(lower);
+            navigator.SetValue(path);
+            instance.ReferencedFiles.Add(lower);
+        }
+
         private void HandleReferenceType(InstanceDeclaration instance, XPathNavigator navigator, BinaryWriter refTypeWriter)
         {
             if (navigator.SchemaInfo is null || navigator.SchemaInfo.SchemaType is null)
@@ -716,88 +940,18 @@ namespace BinaryAssetBuilder.Core
                       && XmlSchemaType.IsDerivedFrom(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlAssetReferenceType, XmlSchemaDerivationMethod.None);
             if (isWeakRef || isRef)
             {
-                string instanceName = navigator.Value.Trim().Split('\\')[0];
-                if (string.IsNullOrEmpty(instanceName))
-                {
-                    return;
-                }
-                InstanceHandle instanceHandle = new InstanceHandle(instanceName);
-                string refTypeName = null;
-                if (navigator.SchemaInfo.SchemaElement != null)
-                {
-                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaElement.UnhandledAttributes);
-                }
-                else if (navigator.SchemaInfo.SchemaAttribute != null)
-                {
-                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaAttribute.UnhandledAttributes);
-                }
-                if (refTypeName is null)
-                {
-                    refTypeName = GetRefTypeName(navigator.SchemaInfo.SchemaType.UnhandledAttributes);
-                }
-                if (refTypeName is null)
-                {
-                    throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
-                                                          "Asset reference to '{0}' in '{1}' does not have type (xas:refType missing in schema).",
-                                                          instanceName,
-                                                          instance);
-                }
-                refTypeWriter.Write(HashProvider.GetCaseSenstitiveSymbolHash(refTypeName));
-                if (instanceHandle.TypeId == 0u)
-                {
-                    instanceHandle.TypeName = refTypeName;
-                }
-                else if (isRef)
-                {
-                    XmlSchemaType xmlType = _current.DocumentProcessor.SchemaSet.GetXmlType(instanceHandle.TypeName);
-                    XmlSchemaType otherType = _current.DocumentProcessor.SchemaSet.GetXmlType(refTypeName);
-                    if (otherType is null)
-                    {
-                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
-                                                              "Unable to establish schema type of underlying reference type '{0}'. Make sure it's defined and included in the schema set.",
-                                                              refTypeName);
-                    }
-                    if (xmlType is null)
-                    {
-                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
-                                                              "Unable to establish schema type of referenced instance '{0}'. Make sure it's defined and included in the schema set.",
-                                                              instanceHandle.Name);
-                    }
-                    if (!XmlSchemaType.IsDerivedFrom(xmlType, otherType, XmlSchemaDerivationMethod.None))
-                    {
-                        throw new BinaryAssetBuilderException(ErrorCode.ReferencingError,
-                                                              "Type of instance '{0}' referenced from '{1}' does not appear to be equal to or derived from required reference type '{2}'.",
-                                                              instanceHandle.Name,
-                                                              instance.Handle.Name,
-                                                              refTypeName);
-                    }
-                }
-                if (isRef)
-                {
-                    instance.ReferencedInstances.Add(instanceHandle);
-                    navigator.SetValue($"{instanceName}\\{instance.ReferencedInstances.Count - 1}");
-                }
-                else
-                {
-                    instance.WeakReferencedInstances.Add(instanceHandle);
-                }
+                HandleAssetReferenceType(navigator, ref instance, refTypeWriter, isRef);
             }
             else if (XmlSchemaType.IsDerivedFrom(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlFileReferenceType, XmlSchemaDerivationMethod.None))
             {
-                string lower = navigator.Value.Trim().ToLower();
-                TryGetFileHashItem(lower, out FileHashItem fileItem);
-                string path = fileItem.Path.ToLower();
-                _current.DependentFiles.Add(lower);
-                navigator.SetValue(path);
-                instance.ReferencedFiles.Add(lower);
+                HandleFileReferenceType(navigator, ref instance);
             }
-            else if (Equals(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlStringHashType))
+            else
             {
-                HashProvider.RecordHash(HashProvider.StringHashTableName, navigator.Value.Trim());
-            }
-            else if (Equals(navigator.SchemaInfo.SchemaType, _current.DocumentProcessor.SchemaSet.XmlPoidType))
-            {
-                HashProvider.RecordHash(HashProvider.PoidTableName, navigator.Value.Trim());
+                if (_current.DocumentProcessor.SchemaSet.IsHashableType(navigator.SchemaInfo.SchemaType))
+                {
+                    HashProvider.RecordHash(navigator.SchemaInfo.SchemaType, navigator.Value);
+                }
             }
         }
 
@@ -873,9 +1027,12 @@ namespace BinaryAssetBuilder.Core
                         {
                             instance.AllDependentInstances.TryAdd(reference.Handle);
                             AddOutputInstance(reference);
-                            foreach (InstanceHandle dependentHandle in reference.AllDependentInstances)
+                            if (reference.AllDependentInstances != null)
                             {
-                                instance.AllDependentInstances.TryAdd(dependentHandle);
+                                foreach (InstanceHandle dependentHandle in reference.AllDependentInstances)
+                                {
+                                    instance.AllDependentInstances.TryAdd(dependentHandle);
+                                }
                             }
                         }
                         instance.ValidatedReferencedInstances.Add(reference.Handle);
@@ -893,13 +1050,70 @@ namespace BinaryAssetBuilder.Core
                         instance.ValidatedReferencedInstances.Add(referencedHandle);
                     }
                 }
+                foreach (InstanceHandle referencedInstance in instance.WeakReferencedInstances)
+                {
+                    InstanceDeclaration otherInstance = ResolveReference(instance, referencedInstance, out FindLocation location);
+                    if (otherInstance != null && location == FindLocation.Tentative)
+                    {
+                        AddOutputInstance(otherInstance);
+                        instance.ValidatedReferencedInstances.Add(otherInstance.Handle);
+                    }
+                }
                 foreach (string referencedFile in instance.ReferencedFiles)
                 {
                     if (!instance.Document.TryGetFileHashItem(referencedFile, out FileHashItem _))
                     {
+                        if (Settings.Current.ErrorLevel > 0)
+                        {
+                            throw new BinaryAssetBuilderException(ErrorCode.FileNotFound, "Referenced file not found: {0}", referencedFile);
+                        }
                         _tracer.TraceWarning("Referenced file not found: {0}", referencedFile);
                     }
                 }
+            }
+        }
+
+        private void CompileInstance(BinaryAsset asset, InstanceDeclaration declaration)
+        {
+            _tracer.Message("{0}: Compiling {1}", Path.GetFileName(_current.SourcePath), asset.Instance.ToString());
+            if (asset.Instance.XmlNode is null)
+            {
+                throw new BinaryAssetBuilderException(ErrorCode.DependencyCacheFailure, "Need to compile instance {0} but XML is not loaded. Bug.", asset.Instance);
+            }
+            if (declaration.HasCustomData)
+            {
+                declaration.CustomDataPath = Path.Combine(asset.CustomDataOutputDirectory, asset.FileBase + ".cdata");
+                if (!Directory.Exists(asset.CustomDataOutputDirectory))
+                {
+                    Directory.CreateDirectory(asset.CustomDataOutputDirectory);
+                }
+            }
+            DateTime now = DateTime.Now;
+            IAssetBuilderPlugin plugin = _current.DocumentProcessor.Plugins.GetPlugin(asset.Instance.Handle.TypeId);
+            asset.Buffer = plugin.ProcessInstance(asset.Instance);
+            _current.DocumentProcessor.AddCompileTime(asset.Instance.Handle, DateTime.Now - now);
+        }
+
+        private void VerifyInstance(BinaryAsset asset, InstanceDeclaration declaration)
+        {
+            if (_current.IsLoaded && !_current.DocumentProcessor.VerifierPlugins.GetPlugin(asset.Instance.Handle.TypeId).VerifyInstance(declaration))
+            {
+                _current.VerificationErrors = true;
+                throw new BinaryAssetBuilderException(ErrorCode.GameDataVerification, "FATAL: An asset failed the Game Data Verification step. See previous output.");
+            }
+        }
+
+        private void CountCommitSource(AssetLocation commitSource, ref int instancesCompiledCount, ref int instancesCopiedFromCacheCount)
+        {
+            switch (commitSource)
+            {
+                case AssetLocation.Memory:
+                    ++instancesCompiledCount;
+                    break;
+                case AssetLocation.Local:
+                case AssetLocation.Cache:
+                    ++instancesCopiedFromCacheCount;
+                    break;
             }
         }
 
@@ -1015,6 +1229,7 @@ namespace BinaryAssetBuilder.Core
                     inclusionItem.PhysicalPath = FileNameResolver.ResolvePath(SourceDirectory, inclusionItem.LogicalPath).ToLower();
                 }
             }
+            _current.StreamHints.Clear();
         }
 
         public void ReloadIfRequired(InstanceHandleSet requiredOverrideSources)
@@ -1108,13 +1323,13 @@ namespace BinaryAssetBuilder.Core
                 }
             }
             _current.NamespaceManager = new XmlNamespaceManager(reader.NameTable);
-            _current.NamespaceManager.AddNamespace("ea", "uri:ea.com:eala:asset");
+            _current.NamespaceManager.AddNamespace("ea", SchemaSet.XmlNamespace);
             _current.NamespaceManager.AddNamespace("ms", "urn:schemas-microsoft-com:xslt");
         }
 
         public void InplaceLoad(string reason)
         {
-            InternalLoad(reason, false);
+            InternalLoad(reason, LoadType.InplaceLoad);
         }
 
         public void FromLastHack()
@@ -1170,6 +1385,17 @@ namespace BinaryAssetBuilder.Core
                 selfInstance.MakeComplete();
             }
             _last = null;
+        }
+
+        public void AddStreamHints(string[] streams)
+        {
+            foreach (string stream in streams)
+            {
+                if (!_current.StreamHints.Contains(stream))
+                {
+                    _current.StreamHints.Add(stream);
+                }
+            }
         }
 
         public void HandleValidationEvents(object sender, ValidationEventArgs args)
@@ -1312,6 +1538,10 @@ namespace BinaryAssetBuilder.Core
 
         public void ProcessInstances(OutputManager outputManager, ref int instancesCompiledCount, ref int instancesCopiedFromCacheCount)
         {
+            if (ReloadForInheritance)
+            {
+                return;
+            }
             foreach (InstanceDeclaration selfInstance in SelfInstances)
             {
                 ExtendedTypeInformation extendedTypeInformation = _current.DocumentProcessor.Plugins.GetExtendedTypeInformation(selfInstance.Handle.TypeId);
@@ -1321,37 +1551,11 @@ namespace BinaryAssetBuilder.Core
                 {
                     if (binaryAsset.GetLocation(AssetLocation.All, AssetLocationOption.None) == AssetLocation.None)
                     {
-                        _tracer.Message("{0}: Compiling {1}", Path.GetFileName(_current.SourcePath), binaryAsset.Instance.ToString());
-                        if (binaryAsset.Instance.XmlNode is null)
-                        {
-                            throw new BinaryAssetBuilderException(ErrorCode.DependencyCacheFailure, "Need to compile instance {0} but XML is not loaded. Bug.", binaryAsset.Instance);
-                        }
-                        if (selfInstance.HasCustomData)
-                        {
-                            selfInstance.CustomDataPath = Path.Combine(binaryAsset.CustomDataOutputDirectory, binaryAsset.FileBase + ".cdata");
-                            if (!Directory.Exists(binaryAsset.CustomDataOutputDirectory))
-                            {
-                                Directory.CreateDirectory(binaryAsset.CustomDataOutputDirectory);
-                            }
-                        }
-                        IAssetBuilderPlugin plugin = _current.DocumentProcessor.Plugins.GetPlugin(binaryAsset.Instance.Handle.TypeId);
-                        binaryAsset.Buffer = plugin.ProcessInstance(binaryAsset.Instance);
+                        CompileInstance(binaryAsset, selfInstance);
                     }
-                    if (_current.IsLoaded && !_current.DocumentProcessor.VerifierPlugins.GetPlugin(binaryAsset.Instance.Handle.TypeId).VerifyInstance(selfInstance))
-                    {
-                        _current.VerificationErrors = true;
-                    }
+                    VerifyInstance(binaryAsset, selfInstance);
                     AssetLocation assetLocation = binaryAsset.Commit();
-                    switch (assetLocation)
-                    {
-                        case AssetLocation.Memory:
-                            ++instancesCompiledCount;
-                            break;
-                        case AssetLocation.Local:
-                        case AssetLocation.Cache:
-                            ++instancesCopiedFromCacheCount;
-                            break;
-                    }
+                    CountCommitSource(assetLocation, ref instancesCompiledCount, ref instancesCopiedFromCacheCount);
                     if (assetLocation != AssetLocation.BasePatchStream)
                     {
                         _current.DocumentProcessor.AddLastWrittenAsset(binaryAsset);
@@ -1372,84 +1576,27 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
-        public void StableSort()
+        public void StableSort(OutputManager outputManager)
         {
             _tracer.TraceInfo("Stable sorting assets");
+            List<InstanceDeclaration> finalList = new List<InstanceDeclaration>();
+            if (outputManager.BasePatchStreamManifest != null)
+            {
+                _tracer.TraceInfo("Merging base stream assets from {0}", outputManager.BasePatchStream);
+                StableSort_InitializeFromBaseManifest(outputManager, _current.OutputInstances, finalList);
+            }
+            _tracer.TraceInfo("Sorting by schema dependencies");
             TypeDepComapre compare = new TypeDepComapre(_current.DocumentProcessor.SchemaSet.AssetDependencies);
             _current.OutputInstances.Sort(compare);
-            List<InstanceDeclaration> instances = new List<InstanceDeclaration>();
+            _tracer.TraceInfo("Sorting by asset dependencies");
             foreach (InstanceDeclaration outputInstance in _current.OutputInstances)
             {
-                int index = 0;
-                int a = 0;
-                int b = 0;
-                int c = 0;
-                uint typeId = 0;
-                uint lastTypeId = 0;
-                bool flag = false;
-                foreach (InstanceDeclaration x in instances)
-                {
-                    if ((int)x.Handle.TypeId != (int)lastTypeId)
-                    {
-                        b = a;
-                        lastTypeId = x.Handle.TypeId;
-                    }
-                    if (outputInstance.AllDependentInstances != null && outputInstance.AllDependentInstances.Contains(x.Handle))
-                    {
-                        index = a + 1;
-                        c = index;
-                        if ((int)outputInstance.Handle.TypeId != (int)x.Handle.TypeId)
-                        {
-                            flag = false;
-                            typeId = x.Handle.TypeId;
-                        }
-                    }
-                    else
-                    {
-                        if (x.AllDependentInstances != null && x.AllDependentInstances.Contains(outputInstance.Handle))
-                        {
-                            if (b > c)
-                            {
-                                if ((int)outputInstance.Handle.TypeId != (int)x.Handle.TypeId)
-                                {
-                                    index = b;
-                                    break;
-                                }
-                                break;
-                            }
-                            break;
-                        }
-                        if ((int)outputInstance.Handle.TypeId == (int)x.Handle.TypeId)
-                        {
-                            if (!flag)
-                            {
-                                index = a;
-                                flag = true;
-                            }
-                            if (string.Compare(outputInstance.Handle.InstanceName, x.Handle.InstanceName) > 0)
-                            {
-                                index = a + 1;
-                            }
-                        }
-                        else if ((int)x.Handle.TypeId == (int)typeId)
-                        {
-                            index = a + 1;
-                        }
-                        else
-                        {
-                            typeId = 0u;
-                            if (compare.Compare(outputInstance, x) > 0)
-                            {
-                                index = a + 1;
-                            }
-                        }
-                    }
-                    ++a;
-                }
-                instances.Insert(index, outputInstance);
+                int index = StableSort_CalcInsertPosition(finalList, outputInstance, compare);
+                finalList.Insert(index, outputInstance);
             }
-            _current.OutputInstances = instances;
+            _current.OutputInstances = finalList;
         }
+
 
         public void PrepareOutputInstances(OutputManager outputManager)
         {
@@ -1477,11 +1624,15 @@ namespace BinaryAssetBuilder.Core
                         binaryAsset.Commit();
                     }
                     _current.OutputInstances.Add(instance);
+                    if (Settings.Current.OutputAssetReport)
+                    {
+                        AssetReport.RecordAsset(instance, binaryAsset);
+                    }
                 }
             }
             if (Settings.Current.StableSort)
             {
-                StableSort();
+                StableSort(outputManager);
             }
             else
             {
@@ -1501,6 +1652,30 @@ namespace BinaryAssetBuilder.Core
             _current.OutputInstanceSet = null;
         }
 
+        public void CacheFromDocument(AssetDeclarationDocument other)
+        {
+            if (other._last != null)
+            {
+                _last = other._last;
+            }
+            else
+            {
+                if (other._current is null || _last != null)
+                {
+                    return;
+                }
+                _last = new LastState(other._current);
+                List<InstanceDeclaration> instances = new List<InstanceDeclaration>();
+                foreach (InstanceDeclaration otherInstance in other._current.SelfInstances)
+                {
+                    InstanceDeclaration instance = new InstanceDeclaration();
+                    instance.CacheFromInstance(otherInstance);
+                    instances.Add(instance);
+                }
+                _last.SelfInstances = new List<InstanceDeclaration>(instances);
+            }
+        }
+
         public XmlSchema GetSchema()
         {
             return null;
@@ -1508,8 +1683,7 @@ namespace BinaryAssetBuilder.Core
 
         public void ReadXml(XmlReader reader)
         {
-            _last = new LastState();
-            _last.ReadXml(reader);
+            _last = new LastState(reader);
         }
 
         public void WriteXml(XmlWriter writer)

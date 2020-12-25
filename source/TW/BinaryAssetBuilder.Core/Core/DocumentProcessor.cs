@@ -18,7 +18,7 @@ namespace BinaryAssetBuilder.Core
             public bool UsePrecompiled;
         }
 
-        [NonSerialized] public const uint Version = 10;
+        [NonSerialized] public const uint Version = 10u;
 
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(DocumentProcessor), "Provides XML processing functionality");
         private static readonly InstanceHandleSet _missingReferences = new InstanceHandleSet();

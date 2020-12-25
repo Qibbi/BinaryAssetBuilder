@@ -1,21 +1,16 @@
 ﻿using BinaryAssetBuilder.Core;
 using Metrics;
 using System;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Windows;
 
 namespace BinaryAssetBuilder
 {
     internal class BinaryAssetBuilder
     {
-        private static Tracer _tracer;
-        private static bool _pauseOnError;
+        private static Tracer _tracer = Tracer.GetTracer(nameof(BinaryAssetBuilder), nameof(BinaryAssetBuilder));
         private static GUIBuildOutput _buildWindow;
-        private static Thread _workThread;
 
         public static MetricDescriptor[] _descriptors = new[]
         {
@@ -43,33 +38,95 @@ namespace BinaryAssetBuilder
             MetricManager.GetDescriptor("BAB.BuildSuccessful", MetricType.Success, "Build completed successfully")
         };
 
+        private Mutex _mutex = new Mutex();
+        private Mutex _sessionCacheMutex = new Mutex();
+        private PluginRegistry _pluginRegistry;
+        private VerifierPluginRegistry _verifierPluginRegistry;
+        private ISessionCache _sessionCache;
+        private PathMonitor _pathMonitor;
+        private DateTime _startTime = DateTime.Now;
         private int _runResult;
+        private TimeSpan _cacheSerializationTime;
+
+        public ISessionCache Cache { get => _sessionCache; set => _sessionCache = value; }
+        public PathMonitor Monitor { get => _pathMonitor; set => _pathMonitor = value; }
+        public int RunResult => _runResult;
+
+        public BinaryAssetBuilder()
+        {
+            _pluginRegistry = new PluginRegistry(Settings.Current.Plugins, Settings.Current.TargetPlatform);
+            _verifierPluginRegistry = new VerifierPluginRegistry(Settings.Current.VerifierPlugins, Settings.Current.TargetPlatform);
+        }
+
+        private void InitializeSessionCache()
+        {
+            if (Settings.Current.UseSessionCache)
+            {
+                string sessionCachePath = Path.Combine(Settings.Current.SessionCacheDirectory, "BinaryAssetBuilder.SessionCache.xml");
+                if (sessionCachePath != _sessionCache.CacheFileName)
+                {
+                    DateTime now = DateTime.Now;
+                    _sessionCache.LoadCache(sessionCachePath);
+                    _cacheSerializationTime = DateTime.Now - now;
+                }
+                if (Settings.Current.Resident && _pathMonitor.IsResultTrustable())
+                {
+                    _sessionCache.InitializeCache(_pathMonitor.GetChangedFiles());
+                }
+                else
+                {
+                    _sessionCache.InitializeCache(new System.Collections.Generic.List<string>());
+                }
+                _pathMonitor.Reset();
+                if (_pluginRegistry.AssetBuilderPluginVersion != _sessionCache.AssetCompilersVersion)
+                {
+                    Settings.Current.UseStreamHints = false;
+                    _sessionCache.AssetCompilersVersion = _pluginRegistry.AssetBuilderPluginVersion;
+                }
+                _tracer.TraceInfo("Session caching enabled ('{0}').", sessionCachePath);
+            }
+            else
+            {
+                _sessionCache.InitializeCache(new System.Collections.Generic.List<string>());
+            }
+        }
+
+        private bool BuildStringHashes(SchemaSet theSchemas)
+        {
+            string fileName = Path.Combine(HashProvider.GetOutputDirectory(), HashProvider.StringHashesFile);
+            new DocumentProcessor(Settings.Current, _pluginRegistry, _verifierPluginRegistry)
+            {
+                Cache = _sessionCache,
+                SchemaSet = theSchemas
+            }.ProcessDocument(fileName, true, false, out bool result);
+            return result;
+        }
 
         public static string GetApplicationVersionString()
         {
             Assembly entryAssembly = Assembly.GetEntryAssembly();
-            string title = entryAssembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
+            string title = entryAssembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? string.Empty;
             string name = entryAssembly.GetName().Version.ToString(3);
-            string copyright = entryAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright;
+            string copyright = entryAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? string.Empty;
             return $"{title} {name}\n{copyright}\n";
         }
 
-        public void ConsoleTraceWriter(string source, TraceEventType eventType, string message)
+        public void BaseTraceWriter(string source, TraceEventType eventType, string message)
         {
             if (eventType == TraceEventType.Information || eventType == TraceEventType.Verbose)
             {
-                Console.WriteLine(message);
+                Console.WriteLine($"[{DateTime.Now - _startTime}] {message}");
             }
             else
             {
-                Console.WriteLine($"{eventType}: {message}");
+                Console.WriteLine($"[{DateTime.Now - _startTime}] {eventType}: {message}");
             }
         }
 
         public void GuiTraceWriter(string source, TraceEventType eventType, string message)
         {
+            BaseTraceWriter(source, eventType, message);
             _buildWindow?.Write(source, eventType, message);
-            ConsoleTraceWriter(source, eventType, message);
         }
 
         public void DoBuildData()
@@ -78,35 +135,63 @@ namespace BinaryAssetBuilder
             {
                 MetricManager.OpenSession();
                 _tracer.Message($"{nameof(BinaryAssetBuilder)} started");
-                PluginRegistry pluginRegistry = new PluginRegistry(Settings.Current.Plugins, Settings.Current.TargetPlatform);
-                VerifierPluginRegistry verifierPluginRegistry = new VerifierPluginRegistry(Settings.Current.VerifierPlugins, Settings.Current.TargetPlatform);
-                new DocumentProcessor(Settings.Current, pluginRegistry, verifierPluginRegistry)
-                    .ProcessDocument(Settings.Current?.InputPath, true, true);
-                new DocumentProcessor(Settings.Current, pluginRegistry, verifierPluginRegistry)
-                    .ProcessDocument(Path.Combine(Settings.Current.IntermediateOutputDirectory, HashProvider.StringHashesFile), true, false);
+                MetricManager.IsEnabled = true;
+                SchemaSet theSchemas = new SchemaSet(Settings.Current.StableSort);
+                HashProvider.InitializeStringHashes(Settings.Current.SessionCacheDirectory);
+                MetricManager.Submit("BAB.SessionCacheEnabled", Settings.Current.UseSessionCache);
+                InitializeSessionCache();
+                DocumentProcessor documentProcessor = new DocumentProcessor(Settings.Current, _pluginRegistry, _verifierPluginRegistry)
+                {
+                    Cache = _sessionCache,
+                    SchemaSet = theSchemas
+                };
+                documentProcessor.ProcessDocument(Settings.Current.InputPath, true, true, out bool success);
+                MetricManager.IsEnabled = false;
+                Settings.Current.SingleFile = true;
+                Settings.Current.UseBuildCache = false;
+                if (Settings.Current.OutputAssetReport)
+                {
+                    AssetReport.Close();
+                }
+                HashProvider.FinalizeStringHashes();
+                if (Settings.Current.OutputStringHashes)
+                {
+                    BuildStringHashes(theSchemas);
+                }
+                if (Settings.Current.UseSessionCache && (success || Settings.Current.UsePartialSessionCache) && !Settings.Current.FreezeSessionCache)
+                {
+                    DateTime now = DateTime.Now;
+                    _sessionCache.SaveCache(Settings.Current.UseCompressedSessionCache);
+                    _cacheSerializationTime += DateTime.Now - now;
+                    MetricManager.Submit("BAB.SessionSerialization", _cacheSerializationTime);
+                }
                 _tracer.Message($"{nameof(BinaryAssetBuilder)} complete");
+                documentProcessor.OutputTypeCompileTime();
             }
-            catch (BinaryAssetBuilderException ex)
+            catch (Exception ex)
             {
-                ex.Trace(_tracer);
-                if (_pauseOnError)
+                _runResult = -1;
+                if (ex.GetType() == typeof(BinaryAssetBuilderException))
                 {
-                    if (_buildWindow is null)
-                    {
-                        Console.WriteLine("\nPress ENTER to exit\n");
-                        Console.ReadLine();
-                    }
-                    else
-                    {
-                        Thread.Sleep(10000);
-                    }
+                    ((BinaryAssetBuilderException)ex).Trace(_tracer);
                 }
-                _runResult = (int)ex.ErrorCode;
-                if (_buildWindow is null)
+                else
                 {
-                    return;
+                    _tracer.TraceError(ex.ToString());
                 }
-                _buildWindow.SaveAndOpenText();
+                if (Settings.Current.PauseOnError && _buildWindow is null)
+                {
+                    Console.WriteLine("\nPress ENTER to exit\n");
+                    Console.ReadLine();
+                }
+                if (_buildWindow != null)
+                {
+                    _buildWindow.SaveAndOpenText();
+                }
+                if (Settings.Current.Resident)
+                {
+                    Console.WriteLine("Resident BAB must now exit due to previous errors.");
+                }
             }
             finally
             {
@@ -114,108 +199,58 @@ namespace BinaryAssetBuilder
                 if (_buildWindow != null)
                 {
                     _buildWindow.DiffThreadClose();
+                    _buildWindow = null;
+                }
+            }
+            try
+            {
+                if (!Settings.Current.Resident)
+                {
+                    return;
+                }
+                // ((IClientCommand)Activator.GetObject(typeof(IClientCommand), "ipc://BinaryAssetBuilderClientChannel/ClientCommand")).NotifyBuildFinished(RunResult);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                if (RunResult != 0)
+                {
+                    if (Settings.Current.Resident)
+                    {
+                        // Program._systemTrayForm.systemTrayIcon.Visible = false;
+                    }
+                    Environment.Exit(RunResult);
                 }
             }
         }
 
-        public void Run(string[] args)
+        public void Run()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (string arg in args)
+            _pluginRegistry.ReInitialize(Settings.Current.Plugins, Settings.Current.TargetPlatform);
+            _verifierPluginRegistry.ReInitialize(Settings.Current.VerifierPlugins, Settings.Current.TargetPlatform);
+            Tracer.TraceWrite = BaseTraceWriter;
+            if (Settings.Current.GuiMode)
             {
-                sb.AppendFormat("{0} ", arg);
+                _buildWindow = new GUIBuildOutput();
+                _buildWindow.Show();
+                Tracer.TraceWrite = GuiTraceWriter;
             }
-            Console.WriteLine("Command Line: {0}", sb.ToString());
-            Tracer.TraceWrite = ConsoleTraceWriter;
-            Settings.Current = ConfigurationManager.GetSection("assetbuilder") as Settings;
-            if (Settings.Current is null)
+            Tracer.SetTraceLevel(Settings.Current.TraceLevel);
+            if (string.IsNullOrEmpty(Settings.Current.DataRoot))
             {
-                throw new ApplicationException($"{nameof(BinaryAssetBuilder)} configuration not found.");
+                throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "Data root not set in application configuration file.");
             }
-            CommandLineOptionProcessor lineOptionProcessor = new CommandLineOptionProcessor(Settings.Current);
-            if (args.Length == 0 || (args.Length > 0 && (args[0] == "/?" || args[0] == "-?")))
+            if (Settings.Current.GuiMode)
             {
-                Console.WriteLine(GetApplicationVersionString());
-                Console.WriteLine($"Usage: {nameof(BinaryAssetBuilder)} {lineOptionProcessor.GetCommandLineHintText()}\n");
-                Console.WriteLine(lineOptionProcessor.GetCommandLineHelpText());
+                new Thread(new ThreadStart(DoBuildData)).Start();
+                // Application.Run((Form)_buildWindow);
             }
             else
             {
-                if (!lineOptionProcessor.ProcessOptions(args, out string[] messages))
-                {
-                    Console.WriteLine(string.Join("\n", messages));
-                }
-                else
-                {
-                    lineOptionProcessor.PostProcessSettings();
-                    if (Settings.Current.GuiMode)
-                    {
-                        _buildWindow = new GUIBuildOutput();
-                        _buildWindow.Show();
-                        Tracer.TraceWrite = GuiTraceWriter;
-                    }
-                    Tracer.DefaultTraceLevel = Settings.Current.TraceLevel;
-                    _tracer = Tracer.GetTracer(nameof(BinaryAssetBuilder), "Main executable");
-                    _tracer.TraceInfo("Command Line: {0}", sb.ToString());
-                    if (string.IsNullOrEmpty(Settings.Current.DataRoot))
-                    {
-                        throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "Data root not set in application configuration file.");
-                    }
-                    _pauseOnError = Settings.Current.PauseOnError;
-                    MetricManager.AddListener(new ConsoleMetricsListener());
-                    if (_buildWindow != null)
-                    {
-                        _workThread = new Thread(new ThreadStart(DoBuildData));
-                        _workThread.Start();
-                        Application.Current.Run(_buildWindow);
-                    }
-                    else
-                    {
-                        DoBuildData();
-                    }
-                }
+                DoBuildData();
             }
-        }
-
-        [STAThread]
-        private static int Main(string[] args)
-        {
-            BinaryAssetBuilder binaryAssetBuilder;
-            try
-            {
-                binaryAssetBuilder = new BinaryAssetBuilder();
-                if (binaryAssetBuilder is null)
-                {
-                    Console.WriteLine($"Critical failure: {nameof(BinaryAssetBuilder)} object could not be instantiated.");
-                    return -1;
-                }
-                binaryAssetBuilder.Run(args);
-            }
-            catch (Exception ex)
-            {
-                if (_tracer != null)
-                {
-                    _tracer.TraceException("{0} \n\n   This is an internal error or potentially a bug.", ex);
-                }
-                else
-                {
-                    Console.WriteLine("{0} \n\n   This is an internal error or potentially a bug.", ex);
-                }
-                if (_pauseOnError)
-                {
-                    if (_buildWindow is null)
-                    {
-                        Console.WriteLine("\nPress ENTER to exit\n");
-                        Console.ReadLine();
-                    }
-                    else
-                    {
-                        Thread.Sleep(10000);
-                    }
-                }
-                return -1;
-            }
-            return binaryAssetBuilder._runResult;
         }
     }
 }

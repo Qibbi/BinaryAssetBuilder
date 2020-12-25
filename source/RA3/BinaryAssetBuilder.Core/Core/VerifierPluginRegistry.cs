@@ -11,6 +11,10 @@ namespace BinaryAssetBuilder.Core
             {
             }
 
+            public void ReInitialize(object configObject, TargetPlatform targetPlatform)
+            {
+            }
+
             public bool VerifyInstance(InstanceDeclaration instance)
             {
                 return true;
@@ -42,6 +46,14 @@ namespace BinaryAssetBuilder.Core
                 {
                     DefaultPlugin = verifierPlugin;
                 }
+            }
+        }
+
+        public void ReInitialize(PluginDescriptor[] plguins, TargetPlatform targetPlatform)
+        {
+            foreach (PluginDescriptor plugin in plguins)
+            {
+                plugin.ReInitialize(targetPlatform);
             }
         }
 

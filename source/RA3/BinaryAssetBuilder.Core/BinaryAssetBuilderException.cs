@@ -1,5 +1,6 @@
 ﻿using BinaryAssetBuilder.Core;
 using System;
+using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -22,6 +23,17 @@ namespace BinaryAssetBuilder
         public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode) : base(errorCode.ToString(), innerException)
         {
             ErrorCode = errorCode;
+        }
+
+        public BinaryAssetBuilderException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            ErrorCode = (ErrorCode)info.GetValue(nameof(ErrorCode), typeof(ErrorCode));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(ErrorCode), ErrorCode);
+            base.GetObjectData(info, context);
         }
 
         public void Trace(Tracer tracer)

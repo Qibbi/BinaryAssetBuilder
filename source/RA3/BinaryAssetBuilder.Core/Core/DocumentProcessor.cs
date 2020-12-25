@@ -1,24 +1,45 @@
-﻿using BinaryAssetBuilder.Utility;
+﻿using BinaryAssetBuilder.Project;
+using BinaryAssetBuilder.Utility;
 using Metrics;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace BinaryAssetBuilder.Core
 {
     public class DocumentProcessor
     {
+        private class TypeCompileData
+        {
+            public TimeSpan TotalProcessTime = new TimeSpan(0L);
+            public TimeSpan LongestProcessTime = new TimeSpan(0L);
+            public uint InstancesProcessed;
+            public readonly string TypeName;
+            public string LongestProcessInstance = string.Empty;
+
+            public TypeCompileData(string typeName)
+            {
+                TypeName = typeName;
+            }
+        }
+
         public class ProcessOptions
         {
             public string BasePatchStream;
+            public string[] BasePatchStreamSearchPaths = null;
+            public StreamReference[] StreamReferences = null;
+            public string RelativeBasePath = string.Empty;
             public bool GenerateOutput;
             public string Configuration;
             public bool UsePrecompiled;
         }
 
-        [NonSerialized] public const uint Version = 10;
+        [NonSerialized] public const uint Version = 11u;
 
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(DocumentProcessor), "Provides XML processing functionality");
         private static readonly InstanceHandleSet _missingReferences = new InstanceHandleSet();
@@ -27,24 +48,27 @@ namespace BinaryAssetBuilder.Core
         private static TimeSpan _totalPrepareSourceTime = new TimeSpan(0L);
         private static TimeSpan _totalPostProcTime = new TimeSpan(0L);
         private static TimeSpan _totalValidateTime = new TimeSpan(0L);
+        private static IDictionary<uint, TypeCompileData> _typeProcessingTime = new SortedDictionary<uint, TypeCompileData>();
         private static readonly Stack<string> _currentDocumentStack = new Stack<string>();
+        private static readonly Stack<string> _currentstreamStack = new Stack<string>();
 
-        private readonly StringCollection _documentStack = new StringCollection();
+        private readonly List<string> _documentStack = new List<string>();
         [NonSerialized] private readonly Dictionary<string, AssetLocationInfo> _lastWrittenAssets = new Dictionary<string, AssetLocationInfo>();
         private int _instancesProcessedCount;
         private int _filesProcessedCount;
         private int _filesParsedCount;
         private int _instancesCopiedFromCacheCount;
         private int _instancesCompiledCount;
-        private readonly string _sessionCachePath;
         private long _maxTotalMemory;
+        private bool _isCompilingProject;
+        private Dictionary<string, string> _projectDefaultConfigurations;
 
         public static string CurrentDocument => _currentDocumentStack.Peek();
 
-        public SessionCache Cache { get; private set; }
+        public ISessionCache Cache { get; set; }
         public InstanceHandleSet MissingReferences => _missingReferences;
         public InstanceHandleSet ChangedInheritFromReferences { get; } = new InstanceHandleSet();
-        public SchemaSet SchemaSet { get; }
+        public SchemaSet SchemaSet { get; set; }
         public PluginRegistry Plugins { get; }
         public VerifierPluginRegistry VerifierPlugins { get; }
 
@@ -58,43 +82,21 @@ namespace BinaryAssetBuilder.Core
                 Settings.Current.UseBuildCache = false;
             }
             _tracer.TraceData("Build Cache Status: {0}", Settings.Current.UseBuildCache ? "Active" : "Disabled");
-            if (Settings.Current.UseSessionCache)
-            {
-                _sessionCachePath = Path.Combine(settings.SessionCacheDirectory, $"{nameof(BinaryAssetBuilder)}.{nameof(SessionCache)}.{settings.TargetPlatform}.xml");
-            }
             MetricManager.Submit("BAB.NetworkCacheEnabled", Settings.Current.UseBuildCache);
             if (Settings.Current.UseBuildCache)
             {
                 _tracer.TraceInfo("Network caching enabled ('{0}').", Settings.Current.BuildCacheDirectory);
             }
-            SchemaSet = new SchemaSet(Settings.Current.StableSort);
         }
 
-        private void InitializeSessionCache()
+        private static void ResetTimers()
         {
-            MetricManager.Submit("BAB.SessionCacheEnabled", Settings.Current.UseSessionCache);
-            if (!Settings.Current.UseSessionCache)
-            {
-                if (File.Exists(_sessionCachePath) && !Settings.Current.SingleFile)
-                {
-                    File.Delete(_sessionCachePath);
-                }
-            }
-            else
-            {
-                _tracer.TraceInfo("Session caching enabled ('{0}').", _sessionCachePath);
-                Cache = new SessionCache();
-                Cache.LoadCache(_sessionCachePath);
-                Cache.InitializeCache();
-            }
-        }
-
-        private void FinalizeSessionCache()
-        {
-            if (Cache != null)
-            {
-                Cache.SaveCache(false);
-            }
+            _totalProcInstancesTime = new TimeSpan(0L);
+            _totalPrepareOutputTime = new TimeSpan(0L);
+            _totalPrepareSourceTime = new TimeSpan(0L);
+            _totalPostProcTime = new TimeSpan(0L);
+            _totalValidateTime = new TimeSpan(0L);
+            _typeProcessingTime = new SortedDictionary<uint, TypeCompileData>();
         }
 
         private AssetDeclarationDocument OpenDocument(string sourcePath, string logicalPath, string configuration)
@@ -143,48 +145,129 @@ namespace BinaryAssetBuilder.Core
             }
             foreach (InclusionItem inclusionItem in document.InclusionItems)
             {
+                StreamReference currentStreamReference = null;
                 if (inclusionItem.Type == InclusionType.Reference && !Settings.Current.SingleFile && Settings.Current.DataRoot is null)
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.NoDataRootSpecified, "DataRoot must be specified if not doing /singleFile");
                 }
-                bool valid = Cache.TryGetFile(inclusionItem.PhysicalPath, configuration, Settings.Current.TargetPlatform, out FileHashItem fileItem);
-                if (inclusionItem.Type != InclusionType.Reference || (valid && !Settings.Current.UsePrecompiled) || !LoadPrecompiledReference(document, inclusionItem))
+                string currentConfiguration = configuration;
+                AssetDeclarationDocument currentDocument;
+                bool valid;
+                if (inclusionItem.Type == InclusionType.Reference)
                 {
-                    if (!valid)
+                    foreach (StreamReference streamReference in options.StreamReferences)
                     {
-                        _tracer.TraceError("Input file '{0}' not found (referenced from file://{1}). Treating it as empty.", inclusionItem.LogicalPath, document.SourcePath);
+                        if (inclusionItem.LogicalPath.EndsWith(streamReference.ReferenceName))
+                        {
+                            currentConfiguration = streamReference.ReferenceConfiguration;
+                            currentStreamReference = streamReference;
+                            _tracer.TraceInfo("Attempting use of referenced stream {0} with configuration {1}", streamReference.ReferenceName, streamReference.ReferenceConfiguration);
+                            break;
+                        }
                     }
-                    _totalPostProcTime += DateTime.Now - now;
-                    bool output = inclusionItem.Type == InclusionType.Reference && !usePrecompiled;
-                    ProcessOptions newOptions = new ProcessOptions
+                    valid = Cache.TryGetDocument(inclusionItem.PhysicalPath, currentConfiguration, Settings.Current.TargetPlatform, false, out currentDocument);
+                    if (currentStreamReference != null && currentDocument != null && currentDocument.State == DocumentState.None)
                     {
-                        GenerateOutput = output,
-                        UsePrecompiled = usePrecompiled,
-                        Configuration = configuration
-                    };
-                    AssetDeclarationDocument assetDocument = ProcessDocumentInternal(inclusionItem.LogicalPath, inclusionItem.PhysicalPath, output ? null : outputManager, newOptions);
-                    now = DateTime.Now;
-                    inclusionItem.Document = assetDocument;
-                    document.AllDefines.AddDefinitions(assetDocument.AllDefines);
-                    switch (inclusionItem.Type)
-                    {
-                        case InclusionType.Reference:
-                            document.ReferenceInstances.Add(assetDocument.ReferenceInstances);
-                            document.ReferenceInstances.Add(assetDocument.Instances);
-                            break;
-                        case InclusionType.Instance:
-                            document.TentativeInstances.Add(assetDocument.Instances);
-                            document.TentativeInstances.Add(assetDocument.TentativeInstances);
-                            break;
-                        case InclusionType.All:
-                            document.ReferenceInstances.Add(assetDocument.ReferenceInstances);
-                            document.AllInstances.Add(assetDocument.Instances);
-                            document.TentativeInstances.Add(assetDocument.TentativeInstances);
-                            break;
+                        bool currentValid = false;
+                        foreach (BuildConfiguration buildConfiguration in Settings.Current.BuildConfigurations)
+                        {
+                            if (string.IsNullOrEmpty(currentConfiguration) || buildConfiguration.Name.ToLower().Equals(currentConfiguration.ToLower()))
+                            {
+                                string sourcePathFromRoot;
+                                if (string.IsNullOrEmpty(currentStreamReference.ReferenceManifest))
+                                {
+                                    sourcePathFromRoot = Path.GetFileNameWithoutExtension(GetExpectedOutputManifest(inclusionItem.PhysicalPath)) + buildConfiguration.StreamPostfix + ".manifest";
+                                }
+                                else
+                                {
+                                    sourcePathFromRoot = currentStreamReference.ReferenceManifest;
+                                }
+                                currentDocument.FromLastHack();
+                                if (!LoadPrecompiledReference(currentDocument, sourcePathFromRoot, options.BasePatchStreamSearchPaths))
+                                {
+                                    throw new BinaryAssetBuilderException(ErrorCode.ReferencingError, "Explicitly referenced external stream not found with desired build configuration.");
+                                }
+                                currentValid = true;
+                                break;
+                            }
+                        }
+                        if (!currentValid)
+                        {
+                            throw new BinaryAssetBuilderException(ErrorCode.ReferencingError, "Explicitly referenced stream was not found built with configuration {0}", currentConfiguration);
+                        }
                     }
-                    assetDocument.Reset();
-                    _totalPostProcTime += DateTime.Now - now;
+                    else if (!valid || currentDocument is null || currentDocument.State != DocumentState.Complete)
+                    {
+                        if (_isCompilingProject && _projectDefaultConfigurations.TryGetValue(inclusionItem.PhysicalPath.ToLower(), out string configName))
+                        {
+                            currentConfiguration = configName;
+                            valid = Cache.TryGetFile(inclusionItem.PhysicalPath, currentConfiguration, Settings.Current.TargetPlatform, out FileHashItem hashItem);
+                            _tracer.TraceInfo("Stream {0} references stream {1} which does not have a '{2}' configuration, using default configuration '{3}'",
+                                              document.SourcePath,
+                                              inclusionItem.LogicalPath,
+                                              configuration,
+                                              currentConfiguration);
+                        }
+                        else if (usePrecompiled)
+                        {
+                            _tracer.TraceInfo("Stream {0} references stream {1} which has not been compiled, attempting to use precompiled",
+                                              document.SourcePath,
+                                              inclusionItem.PhysicalPath);
+                            if (LoadPrecompiledReference(document, GetExpectedOutputManifest(inclusionItem.PhysicalPath), options.BasePatchStreamSearchPaths) || _isCompilingProject)
+                            {
+                                continue;
+                            }
+                        }
+                    }
                 }
+                else
+                {
+                    valid = Cache.TryGetDocument(inclusionItem.PhysicalPath, configuration, Settings.Current.TargetPlatform, false, out currentDocument);
+                }
+                if (!valid)
+                {
+                    if (Settings.Current.ErrorLevel > 0)
+                    {
+                        throw new BinaryAssetBuilderException(ErrorCode.FileNotFound,
+                                                              "Input file '{0}' not found (referenced from file://{1}). Treating it as empty.",
+                                                              inclusionItem.LogicalPath,
+                                                              document.SourcePath);
+                    }
+                    _tracer.TraceError("Input file '{0}' not found (referenced from file://{1}). Treating it as empty.", inclusionItem.LogicalPath, document.SourcePath);
+                }
+                _totalPostProcTime += DateTime.Now - now;
+                bool output = inclusionItem.Type == InclusionType.Reference && !usePrecompiled;
+                ProcessOptions newOptions = new ProcessOptions
+                {
+                    GenerateOutput = output,
+                    UsePrecompiled = usePrecompiled,
+                    Configuration = currentConfiguration
+                };
+                if (currentStreamReference is null)
+                {
+                    currentDocument = ProcessDocumentInternal(inclusionItem.LogicalPath, inclusionItem.PhysicalPath, output ? null : outputManager, newOptions);
+                    now = DateTime.Now;
+                    inclusionItem.Document = currentDocument;
+                    document.AllDefines.AddDefinitions(currentDocument.AllDefines);
+                }
+                switch (inclusionItem.Type)
+                {
+                    case InclusionType.Reference:
+                        document.ReferenceInstances.Add(currentDocument.ReferenceInstances);
+                        document.ReferenceInstances.Add(currentDocument.Instances);
+                        break;
+                    case InclusionType.Instance:
+                        document.TentativeInstances.Add(currentDocument.Instances);
+                        document.TentativeInstances.Add(currentDocument.TentativeInstances);
+                        break;
+                    case InclusionType.All:
+                        document.ReferenceInstances.Add(currentDocument.ReferenceInstances);
+                        document.AllInstances.Add(currentDocument.Instances);
+                        document.TentativeInstances.Add(currentDocument.TentativeInstances);
+                        break;
+                }
+                currentDocument.Reset();
+                _totalPostProcTime += DateTime.Now - now;
             }
             foreach (InstanceDeclaration referenceInstance in document.ReferenceInstances)
             {
@@ -245,13 +328,17 @@ namespace BinaryAssetBuilder.Core
                 }
                 if (Settings.Current.VersionFiles)
                 {
-                    outputManager.CreateVersionFile(document, Settings.Current.StreamPostfix);
+                    outputManager.CreateVersionFile(document, Settings.Current.CustomPostfix);
                 }
+                outputManager = null;
+                _currentDocumentStack.Pop();
                 _tracer.Message("{0} Stream complete", document.SourcePathFromRoot);
                 _totalPrepareOutputTime += DateTime.Now - now;
             }
             _documentStack.RemoveAt(_documentStack.Count - 1);
             document.MakeComplete();
+            document.MakeCacheable();
+            Cache.SaveDocumentToCache(document.SourcePath, options.Configuration, Settings.Current.TargetPlatform, document);
         }
 
         private AssetDeclarationDocument ProcessDocumentInternal(string logicalPath, string sourcePath, OutputManager outputManager, ProcessOptions options)
@@ -260,7 +347,11 @@ namespace BinaryAssetBuilder.Core
             AssetDeclarationDocument result = OpenDocument(sourcePath, logicalPath, options.Configuration);
             if (options.GenerateOutput)
             {
-                if (result.State == DocumentState.Complete)
+                if ((Settings.Current.UseStreamHints
+                 && Cache.DirtyStreams != null
+                 && !Cache.DirtyStreams.Contains(sourcePath)
+                 && LoadPrecompiledReference(result, GetExpectedOutputManifest(result.SourcePath), options.BasePatchStreamSearchPaths))
+                 || result.State == DocumentState.Complete)
                 {
                     return result;
                 }
@@ -272,12 +363,25 @@ namespace BinaryAssetBuilder.Core
                                                           Settings.Current.DataRoot);
                 }
                 string str = ShPath.Canonicalize(Path.Combine(Settings.Current.IntermediateOutputDirectory, result.SourcePathFromRoot));
-                string outputDirectory = ShPath.Canonicalize(Path.Combine(Settings.Current.OutputDirectory, result.SourcePathFromRoot)) + Settings.Current.StreamPostfix;
-                string intermediateOutputDirectory = str + Settings.Current.StreamPostfix;
-                outputManager = new OutputManager(this, result.LastOutputAssets, outputDirectory, intermediateOutputDirectory, options.BasePatchStream);
+                string outputDirectory = ShPath.Canonicalize(Path.Combine(Settings.Current.OutputDirectory, result.SourcePathFromRoot)) + Settings.Current.StreamPostfix + Settings.Current.CustomPostfix;
+                string intermediateOutputDirectory = str + Settings.Current.StreamPostfix + Settings.Current.CustomPostfix;
+                outputManager = new OutputManager(this, result.LastOutputAssets, outputDirectory, intermediateOutputDirectory, options.BasePatchStream, options.RelativeBasePath, options.BasePatchStreamSearchPaths);
+                _currentDocumentStack.Push(sourcePath);
             }
             string fileName = Path.GetFileName(sourcePath);
             _currentDocumentStack.Push($"{fileName}:");
+            if (result.State == DocumentState.Complete && result.IsLoaded && result.XmlDocument is null)
+            {
+                foreach (InstanceDeclaration instance in result.Instances)
+                {
+                    if (outputManager.GetBinaryAsset(instance, false).GetLocation(AssetLocation.All, AssetLocationOption.None) == AssetLocation.None)
+                    {
+                        _tracer.TraceInfo("Reloading 'file://{0}' for new stream", result.SourcePath);
+                        result.State = DocumentState.Shallow;
+                        break;
+                    }
+                }
+            }
             if (result.State == DocumentState.Shallow)
             {
                 result.Reinitialize(outputManager);
@@ -300,25 +404,55 @@ namespace BinaryAssetBuilder.Core
             return result;
         }
 
-        private bool LoadPrecompiledReference(AssetDeclarationDocument parentDoc, InclusionItem item)
+        private bool LoadPrecompiledReference(AssetDeclarationDocument parentDoc, string sourcePathFromRoot, string[] baseStreamSearchPaths)
         {
-            string expectedOutputManfiest = GetExpectedOutputManifest(parentDoc, item);
-            string str = ShPath.Canonicalize(Path.Combine(Settings.Current.OutputDirectory, expectedOutputManfiest));
+            string str = ShPath.Canonicalize(Path.Combine(Settings.Current.OutputDirectory, sourcePathFromRoot));
             if (!File.Exists(str))
             {
+                _tracer.TraceWarning("Could not load precompiled manifest {0}, file not found", str);
                 return false;
             }
             Manifest manifest = new Manifest();
-            string[] patchSearchPaths = new[] { Settings.Current.OutputDirectory };
+            List<string> patchSearchPaths = new List<string>();
+            if (baseStreamSearchPaths != null)
+            {
+                patchSearchPaths.AddRange(baseStreamSearchPaths);
+            }
+            patchSearchPaths.Add(Settings.Current.OutputDirectory);
             try
             {
-                manifest.Load(str, patchSearchPaths);
+                manifest.Load(str, patchSearchPaths.ToArray());
             }
-            catch
+            catch (Exception ex)
             {
-                _tracer.TraceError("Could not load {0}.", str);
+                _tracer.TraceError("Could not load {0}: {1}\n\r{2}", str, ex.Message, ex.StackTrace);
                 return false;
             }
+            try
+            {
+                ManifestHeader header = new ManifestHeader();
+                using (FileStream stream = File.OpenRead(str))
+                {
+                    header.LoadFromStream(stream, Settings.Current.BigEndian);
+                }
+                if (header.IsLinked == Settings.Current.LinkedStreams && header.Version == ManifestHeader.LatestVersion)
+                {
+                    if (header.AllTypesHash == Plugins.DefaultPlugin.GetAllTypesHash())
+                    {
+                        goto nomismatch;
+                    }
+                }
+                _tracer.TraceWarning("Could not load precompiled manifest {0}, manifest is incompatible", str);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new BinaryAssetBuilderException(ex,
+                                                      ErrorCode.LockedFile,
+                                                      "Unable to open '{0}'. Make sure no other application is writing or reading from this file while the data build is running.",
+                                                      str);
+            }
+        nomismatch:
             foreach (Asset asset in manifest.Assets)
             {
                 InstanceDeclaration instanceDeclaration = new InstanceDeclaration();
@@ -366,7 +500,92 @@ namespace BinaryAssetBuilder.Core
             return result;
         }
 
-        public AssetDeclarationDocument ProcessDocument(string fileName, bool generateOutput, bool outputStringHashes)
+        public void ProcessProjectDocument(string projectPath, bool generateOutput)
+        {
+            _isCompilingProject = true;
+            _projectDefaultConfigurations = new Dictionary<string, string>();
+            Settings current = Settings.Current;
+            XmlSchema schema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream("BinaryAssetBuilderProject.xsd"), null);
+            StreamReader reader = new StreamReader(projectPath);
+            XmlReader xmlReader = XmlReader.Create(reader);
+            xmlReader.Settings.Schemas.Add(schema);
+            BinaryAssetBuilderProject project = null;
+            try
+            {
+                project = new XmlSerializer(typeof(BinaryAssetBuilderProject)).Deserialize(xmlReader) as BinaryAssetBuilderProject;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _tracer.TraceError("There is an error in '{0}': {1}\n", projectPath, ex.InnerException.Message);
+            }
+            reader.Close();
+            if (project != null)
+            {
+                IDictionary<string, bool> compiledStreams = new SortedDictionary<string, bool>();
+                foreach (BinaryStream binaryStream in project.Stream)
+                {
+                    string path = Path.GetFullPath(!Path.IsPathRooted(binaryStream.Source)
+                        ? Path.Combine(Path.GetDirectoryName(projectPath), binaryStream.Source)
+                        : binaryStream.Source).ToLower();
+                    if (compiledStreams.TryGetValue(path, out bool isCompiled) && isCompiled)
+                    {
+                        _tracer.TraceError("{0} was specified twice in {1}, skipping duplicates", path, projectPath);
+                    }
+                    else if (binaryStream.Configuration != null && binaryStream.Configuration.Length > 0)
+                    {
+                        StreamConfiguration currentConfiguration = null;
+                        foreach (StreamConfiguration configuration in binaryStream.Configuration)
+                        {
+                            if (configuration.IsDefault)
+                            {
+                                if (currentConfiguration != null)
+                                {
+                                    _tracer.TraceWarning("Stream {0} has multiple default configurations. Using {1}.", path, currentConfiguration.Name);
+                                }
+                                else
+                                {
+                                    currentConfiguration = configuration;
+                                }
+                            }
+                        }
+                        if (currentConfiguration is null)
+                        {
+                            _tracer.TraceInfo("No default configuration specified for {0}. Using{1}", binaryStream.Source, binaryStream.Configuration[0].Name);
+                            currentConfiguration = binaryStream.Configuration[0];
+                        }
+                        _projectDefaultConfigurations[path] = currentConfiguration.Name;
+                        foreach (StreamConfiguration configuration in binaryStream.Configuration)
+                        {
+                            Settings.Current = SettingsLoader.GetSettingsForConfiguration(configuration.Name);
+                            Settings.Current.BuildConfigurationName = configuration.Name;
+                            ProcessOptions op = new ProcessOptions
+                            {
+                                GenerateOutput = true,
+                                UsePrecompiled = true,
+                                Configuration = configuration.Name,
+                                BasePatchStream = configuration.PatchStream,
+                                BasePatchStreamSearchPaths = configuration.BaseStreamSearchPath,
+                                RelativeBasePath = configuration.RelativeBasePath
+                            };
+                            if (configuration.StreamReference != null)
+                            {
+                                op.StreamReferences = configuration.StreamReference;
+                            }
+                            ProcessDocumentInternal(path, path, null, op);
+                            Settings.Current = current;
+                        }
+                    }
+                    else
+                    {
+                        _projectDefaultConfigurations[path] = string.Empty;
+                        ProcessDocumentInternal(path, path, null, new ProcessOptions { GenerateOutput = true, UsePrecompiled = true });
+                    }
+                }
+            }
+            _isCompilingProject = false;
+        }
+
+        public void ProcessDocument(string fileName, bool generateOutput, bool outputStringHashes, out bool isSuccess)
         {
             XIncludeReaderWrapper.LoadAssembly();
             ExpressionEvaluatorWrapper.LoadAssembly();
@@ -378,25 +597,28 @@ namespace BinaryAssetBuilder.Core
                     throw new BinaryAssetBuilderException(ErrorCode.InputXmlFileNotFound, "File {0} not found", fileName);
                 }
                 MetricManager.Submit("BAB.MapName", Path.GetFileName(Path.GetDirectoryName(fileName)));
-                HashProvider.InitializeStringHashes();
-                InitializeSessionCache();
                 MetricManager.Submit("BAB.StartupTime", DateTime.Now - now);
                 now = DateTime.Now;
-                bool success = false;
-                AssetDeclarationDocument document = null;
+                isSuccess = false;
                 try
                 {
-                    document = ProcessDocumentInternal(Path.IsPathRooted(fileName) ? Path.GetFileName(fileName) : fileName,
-                                                       fileName,
-                                                       null,
-                                                       new ProcessOptions
-                                                       {
-                                                           BasePatchStream = Settings.Current.BasePatchStream,
-                                                           Configuration = Settings.Current.BuildConfigurationName,
-                                                           GenerateOutput = generateOutput,
-                                                           UsePrecompiled = Settings.Current.UsePrecompiled
-                                                       });
-                    success = true;
+                    if (Path.GetExtension(fileName).ToLower().Equals(".babproj", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        ProcessProjectDocument(fileName, generateOutput);
+                    }
+                    else
+                    {
+                        ProcessDocumentInternal(fileName,
+                                                fileName,
+                                                null,
+                                                new ProcessOptions
+                                                {
+                                                    GenerateOutput = generateOutput,
+                                                    BasePatchStream = Settings.Current.BasePatchStream,
+                                                    UsePrecompiled = Settings.Current.UsePrecompiled
+                                                });
+                        isSuccess = true;
+                    }
                 }
                 finally
                 {
@@ -407,14 +629,6 @@ namespace BinaryAssetBuilder.Core
                     MetricManager.Submit("BAB.OutputPrepTime", _totalPrepareOutputTime);
                     MetricManager.Submit("BAB.DocumentProcessingTime", DateTime.Now - now);
                     now = DateTime.Now;
-                    if ((success || Settings.Current.PartialSessionCache) && !Settings.Current.FreezeSessionCache)
-                    {
-                        FinalizeSessionCache();
-                    }
-                    if (outputStringHashes)
-                    {
-                        HashProvider.FinalizeStringHashes(Settings.Current.IntermediateOutputDirectory);
-                    }
                     MetricManager.Submit("BAB.LinkedStreamsEnabled", Settings.Current.LinkedStreams);
                     MetricManager.Submit("BAB.MaxMemorySize", _maxTotalMemory);
                     MetricManager.Submit("BAB.FilesProcessedCount", (long)_filesProcessedCount);
@@ -423,20 +637,48 @@ namespace BinaryAssetBuilder.Core
                     MetricManager.Submit("BAB.InstancesCompiledCount", (long)_instancesCompiledCount);
                     MetricManager.Submit("BAB.InstancesCopiedFromCacheCount", (long)_instancesCopiedFromCacheCount);
                     MetricManager.Submit("BAB.ShutdownTime", DateTime.Now - now);
-                    MetricManager.Submit("BAB.BuildSuccessful", success);
+                    MetricManager.Submit("BAB.BuildSuccessful", isSuccess);
                 }
-                return document;
             }
         }
 
-        public string GetExpectedOutputManifest(AssetDeclarationDocument parentDoc, InclusionItem item)
+        public string GetExpectedOutputManifest(string path)
         {
-            string physicalPath = item.PhysicalPath;
-            string dataRoot = Settings.Current.DataRoot;
-            return (string.IsNullOrEmpty(dataRoot)
-                 || !physicalPath.StartsWith(dataRoot, StringComparison.InvariantCultureIgnoreCase) ? Path.GetFileNameWithoutExtension(physicalPath)
-                                                                                                    : Path.Combine(Path.GetDirectoryName(physicalPath.Substring(dataRoot.Length + 1)),
-                                                                                                                   Path.GetFileNameWithoutExtension(physicalPath))) + ".manifest";
+            string dataRoot = FileNameResolver.GetDataRoot(path);
+            return (string.IsNullOrEmpty(dataRoot) ? Path.GetFileNameWithoutExtension(path)
+                                                   : Path.Combine(Path.GetDirectoryName(path[(dataRoot.Length + 1)..]), Path.GetFileNameWithoutExtension(path))) + ".manifest";
+        }
+
+        public void AddCompileTime(InstanceHandle handle, TimeSpan instanceCompileTime)
+        {
+            if (!_typeProcessingTime.TryGetValue(handle.TypeId, out TypeCompileData typeCompileData))
+            {
+                typeCompileData = new TypeCompileData(handle.TypeName);
+                _typeProcessingTime.Add(handle.TypeId, typeCompileData);
+            }
+            ++typeCompileData.InstancesProcessed;
+            if (instanceCompileTime > typeCompileData.LongestProcessTime)
+            {
+                typeCompileData.LongestProcessTime = instanceCompileTime;
+                typeCompileData.LongestProcessInstance = handle.InstanceName;
+            }
+            typeCompileData.TotalProcessTime += instanceCompileTime;
+        }
+
+        public void OutputTypeCompileTime()
+        {
+            TimeSpan timeSpan = new TimeSpan(0L);
+            foreach (KeyValuePair<uint, TypeCompileData> dataItem in _typeProcessingTime)
+            {
+                TypeCompileData data = dataItem.Value;
+                _tracer.Message("{0}:", data.TypeName);
+                _tracer.Message("    Instances Processed: {0}", data.InstancesProcessed);
+                _tracer.Message("    Total Processing Time: {0}", data.TotalProcessTime);
+                _tracer.Message("    Longest Processing Time: {0} ({1})", data.LongestProcessTime, data.LongestProcessInstance);
+                _tracer.Message("    Average Processing Time: {0} seconds", data.TotalProcessTime.TotalSeconds / data.InstancesProcessed);
+                timeSpan += data.TotalProcessTime;
+            }
+            _tracer.Message("Total Processing Time for all types: {0}", timeSpan);
         }
     }
 }

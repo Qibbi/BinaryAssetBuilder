@@ -11,7 +11,7 @@ namespace BinaryAssetBuilder.Utility
     {
         private unsafe sbyte* _pBuffer;
         private unsafe AssetStream.ManifestHeader* _pHeader;
-        private IDictionary<uint, string> _stringHashes;
+        private readonly IDictionary<uint, string> _stringHashes;
 
         public unsafe bool IsLoaded => (IntPtr)_pBuffer != IntPtr.Zero;
         public Manifest PatchManifest { get; private set; }
@@ -33,6 +33,21 @@ namespace BinaryAssetBuilder.Utility
         public unsafe int AssetNameBufferSize => (IntPtr)_pHeader != IntPtr.Zero ? (int)_pHeader->AssetNameBufferSize : 0;
         public unsafe int SourceFileNameBufferSize => (IntPtr)_pHeader != IntPtr.Zero ? (int)_pHeader->SourceFileNameBufferSize : 0;
 
+        public Manifest()
+        {
+            _stringHashes = new SortedDictionary<uint, string>();
+            PatchManifest = null;
+        }
+
+        public static bool IsEquivalent(AssetEntry assetEntry, Asset asset)
+        {
+            return assetEntry.InstanceId == asset.InstanceId
+                && assetEntry.InstanceHash == asset.InstanceHash
+                && assetEntry.TypeId == asset.TypeId
+                && (assetEntry.TypeHash == asset.TypeHash
+                || asset.IsTokenized);
+        }
+
         private unsafe void Free()
         {
             Assets = null;
@@ -45,30 +60,35 @@ namespace BinaryAssetBuilder.Utility
             _pBuffer = null;
         }
 
-        public Manifest()
-        {
-            _stringHashes = new SortedDictionary<uint, string>();
-            PatchManifest = null;
-        }
-
         public static Manifest Create(string fileName)
         {
             Manifest result = new Manifest();
-            return !result.Load(fileName, null) ? null : result;
+            return result.Load(fileName, null, true) ? result : null;
         }
 
         public static Manifest Create(string fileName, string[] patchSearchPaths)
         {
             Manifest result = new Manifest();
-            return !result.Load(fileName, patchSearchPaths) ? null : result;
+            return result.Load(fileName, patchSearchPaths, true) ? result : null;
+        }
+
+        public static Manifest Create(string fileName, string[] patchSearchPaths, bool validateAssets)
+        {
+            Manifest result = new Manifest();
+            return result.Load(fileName, patchSearchPaths, validateAssets) ? result : null;
         }
 
         public bool Load(string fileName)
         {
-            return Load(fileName, null);
+            return Load(fileName, null, true);
         }
 
-        public unsafe bool Load(string fileName, string[] patchSearchPaths)
+        public bool Load(string fileName, string[] patchSearchPaths)
+        {
+            return Load(fileName, patchSearchPaths, true);
+        }
+
+        public unsafe bool Load(string fileName, string[] patchSearchPaths, bool validateAssets)
         {
             Free();
             FileName = Path.GetFullPath(fileName);
@@ -156,6 +176,7 @@ namespace BinaryAssetBuilder.Utility
                     currentAsset->InstanceDataSize = EA.Endian.BigEndian(currentAsset->InstanceDataSize);
                     currentAsset->RelocationDataSize = EA.Endian.BigEndian(currentAsset->RelocationDataSize);
                     currentAsset->ImportsDataSize = EA.Endian.BigEndian(currentAsset->ImportsDataSize);
+                    currentAsset->IsTokenized = EA.Endian.BigEndian(currentAsset->IsTokenized);
                 }
                 ReferenceHandle[] externalReferences = new ReferenceHandle[currentAsset->AssetReferenceCount];
                 AssetId* assetId = (AssetId*)(ptr4 + currentAsset->AssetReferenceOffset);
@@ -173,6 +194,7 @@ namespace BinaryAssetBuilder.Utility
                         TypeName = StringFromHash(assetId->TypeId),
                         InstanceName = StringFromHash(assetId->InstanceId)
                     };
+                    externalReferences[idx].QualifiedName = $"{externalReferences[idx].TypeName}:{externalReferences[idx].InstanceName}";
                     ++assetId;
                 }
                 Asset asset = new Asset(index,
@@ -186,6 +208,10 @@ namespace BinaryAssetBuilder.Utility
                                         linkedRelocationOffset,
                                         linkedImportsOffset);
                 Assets[index] = asset;
+                if (validateAssets)
+                {
+                    Assets[index].Update();
+                }
                 linkedInstanceOffset += currentAsset->InstanceDataSize;
                 linkedRelocationOffset += currentAsset->RelocationDataSize;
                 linkedImportsOffset += currentAsset->ImportsDataSize;
@@ -217,7 +243,7 @@ namespace BinaryAssetBuilder.Utility
                     if (File.Exists(str))
                     {
                         patchManifest = new Manifest();
-                        patchManifest.Load(str, patchSearchPaths);
+                        patchManifest.Load(str, patchSearchPaths, validateAssets);
                         break;
                     }
                 }
@@ -252,7 +278,7 @@ namespace BinaryAssetBuilder.Utility
 
         public bool Reload()
         {
-            return !string.IsNullOrEmpty(FileName) && Load(FileName, null);
+            return !string.IsNullOrEmpty(FileName) && Load(FileName, null, true);
         }
 
         public void LoadStringHashes(string basePath)
@@ -293,6 +319,19 @@ namespace BinaryAssetBuilder.Utility
         public string StringFromHash(uint hash)
         {
             return !_stringHashes.TryGetValue(hash, out string result) ? hash.ToString("x8") : result;
+        }
+
+        public int GetBaseStreamPosition(AssetEntry assetEntry)
+        {
+            Asset[] assets = Assets;
+            for (int idx = 0; idx < assets.Length; ++idx)
+            {
+                if (IsEquivalent(assetEntry, assets[idx]))
+                {
+                    return idx;
+                }
+            }
+            return -1;
         }
 
         public void Dispose()

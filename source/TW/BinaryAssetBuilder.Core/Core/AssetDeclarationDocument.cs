@@ -619,7 +619,7 @@ namespace BinaryAssetBuilder.Core
             foreach (InstanceDeclaration selfInstance in _current.SelfInstances)
             {
                 ExtendedTypeInformation extendedTypeInformation = _current.DocumentProcessor.Plugins.GetExtendedTypeInformation(selfInstance.Handle.TypeId);
-                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, 10u.ToString());
+                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, DocumentProcessor.Version.ToString());
                 selfInstance.Handle.TypeHash = extendedTypeInformation.TypeHash;
                 selfInstance.Handle.InstanceHash = HashProvider.GetTextHash(textHash, selfInstance.XmlNode.OuterXml);
                 selfInstance.ProcessingHash = extendedTypeInformation.ProcessingHash;

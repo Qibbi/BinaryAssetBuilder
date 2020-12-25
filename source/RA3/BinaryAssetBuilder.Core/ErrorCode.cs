@@ -30,6 +30,8 @@
         NetworkCacheFailure,
         NoIdAttributeForAsset,
         InvalidCustomDataFilePath,
-        PathMonitor
+        ErrorContactingBabClient,
+        PathMonitor,
+        GameDataVerification
     }
 }

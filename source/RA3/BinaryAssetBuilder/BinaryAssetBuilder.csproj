@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <Platforms>x86</Platforms>
     <Nullable>disable</Nullable>
-    <StartupObject>BinaryAssetBuilder.BinaryAssetBuilder</StartupObject>
+    <StartupObject>BinaryAssetBuilder.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">

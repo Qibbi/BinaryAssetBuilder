@@ -89,7 +89,7 @@ namespace BinaryAssetBuilder.Core
             AssetOutputDirectory = Path.Combine(_parent.IntermediateOutputDirectory, "assets");
             _customDataFileName = FileBase + ".cdata";
             AssetFileName = FileBase + ".asset";
-            if (!string.IsNullOrEmpty(_parent.TargetPlatformCacheRoot))
+            if (!string.IsNullOrEmpty(_parent.TargetPlatformCacheRoot) && _parent.DocumentProcessor.Plugins.GetExtendedTypeInformation(instance.Handle.TypeId).UseBuildCache)
             {
                 _cacheDirectory = Path.Combine(_parent.TargetPlatformCacheRoot, $"{instance.Handle.TypeName}\\{instance.Handle.TypeHash:x8}\\{instance.Handle.InstanceHash >> 24:x2}");
             }
@@ -510,13 +510,13 @@ namespace BinaryAssetBuilder.Core
         {
             AssetLocation result = AssetLocation.None;
             bool forceUpdate = (options & AssetLocationOption.ForceUpdate) != AssetLocationOption.None;
-            bool returnAll = (options & AssetLocationOption.ReturnAll) != AssetLocationOption.None;
+            bool returnSingle = (options & AssetLocationOption.ReturnAll) == AssetLocationOption.None;
             if ((locationFilter & AssetLocation.BasePatchStream) != AssetLocation.None)
             {
                 UpdateBasePatchStreamAvailability(forceUpdate);
                 if (_basePatchStreamAvailability == Availability.Present)
                 {
-                    if (!returnAll)
+                    if (returnSingle)
                     {
                         return AssetLocation.BasePatchStream;
                     }
@@ -528,7 +528,7 @@ namespace BinaryAssetBuilder.Core
                 UpdateOutputAvailability(forceUpdate);
                 if (_outputAvailability == Availability.Present)
                 {
-                    if (!returnAll)
+                    if (returnSingle)
                     {
                         return AssetLocation.Output;
                     }
@@ -540,7 +540,7 @@ namespace BinaryAssetBuilder.Core
                 UpdateMemoryAvailability(forceUpdate);
                 if (_memoryAvailability == Availability.Present)
                 {
-                    if (!returnAll)
+                    if (returnSingle)
                     {
                         return AssetLocation.Memory;
                     }
@@ -552,7 +552,7 @@ namespace BinaryAssetBuilder.Core
                 UpdateLocalAvailability(forceUpdate);
                 if (_localAvailability == Availability.Present)
                 {
-                    if (!returnAll)
+                    if (returnSingle)
                     {
                         return AssetLocation.Local;
                     }
@@ -564,7 +564,7 @@ namespace BinaryAssetBuilder.Core
                 UpdateCacheAvailability(forceUpdate);
                 if (_cacheAvailability == Availability.Present)
                 {
-                    if (!returnAll)
+                    if (returnSingle)
                     {
                         return AssetLocation.Cache;
                     }

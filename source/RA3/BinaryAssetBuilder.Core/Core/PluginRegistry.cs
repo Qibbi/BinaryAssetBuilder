@@ -11,6 +11,10 @@ namespace BinaryAssetBuilder.Core
             {
             }
 
+            public void ReInitialize(object configObject, TargetPlatform targetPlatform)
+            {
+            }
+
             public AssetBuffer ProcessInstance(InstanceDeclaration instance)
             {
                 _tracer.TraceError("Couldn't process {0}. No matching plugin found.", instance.Handle);
@@ -18,6 +22,11 @@ namespace BinaryAssetBuilder.Core
             }
 
             public uint GetAllTypesHash()
+            {
+                return 0u;
+            }
+
+            public uint GetVersionNumber()
             {
                 return 0u;
             }
@@ -39,9 +48,23 @@ namespace BinaryAssetBuilder.Core
 
         private readonly Dictionary<uint, IAssetBuilderPlugin> _pluginMap = new Dictionary<uint, IAssetBuilderPlugin>();
         private readonly Dictionary<uint, ExtendedTypeInformation> _typeInfoMap = new Dictionary<uint, ExtendedTypeInformation>();
+        private readonly Dictionary<uint, bool> _buildCacheMap = new Dictionary<uint, bool>();
+        private readonly bool _defaultUseBuildCache;
 
         public IAssetBuilderPlugin DefaultPlugin { get; set; } = new NullPlugin();
         public Dictionary<uint, IAssetBuilderPlugin>.ValueCollection AllPlugins => _pluginMap.Values;
+        public uint AssetBuilderPluginVersion
+        {
+            get
+            {
+                uint result = 0;
+                foreach (IAssetBuilderPlugin plugin in AllPlugins)
+                {
+                    result += plugin.GetVersionNumber();
+                }
+                return result + DefaultPlugin.GetVersionNumber();
+            }
+        }
 
         public PluginRegistry(PluginDescriptor[] plugins, TargetPlatform targetPlatform)
         {
@@ -57,13 +80,24 @@ namespace BinaryAssetBuilder.Core
                     foreach (uint handledType in plugin.HandledTypes)
                     {
                         AddPlugin(handledType, babPlugin);
+                        _buildCacheMap[handledType] = plugin.UseBuildCache;
                     }
                 }
                 else
                 {
                     DefaultPlugin = babPlugin;
+                    _defaultUseBuildCache = plugin.UseBuildCache;
                 }
             }
+        }
+
+        public void ReInitialize(PluginDescriptor[] plugins, TargetPlatform targetPlatform)
+        {
+            foreach (PluginDescriptor plugin in plugins)
+            {
+                plugin.ReInitialize(targetPlatform);
+            }
+            _typeInfoMap.Clear();
         }
 
         public void AddPlugin(uint typeId, IAssetBuilderPlugin plugin)
@@ -85,7 +119,15 @@ namespace BinaryAssetBuilder.Core
             if (!_typeInfoMap.TryGetValue(typeId, out ExtendedTypeInformation result))
             {
                 IAssetBuilderPlugin plugin = GetPlugin(typeId);
-                result = plugin.GetExtendedTypeInformation(typeId);
+                if (plugin != null)
+                {
+                    result = plugin.GetExtendedTypeInformation(typeId);
+                }
+                if (!_buildCacheMap.TryGetValue(typeId, out bool useBuildCache))
+                {
+                    useBuildCache = _defaultUseBuildCache;
+                }
+                result.UseBuildCache = useBuildCache;
                 _typeInfoMap.Add(typeId, result);
             }
             return result;

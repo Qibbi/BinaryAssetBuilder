@@ -8,7 +8,7 @@ namespace BinaryAssetBuilder.Core
         {
             foreach (Definition definition in definitions.Values)
             {
-                if (TryGetValue(definition.Name, out Definition nDefinition) && nDefinition.Document != definition.Document)
+                if (TryGetValue(definition.Name, out Definition nDefinition) && !nDefinition.Document.SourcePath.Equals(definition.Document.SourcePath))
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.DuplicateDefine,
                                                           "Definition {0} defined in {1} is already defined in {2}",

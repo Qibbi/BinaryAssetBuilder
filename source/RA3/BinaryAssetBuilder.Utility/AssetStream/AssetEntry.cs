@@ -16,5 +16,6 @@ namespace AssetStream
         public int InstanceDataSize;
         public int RelocationDataSize;
         public int ImportsDataSize;
+        public uint IsTokenized;
     }
 }

@@ -9,10 +9,6 @@ namespace BinaryAssetBuilder.Core
 {
     public class SchemaSet
     {
-        private class SchemaHashTable : Dictionary<XmlSchema, uint>
-        {
-        }
-
         private class DependencyList
         {
             public List<uint> Children = new List<uint>();
@@ -27,23 +23,24 @@ namespace BinaryAssetBuilder.Core
         }
 
         public const string XmlNamespace = "uri:ea.com:eala:asset";
-        private readonly StringCollection _schemaPaths = new StringCollection();
+        private readonly Dictionary<XmlSchemaType, bool> _hashableTypes = new Dictionary<XmlSchemaType, bool>();
+        private readonly IDictionary<string, DateTime> _schemaPaths = new SortedDictionary<string, DateTime>();
         private string _currentSchema = "<unknown>";
         private readonly Dictionary<string, StringCollection> _inheritanceMap = new Dictionary<string, StringCollection>();
         private readonly Dictionary<uint, DependencyList> _dependencyTree = new Dictionary<uint, DependencyList>();
         private readonly Set<uint> _circularCheck = new Set<uint>();
 
-        public XmlSchemaSet Schemas { get; } = new XmlSchemaSet();
-        public Dictionary<uint, int> AssetDependencies { get; } = new Dictionary<uint, int>();
-        public XmlSchemaType XmlBaseAssetType { get; }
-        public XmlSchemaType XmlBaseInheritableAsset { get; }
-        public XmlSchemaType XmlAssetReferenceType { get; }
-        public XmlSchemaType XmlWeakReferenceType { get; }
-        public XmlSchemaType XmlFileReferenceType { get; }
-        public XmlSchemaType XmlStringHashType { get; }
-        public XmlSchemaType XmlPoidType { get; }
+        public XmlSchemaSet Schemas { get; private set; } = new XmlSchemaSet();
+        public IDictionary<uint, int> AssetDependencies { get; } = new SortedDictionary<uint, int>();
+        public XmlSchemaType XmlBaseAssetType { get; private set; }
+        public XmlSchemaType XmlBaseInheritableAsset { get; private set; }
+        public XmlSchemaType XmlAssetReferenceType { get; private set; }
+        public XmlSchemaType XmlWeakReferenceType { get; private set; }
+        public XmlSchemaType XmlFileReferenceType { get; private set; }
+        public XmlSchemaType XmlStringHashType { get; private set; }
+        public XmlSchemaType XmlPoidType { get; private set; }
 
-        private bool FlattenInheritanceTree(string typeName, Dictionary<string, StringCollection> dictionary)
+        private bool FlattenInheritanceTree(string typeName, IDictionary<string, StringCollection> dictionary)
         {
             if (_inheritanceMap.ContainsKey(typeName))
             {
@@ -76,6 +73,34 @@ namespace BinaryAssetBuilder.Core
 
         public SchemaSet(bool countDependencies)
         {
+            LoadSchemas(countDependencies);
+        }
+
+        private void SetupHashableTypes()
+        {
+            foreach (StringHashBinDescriptor binDescriptor in Settings.Current.StringHashBinDescriptors)
+            {
+                _hashableTypes.Add(Schemas.GlobalTypes[new XmlQualifiedName(binDescriptor.SchemaType, XmlNamespace)] as XmlSchemaType, true);
+            }
+        }
+
+        private void SetupHelperSchemaTypes()
+        {
+            XmlBaseAssetType = Schemas.GlobalTypes[new XmlQualifiedName("BaseAssetType", XmlNamespace)] as XmlSchemaType;
+            XmlBaseInheritableAsset = Schemas.GlobalTypes[new XmlQualifiedName("BaseInheritableAsset", XmlNamespace)] as XmlSchemaType;
+            XmlAssetReferenceType = Schemas.GlobalTypes[new XmlQualifiedName("AssetReference", XmlNamespace)] as XmlSchemaType;
+            XmlWeakReferenceType = Schemas.GlobalTypes[new XmlQualifiedName("WeakReference", XmlNamespace)] as XmlSchemaType;
+            XmlFileReferenceType = Schemas.GlobalTypes[new XmlQualifiedName("FileReference", XmlNamespace)] as XmlSchemaType;
+            SetupHashableTypes();
+        }
+
+        private void LoadSchemas(bool countDependencies)
+        {
+            _schemaPaths.Clear();
+            Schemas = new XmlSchemaSet();
+            _inheritanceMap.Clear();
+            _dependencyTree.Clear();
+            _hashableTypes.Clear();
             try
             {
                 ReadSchema(Directory.GetCurrentDirectory(), Settings.Current.SchemaPath);
@@ -85,14 +110,8 @@ namespace BinaryAssetBuilder.Core
                 throw new BinaryAssetBuilderException(ex, ErrorCode.ReadingSchema, "Error encountered in schema '{0}'", _currentSchema);
             }
             Schemas.Compile();
-            XmlBaseAssetType = Schemas.GlobalTypes[new XmlQualifiedName("BaseAssetType", XmlNamespace)] as XmlSchemaType;
-            XmlBaseInheritableAsset = Schemas.GlobalTypes[new XmlQualifiedName("BaseInheritableAsset", XmlNamespace)] as XmlSchemaType;
-            XmlAssetReferenceType = Schemas.GlobalTypes[new XmlQualifiedName("AssetReference", XmlNamespace)] as XmlSchemaType;
-            XmlWeakReferenceType = Schemas.GlobalTypes[new XmlQualifiedName("WeakReference", XmlNamespace)] as XmlSchemaType;
-            XmlFileReferenceType = Schemas.GlobalTypes[new XmlQualifiedName("FileReference", XmlNamespace)] as XmlSchemaType;
-            XmlStringHashType = Schemas.GlobalTypes[new XmlQualifiedName("StringHash", XmlNamespace)] as XmlSchemaType;
-            XmlPoidType = Schemas.GlobalTypes[new XmlQualifiedName("Poid", XmlNamespace)] as XmlSchemaType;
-            Dictionary<string, StringCollection> dictionary = new Dictionary<string, StringCollection>
+            SetupHelperSchemaTypes();
+            IDictionary<string, StringCollection> dict = new SortedDictionary<string, StringCollection>
             {
                 { "BaseAssetType", new StringCollection() }
             };
@@ -108,10 +127,10 @@ namespace BinaryAssetBuilder.Core
                     }
                     if (xmlSchemaType.BaseXmlSchemaType != null && !string.IsNullOrEmpty(xmlSchemaType.BaseXmlSchemaType.Name))
                     {
-                        if (!dictionary.TryGetValue(xmlSchemaType.BaseXmlSchemaType.Name, out StringCollection collection))
+                        if (!dict.TryGetValue(xmlSchemaType.BaseXmlSchemaType.Name, out StringCollection collection))
                         {
                             collection = new StringCollection();
-                            dictionary.Add(xmlSchemaType.BaseXmlSchemaType.Name, collection);
+                            dict.Add(xmlSchemaType.BaseXmlSchemaType.Name, collection);
                         }
                         collection.Add(xmlSchemaType.Name);
                     }
@@ -119,17 +138,17 @@ namespace BinaryAssetBuilder.Core
             }
             if (countDependencies)
             {
-                foreach (KeyValuePair<uint, DependencyList> dependencies in _dependencyTree)
+                AssetDependencies.Clear();
+                foreach (KeyValuePair<uint, DependencyList> kvp in _dependencyTree)
                 {
-                    BuildGrandchildren(dependencies.Value);
-                    AssetDependencies[dependencies.Key] = dependencies.Value.GrandChildren.Count;
+                    BuildGrandchildren(kvp.Value);
+                    AssetDependencies[kvp.Key] = kvp.Value.GrandChildren.Count;
                 }
                 _dependencyTree.Clear();
-                _dependencyTree = null;
             }
-            foreach (string key in dictionary.Keys)
+            foreach (string key in dict.Keys)
             {
-                FlattenInheritanceTree(key, dictionary);
+                FlattenInheritanceTree(key, dict);
             }
         }
 
@@ -138,11 +157,14 @@ namespace BinaryAssetBuilder.Core
             schemaFile = Path.IsPathRooted(schemaFile) ? Path.GetFullPath(schemaFile) : Path.GetFullPath(Path.Combine(baseDirectory, schemaFile));
             _currentSchema = schemaFile;
             string lower = schemaFile.ToLower();
-            if (_schemaPaths.Contains(lower))
+            if (_schemaPaths.ContainsKey(lower))
             {
                 return;
             }
-            _schemaPaths.Add(lower);
+            if (File.Exists(lower))
+            {
+                _schemaPaths.Add(lower, File.GetLastWriteTime(lower));
+            }
             string schema = null;
             using (StreamReader streamReader = new StreamReader(schemaFile))
             {
@@ -150,11 +172,12 @@ namespace BinaryAssetBuilder.Core
             }
             using StringReader stringReader = new StringReader(schema);
             XmlSchema xmlSchema = XmlSchema.Read(stringReader, null);
-            Schemas.Add(xmlSchema);
             foreach (XmlSchemaInclude include in xmlSchema.Includes)
             {
                 ReadSchema(Path.GetDirectoryName(schemaFile), include.SchemaLocation);
             }
+            xmlSchema.Includes.Clear();
+            Schemas.Add(xmlSchema);
         }
 
         private void BuildGrandchildren(DependencyList list)
@@ -370,6 +393,50 @@ namespace BinaryAssetBuilder.Core
         {
             _inheritanceMap.TryGetValue(typeName, out StringCollection result);
             return result;
+        }
+
+        public bool IsHashableType(XmlSchemaType type)
+        {
+            return _hashableTypes.ContainsKey(type);
+        }
+
+        public void ReloadIfChanged(bool countDependencies)
+        {
+            bool hasChanged = false;
+            if (countDependencies && AssetDependencies.Count == 0)
+            {
+                hasChanged = true;
+            }
+            if (_schemaPaths.Count != 0)
+            {
+                string lower = Settings.Current.SchemaPath.ToLower();
+                if (_schemaPaths.TryGetValue(lower, out DateTime dateTime))
+                {
+                    if (!File.Exists(lower) || File.GetLastWriteTime(lower) != dateTime)
+                    {
+                        hasChanged = true;
+                    }
+                    else
+                    {
+                        foreach (KeyValuePair<string, DateTime> schemaPath in _schemaPaths)
+                        {
+                            if (!File.Exists(schemaPath.Key) || File.GetLastWriteTime(schemaPath.Key) != schemaPath.Value)
+                            {
+                                hasChanged = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                hasChanged = true;
+            }
+            if (hasChanged)
+            {
+                LoadSchemas(countDependencies);
+            }
         }
     }
 }

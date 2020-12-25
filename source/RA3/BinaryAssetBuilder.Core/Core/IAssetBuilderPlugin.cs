@@ -6,6 +6,8 @@
 
         uint GetAllTypesHash();
 
+        uint GetVersionNumber();
+
         ExtendedTypeInformation GetExtendedTypeInformation(uint typeId);
     }
 }

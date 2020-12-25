@@ -51,7 +51,7 @@ namespace BinaryAssetBuilder.Core
             TargetPlatformCacheRoot = Settings.Current.UseBuildCache ? Path.Combine(Settings.Current.BuildCacheDirectory, _targetPlatform.ToString()) : null;
             _manifestFile = OutputDirectory + ".manifest";
             _oldManifestFile = OutputDirectory + ".old.manifest";
-            _versionFile = OutputDirectory + ".version";
+            _versionFile = OutputDirectory.Remove(OutputDirectory.LastIndexOf(Settings.Current.StreamPostfix)) + ".version";
             if (File.Exists(_oldManifestFile))
             {
                 File.Delete(_oldManifestFile);

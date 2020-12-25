@@ -13,6 +13,7 @@
         public unsafe int InstanceDataSize { get => Data->InstanceDataSize; set => Data->InstanceDataSize = value; }
         public unsafe int RelocationDataSize { get => Data->RelocationDataSize; set => Data->RelocationDataSize = value; }
         public unsafe int ImportsDataSize { get => Data->ImportsDataSize; set => Data->ImportsDataSize = value; }
+        public unsafe bool IsTokenized { get => Data->IsTokenized != 0; set => Data->IsTokenized = value ? 1u : 0u; }
 
         protected override unsafe void Swap()
         {
@@ -27,6 +28,7 @@
             Data->InstanceDataSize = EA.Endian.BigEndian(Data->InstanceDataSize);
             Data->RelocationDataSize = EA.Endian.BigEndian(Data->RelocationDataSize);
             Data->ImportsDataSize = EA.Endian.BigEndian(Data->ImportsDataSize);
+            Data->IsTokenized = EA.Endian.BigEndian(Data->IsTokenized);
         }
     }
 }

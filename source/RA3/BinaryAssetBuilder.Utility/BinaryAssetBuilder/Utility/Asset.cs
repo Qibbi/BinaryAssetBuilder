@@ -25,6 +25,7 @@ namespace BinaryAssetBuilder.Utility
         public unsafe int InstanceDataSize => _assetEntry->InstanceDataSize;
         public unsafe int RelocationDataSize => _assetEntry->RelocationDataSize;
         public unsafe int ImportsDataSize => _assetEntry->ImportsDataSize;
+        public unsafe bool IsTokenized => _assetEntry->IsTokenized != 0u;
         public int LinkedInstanceOffset { get; }
         public int LinkedRelocationOffset { get; }
         public int LinkedImportsOffset { get; }

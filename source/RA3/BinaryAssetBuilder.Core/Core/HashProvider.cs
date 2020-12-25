@@ -8,18 +8,18 @@ namespace BinaryAssetBuilder.Core
 {
     public static class HashProvider
     {
+        public const string StringHashesFile = "StringHashes.xml";
+
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(HashProvider), "Centralized facility to produce hashes from strings");
         private static IDictionary<string, string> _schemaNameToBinName;
         private static IDictionary<string, StringHashBin> _stringHashBins;
+        private static readonly string _instanceIdTableName = "INSTANCEID";
+        private static readonly string _typeIdTableName = "TYPEID";
+        private static readonly uint _hashProviderVersion = GetTextHash("StringHashTable") ^ 2u;
+        private static string _outputDirectory;
 
-        public static string StringHashesFile = "StringHashes.xml";
-        public static readonly string StringHashesFileI = "StringHashesI.xml";
         public static readonly string StringBinEnumAttribute = "StringHashBin";
         public static readonly string StringTableAssetName = "StringHashTable";
-        public static readonly string InstanceIdTableName = "INSTANCEID";
-        public static readonly string TypeIdTableName = "TYPEID";
-        public static readonly string StringHashTableName = "STRINGHASH";
-        public static readonly string PoidTableName = "POID";
 
         private static void LoadPreviousStringHashes(string path)
         {
@@ -36,7 +36,14 @@ namespace BinaryAssetBuilder.Core
                         string key = table.Attributes[StringBinEnumAttribute].Value;
                         if (_stringHashBins.TryGetValue(key, out StringHashBin bin))
                         {
-                            bin.ReadStringHashTable(table);
+                            if (Convert.ToUInt32(table.Attributes["Version"].Value) == _hashProviderVersion)
+                            {
+                                bin.ReadStringHashTable(table);
+                            }
+                            else
+                            {
+                                _tracer.TraceInfo("Old string hash file is out of date. If you encounter missing strings in the game (such as misisng ids), please delete the session cache file in {0} and rebuild", Settings.Current.SessionCacheDirectory);
+                            }
                         }
                     }
                 }
@@ -49,12 +56,17 @@ namespace BinaryAssetBuilder.Core
 
         private static void LoadPreviousStringHashes()
         {
-            string path = Path.Combine(Settings.Current.IntermediateOutputDirectory, StringHashesFileI);
+            string path = Path.Combine(_outputDirectory, StringHashesFile);
             if (!File.Exists(path))
             {
                 return;
             }
             LoadPreviousStringHashes(path);
+        }
+
+        public static string GetOutputDirectory()
+        {
+            return _outputDirectory;
         }
 
         public static uint GetTypeHash(Type type)
@@ -97,16 +109,35 @@ namespace BinaryAssetBuilder.Core
             return FastHash.GetHashCode(hash, data);
         }
 
-        public static void InitializeStringHashes()
+        public static uint GetXmlHash(uint hash, XmlNode node)
         {
+            HashingWriter writer = new HashingWriter(hash);
+            XmlWriter xmlWriter = XmlWriter.Create(writer);
+            node.WriteTo(xmlWriter);
+            xmlWriter.Flush();
+            writer.Flush();
+            return writer.GetFinalHash();
+        }
+
+        public static uint GetXmlHash(XmlNode node)
+        {
+            return GetXmlHash(0u, node);
+        }
+
+        public static void InitializeStringHashes(string outputDir)
+        {
+            _outputDirectory = outputDir;
             _schemaNameToBinName = new Dictionary<string, string>();
             _stringHashBins = new Dictionary<string, StringHashBin>
             {
-                { InstanceIdTableName, new StringHashBin(InstanceIdTableName, false) },
-                { TypeIdTableName, new StringHashBin(TypeIdTableName, true) },
-                { StringHashTableName, new StringHashBin(StringHashTableName, true) },
-                { PoidTableName, new StringHashBin(PoidTableName, false) }
+                { _instanceIdTableName, new StringHashBin(_instanceIdTableName, false) },
+                { _typeIdTableName, new StringHashBin(_typeIdTableName, true) }
             };
+            foreach (StringHashBinDescriptor hashBinDescriptor in Settings.Current.StringHashBinDescriptors)
+            {
+                _schemaNameToBinName.Add(hashBinDescriptor.SchemaType, hashBinDescriptor.Bin);
+                _stringHashBins.Add(hashBinDescriptor.Bin, new StringHashBin(hashBinDescriptor.Bin, hashBinDescriptor.IsCaseSensitive));
+            }
             LoadPreviousStringHashes();
         }
 
@@ -124,8 +155,8 @@ namespace BinaryAssetBuilder.Core
 
         public static void RecordHash(InstanceHandle handle)
         {
-            _stringHashBins[InstanceIdTableName].RecordStringHash(handle.InstanceId, handle.InstanceName);
-            _stringHashBins[TypeIdTableName].RecordStringHash(handle.TypeId, handle.TypeName);
+            _stringHashBins[_instanceIdTableName].RecordStringHash(handle.InstanceId, handle.InstanceName);
+            _stringHashBins[_typeIdTableName].RecordStringHash(handle.TypeId, handle.TypeName);
         }
 
         public static void RecordHash(string binName, string str)
@@ -134,39 +165,29 @@ namespace BinaryAssetBuilder.Core
             bin.RecordStringHash(GetTextHash(bin.IsCaseSensitive ? str : str.ToLower()), str);
         }
 
-        public static void FinalizeStringHashes(string dataRoot)
+        public static void FinalizeStringHashes()
         {
-            if (!Directory.Exists(dataRoot))
+            if (!Directory.Exists(_outputDirectory))
             {
-                Directory.CreateDirectory(dataRoot);
+                Directory.CreateDirectory(_outputDirectory);
             }
-            XmlWriter xmlWriter = XmlWriter.Create(Path.Combine(dataRoot, StringHashesFile), new XmlWriterSettings
+            XmlWriter xmlWriter = XmlWriter.Create(Path.Combine(_outputDirectory, StringHashesFile), new XmlWriterSettings
             {
                 CloseOutput = true,
                 Indent = true
             });
             xmlWriter.WriteStartElement("AssetDeclaration", SchemaSet.XmlNamespace);
-            xmlWriter.WriteStartElement(StringTableAssetName);
-            xmlWriter.WriteAttributeString("id", "TheStringTable");
-            foreach (StringHashBin bin in _stringHashBins.Values)
+            if (Settings.Current.OutputAssetReport)
             {
-                bin.WriteStringHashTableElements(xmlWriter);
+                AssetReport.WriteAssetReportInclude(xmlWriter);
             }
-            xmlWriter.WriteEndElement();
-            xmlWriter.WriteEndElement();
-            xmlWriter.Flush();
-            xmlWriter.Close();
-            xmlWriter = XmlWriter.Create(Path.Combine(Settings.Current.IntermediateOutputDirectory, StringHashesFileI), new XmlWriterSettings
-            {
-                CloseOutput = true,
-                Indent = true
-            });
-            xmlWriter.WriteStartElement("AssetDeclaration", SchemaSet.XmlNamespace);
-            foreach (StringHashBin bin in _stringHashBins.Values)
+            foreach (KeyValuePair<string, StringHashBin> bin in _stringHashBins)
             {
                 xmlWriter.WriteStartElement(StringTableAssetName);
-                bin.WriteStringHashTable(xmlWriter);
+                xmlWriter.WriteAttributeString("Version", _hashProviderVersion.ToString());
+                bin.Value.WriteStringHashTable(xmlWriter);
                 xmlWriter.WriteEndElement();
+
             }
             xmlWriter.WriteEndElement();
             xmlWriter.Flush();

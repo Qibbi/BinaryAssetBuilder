@@ -64,7 +64,6 @@ namespace BinaryAssetBuilder.Core
             set => Thread.SetData(IndentLevelStore, value);
         }
 
-        public static int DefaultTraceLevel { get; set; }
         public static TraceKind[] VerbosityLevels { get; }
         public static TraceWriteHandler TraceWrite { get; set; }
 
@@ -73,7 +72,7 @@ namespace BinaryAssetBuilder.Core
 #pragma warning disable IDE0052 // Remove unread private members
         private readonly string _description;
 #pragma warning restore IDE0052 // Remove unread private members
-        private TraceKind _traceMask;
+        private static TraceKind _traceMask;
 
         public bool IsEnabled { get; set; }
 
@@ -93,7 +92,6 @@ namespace BinaryAssetBuilder.Core
         {
             Tracers = new Dictionary<string, Tracer>();
             IndentLevelStore = Thread.AllocateDataSlot();
-            DefaultTraceLevel = 1;
             VerbosityLevels = new TraceKind[]
             {
                 TraceKind.None,
@@ -113,7 +111,6 @@ namespace BinaryAssetBuilder.Core
         {
             _name = name;
             _description = description;
-            _traceMask = VerbosityLevels[DefaultTraceLevel];
             IsEnabled = false;
             IsEnabled = string.Equals(Environment.GetEnvironmentVariable("BabEnableTrace"), "true", StringComparison.OrdinalIgnoreCase);
             if (!IsEnabled)
@@ -153,7 +150,7 @@ namespace BinaryAssetBuilder.Core
             return result;
         }
 
-        public void SetTraceLevel(int level)
+        public static void SetTraceLevel(int level)
         {
             _traceMask = VerbosityLevels[level];
         }

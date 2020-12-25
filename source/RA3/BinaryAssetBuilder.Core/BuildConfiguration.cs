@@ -1,9 +1,10 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
 namespace BinaryAssetBuilder
 {
     [XmlType("buildConfiguration")]
-    public class BuildConfiguration
+    public class BuildConfiguration : ICloneable
     {
         [XmlAttribute("name")] public string Name { get; set; }
         [XmlAttribute("postfix")] public string Postfix { get; set; }
@@ -12,5 +13,10 @@ namespace BinaryAssetBuilder
         [XmlAttribute("artPaths")] public string ArtPaths { get; set; }
         [XmlAttribute("audioPaths")] public string AudioPaths { get; set; }
         [XmlAttribute("dataPaths")] public string DataPaths { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

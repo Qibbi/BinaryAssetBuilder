@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 namespace BinaryAssetBuilder.Core
 {
     [Serializable]
-    public class SessionCache
+    public class SessionCache : ISessionCache
     {
         private class FileConfig
         {
@@ -122,7 +122,7 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
-        [NonSerialized] public const uint CacheVersion = 16u;
+        [NonSerialized] public const uint CacheVersion = 18u;
 
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(SessionCache), "Provides caching functionality");
 
@@ -132,21 +132,11 @@ namespace BinaryAssetBuilder.Core
         private List<string> _dirtyStreams;
         private string _cacheFileName;
 
-        private TimeSpan Age => DateTime.Now - _last?.Created ?? TimeSpan.Zero;
+        private TimeSpan Age => DateTime.Now - _last.Created;
 
         public virtual List<string> DirtyStreams => _dirtyStreams;
         public virtual string CacheFileName => _cacheFileName;
-        public virtual uint AssetCompilersVersion
-        {
-            get => _current?.AssetCompilersVersion ?? uint.MaxValue;
-            set
-            {
-                if (_current != null)
-                {
-                    _current.AssetCompilersVersion = value;
-                }
-            }
-        }
+        public virtual uint AssetCompilersVersion { get => _current.AssetCompilersVersion; set => _current.AssetCompilersVersion = value; }
 
         private static string GetPostfix(string configuration, TargetPlatform targetPlatform)
         {
@@ -172,7 +162,7 @@ namespace BinaryAssetBuilder.Core
                 };
                 if (documentItem.HashItem.Exists)
                 {
-                    _current.Files[path] = documentItem;
+                    _current.Files[key] = documentItem;
                     if (!_current.FileConfigs.TryGetValue(path, out FileConfig fileConfig))
                     {
                         fileConfig = new FileConfig();
@@ -188,7 +178,7 @@ namespace BinaryAssetBuilder.Core
             if (autoCreateDocument && documentItem.Document is null)
             {
                 documentItem.Document = new AssetDeclarationDocument();
-                if (!_current.FileConfigs.TryGetValue(key, out FileConfig fileConfig))
+                if (!_current.FileConfigs.TryGetValue(path, out FileConfig fileConfig))
                 {
                     fileConfig = new FileConfig();
                     _current.FileConfigs[path] = fileConfig;
@@ -202,6 +192,67 @@ namespace BinaryAssetBuilder.Core
         {
             _last = new LastState();
             _last.FromCurrent(_current);
+        }
+
+        private void CheckFiles(List<string> knownChangedFiles)
+        {
+            bool hasNoChangedFiles = knownChangedFiles.Count == 0;
+            if (_last is null)
+            {
+                return;
+            }
+            if (_last.Version != CacheVersion)
+            {
+                _tracer.TraceInfo("Session cache outdated. Version is {0}. Expected version is {1}.", _last.Version, CacheVersion);
+                _last = null;
+            }
+            else if (_last.DocumentProcessorVersion != DocumentProcessor.Version)
+            {
+                _tracer.TraceInfo("DocumentProcessor version mismatch. Version is {0}. Expected version is {1}.", _last.DocumentProcessorVersion, DocumentProcessor.Version);
+                _last = null;
+            }
+            else
+            {
+                _tracer.TraceInfo("Checking {0} files for updates.", _last.Files.Length);
+                int idx = 0;
+                foreach (FileItem file in _last.Files)
+                {
+                    if (file.Document != null)
+                    {
+                        file.Document.ResetState();
+                    }
+                    if (file.HashItem != null)
+                    {
+                        file.HashItem.Reset();
+                    }
+                    if (file.HashItem.IsDirty)
+                    {
+                        if (_dirtyStreams != null)
+                        {
+                            if (file.Document is null || file.Document.StreamHints.Count == 0)
+                            {
+                                _tracer.TraceInfo("Building all streams because {0} has no stream hints.", file.HashItem.Path);
+                                _dirtyStreams = null;
+                            }
+                            else
+                            {
+                                foreach (string streamHint in file.Document.StreamHints)
+                                {
+                                    if (!_dirtyStreams.Contains(streamHint))
+                                    {
+                                        _dirtyStreams.Add(streamHint);
+                                    }
+                                }
+                            }
+                        }
+                        ++idx;
+                        if (!hasNoChangedFiles && !knownChangedFiles.Contains(file.HashItem.Path))
+                        {
+                            throw new BinaryAssetBuilderException(ErrorCode.PathMonitor, "Change went undetected by PathMonitor. File {0}", file.HashItem.Path);
+                        }
+                    }
+                }
+            }
         }
 
         public virtual void LoadCache(string sessionCachePath)
@@ -255,23 +306,6 @@ namespace BinaryAssetBuilder.Core
                 return;
             }
             _tracer.TraceInfo("Session cache age is {0} days, {1} hours, {2} minutes.", Age.Days, Age.Hours, Age.Minutes);
-        }
-
-        public virtual void InitializeCache()
-        {
-            _current = new CurrentState();
-            _dirtyStreams = new List<string>();
-            if (_last != null)
-            {
-                _tracer.TraceInfo("Cached session data available.");
-                _current.FromLast(_last);
-            }
-            else
-            {
-                _tracer.TraceInfo("Cached session data not available.");
-                _current.FromScratch();
-                _dirtyStreams = null;
-            }
         }
 
         public virtual void SaveCache(bool saveCompressed)
@@ -332,6 +366,24 @@ namespace BinaryAssetBuilder.Core
                     return;
                 }
                 fileItem.Document = document;
+            }
+        }
+
+        public virtual void InitializeCache(List<string> knownChangedFiles)
+        {
+            _current = new CurrentState();
+            _dirtyStreams = new List<string>();
+            CheckFiles(knownChangedFiles);
+            if (_last != null)
+            {
+                _tracer.TraceInfo("Cached session data available.");
+                _current.FromLast(_last);
+            }
+            else
+            {
+                _tracer.TraceInfo("Cached session data not available.");
+                _current.FromScratch();
+                _dirtyStreams = null;
             }
         }
     }
