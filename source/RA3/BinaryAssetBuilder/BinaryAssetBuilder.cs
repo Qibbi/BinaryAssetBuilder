@@ -137,7 +137,7 @@ namespace BinaryAssetBuilder
                 _tracer.Message($"{nameof(BinaryAssetBuilder)} started");
                 MetricManager.IsEnabled = true;
                 SchemaSet theSchemas = new SchemaSet(Settings.Current.StableSort);
-                HashProvider.InitializeStringHashes(Settings.Current.SessionCacheDirectory);
+                HashProvider.InitializeStringHashes(Settings.Current.SessionCacheDirectory ?? Settings.Current.OutputDirectory);
                 MetricManager.Submit("BAB.SessionCacheEnabled", Settings.Current.UseSessionCache);
                 InitializeSessionCache();
                 DocumentProcessor documentProcessor = new DocumentProcessor(Settings.Current, _pluginRegistry, _verifierPluginRegistry)

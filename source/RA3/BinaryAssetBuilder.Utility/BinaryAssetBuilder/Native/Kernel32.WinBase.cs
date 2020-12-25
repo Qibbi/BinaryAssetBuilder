@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BinaryAssetBuilder.Native
 {
-    internal static partial class Kernel32
+    public static partial class Kernel32
     {
         public delegate int FormatMessageWDelegate(int dwFlags,
                                                    [In] IntPtr lpSource,

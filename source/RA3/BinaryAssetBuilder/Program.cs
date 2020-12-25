@@ -1,4 +1,5 @@
 ﻿using BinaryAssetBuilder.Core;
+using BinaryAssetBuilder.Native;
 using System;
 using System.Configuration;
 using System.IO;
@@ -38,18 +39,26 @@ namespace BinaryAssetBuilder
             {
                 _thePathMonitor = new PathMonitor(Settings.Current.ProcessedMonitorPaths);
                 _theSessionCache = new SessionCache();
-                _bab = new BinaryAssetBuilder();
-                _bab.Cache = TheSessionCache;
-                _bab.Monitor = ThePathMonitor;
+                _bab = new BinaryAssetBuilder
+                {
+                    Cache = TheSessionCache,
+                    Monitor = ThePathMonitor
+                };
                 if (Settings.Current.Resident)
                 {
                     // CreateRemotingObjects();
                     _residentBabReadyMutex = new Mutex(true, "BinaryAssetBuilderResidentReady");
                 }
+                Metrics.MetricManager.AddListener(new FileMetricsListener(BinaryAssetBuilder._descriptors));
             }
 
             public bool SetupSettings(string[] args)
             {
+                Settings.Current = (Settings)(ConfigurationManager.GetSection("assetbuilder") as Settings).Clone();
+                if (Settings.Current is null)
+                {
+                    throw new ApplicationException("BinaryAssetBuilder configuration not found.");
+                }
                 if (args.Length == 0 || (args.Length > 0 && (args[0] == "/?" || args[0] == "-?")))
                 {
                     CommandLineOptionProcessor processor = new CommandLineOptionProcessor(Settings.Current);
@@ -57,11 +66,6 @@ namespace BinaryAssetBuilder
                     Console.WriteLine($"Usage: {nameof(BinaryAssetBuilder)} {processor.GetCommandLineHintText()}\n");
                     Console.WriteLine(processor.GetCommandLineHelpText());
                     return false;
-                }
-                Settings.Current = (Settings)(ConfigurationManager.GetSection("assetbuilder") as Settings).Clone();
-                if (Settings.Current is null)
-                {
-                    throw new ApplicationException("BinaryAssetBuilder configuration not found.");
                 }
                 if (args.Length != 0 && !new CommandLineOptionProcessor(Settings.Current).ProcessOptions(args, out string[] messages))
                 {
@@ -111,6 +115,14 @@ namespace BinaryAssetBuilder
         [STAThread]
         private static void Main(string[] args)
         {
+            IntPtr consoleWindow = IntPtr.Zero;
+            if (Kernel32.AllocConsole())
+            {
+                consoleWindow = Kernel32.GetConsoleWindow();
+                User32.SetLayeredWindowAttributes(consoleWindow, 0u, 225, 2);
+            }
+            User32.ShowWindow(consoleWindow, 5);
+            Console.ForegroundColor = ConsoleColor.Green;
             using (ResidentInstance residentInstance = new ResidentInstance())
             {
                 if (!residentInstance.IsFirstInstance)
@@ -118,20 +130,21 @@ namespace BinaryAssetBuilder
                     return;
                 }
                 _theResidentServer = residentInstance;
-                if (!residentInstance.SetupSettings(args))
+                if (residentInstance.SetupSettings(args))
                 {
-                    return;
-                }
-                residentInstance.Initialize();
-                if (Settings.Current.Resident)
-                {
-                    // 
-                }
-                else
-                {
-                    residentInstance.StartBuild(args);
+                    residentInstance.Initialize();
+                    if (Settings.Current.Resident)
+                    {
+                        // 
+                    }
+                    else
+                    {
+                        residentInstance.StartBuild(args);
+                    }
                 }
             }
+            Console.WriteLine("\nPress ENTER to exit\n");
+            Console.ReadLine();
         }
     }
 }

@@ -88,6 +88,10 @@ namespace BinaryAssetBuilder.Core
             {
                 anchorPath = Path.GetDirectoryName(anchorPath);
             }
+            if (!Path.IsPathRooted(current.InputPath))
+            {
+                current.InputPath = Path.GetFullPath(Path.Combine(anchorPath, current.InputPath));
+            }
             if (!Path.IsPathRooted(current.DataRoot))
             {
                 current.DataRoot = Path.GetFullPath(Path.Combine(anchorPath, current.DataRoot));
@@ -100,9 +104,17 @@ namespace BinaryAssetBuilder.Core
             {
                 current.OutputDirectory = Path.GetDirectoryName(current.InputPath);
             }
+            else if (!Path.IsPathRooted(current.OutputDirectory))
+            {
+                current.OutputDirectory = Path.GetFullPath(Path.Combine(anchorPath, current.OutputDirectory));
+            }
             if (string.IsNullOrEmpty(current.IntermediateOutputDirectory) || !current.LinkedStreams)
             {
                 current.IntermediateOutputDirectory = current.OutputDirectory;
+            }
+            else if (!Path.IsPathRooted(current.IntermediateOutputDirectory))
+            {
+                current.IntermediateOutputDirectory = Path.GetFullPath(Path.Combine(anchorPath, current.IntermediateOutputDirectory));
             }
             if (current.UseBuildCache && string.IsNullOrEmpty(current.BuildCacheDirectory))
             {

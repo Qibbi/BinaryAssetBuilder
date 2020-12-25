@@ -42,6 +42,10 @@ namespace BinaryAssetBuilder.GameDataVerifier
         {
         }
 
+        public void ReInitialize(object configObject, TargetPlatform targetPlatform)
+        {
+        }
+
         public bool VerifyInstance(InstanceDeclaration instance)
         {
             _namespaceManager = instance.Document.NamespaceManager;

@@ -608,7 +608,7 @@ namespace BinaryAssetBuilder.Core
                     }
                     else
                     {
-                        ProcessDocumentInternal(fileName,
+                        ProcessDocumentInternal(Path.IsPathRooted(fileName) ? Path.GetFileName(fileName) : fileName,
                                                 fileName,
                                                 null,
                                                 new ProcessOptions

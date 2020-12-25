@@ -50,10 +50,24 @@ namespace BinaryAssetBuilder.XmlCompiler
             _platform = targetPlatform;
         }
 
+        public void ReInitialize(object configObject, TargetPlatform targetPlatform)
+        {
+            Initialize(configObject, targetPlatform);
+        }
+
         public uint GetAllTypesHash()
         {
-            // return 0x12B3E763u; // KW 1.02
-            return 0xEB19D975u; // TW 1.09
+            return 0x54EEE764u; // RA3
+        }
+
+        public uint GetVersionNumber()
+        {
+            switch (_platform)
+            {
+                case TargetPlatform.Xbox360: return 6u;
+                case TargetPlatform.PlayStation3: return 7u;
+                default: return 4u;
+            }
         }
 
         public ExtendedTypeInformation GetExtendedTypeInformation(uint typeId)

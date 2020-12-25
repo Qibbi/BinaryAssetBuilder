@@ -20,6 +20,8 @@ namespace BinaryAssetBuilder.Core
 
         public static readonly string StringBinEnumAttribute = "StringHashBin";
         public static readonly string StringTableAssetName = "StringHashTable";
+        public static readonly string StringHashTableName = "STRINGHASH";
+        public static readonly string PoidTableName = "POID";
 
         private static void LoadPreviousStringHashes(string path)
         {

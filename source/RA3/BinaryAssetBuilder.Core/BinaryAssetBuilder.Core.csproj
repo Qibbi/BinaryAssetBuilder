@@ -22,7 +22,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BinaryAssetBuilderProject.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="BinaryAssetBuilderProject.xsd" />
   </ItemGroup>
 
   <ItemGroup>

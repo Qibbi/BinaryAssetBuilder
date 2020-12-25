@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace BinaryAssetBuilder.Native
 {
-    internal static partial class Kernel32
+    public static partial class Kernel32
     {
         private const string _moduleName = "kernel32.dll";
 
@@ -20,6 +20,9 @@ namespace BinaryAssetBuilder.Native
             GetLastError = Marshal.GetDelegateForFunctionPointer<GetLastErrorDelegate>(NativeLibrary.GetExport(HModule, nameof(GetLastError)));
             // WinBase
             FormatMessageW = Marshal.GetDelegateForFunctionPointer<FormatMessageWDelegate>(NativeLibrary.GetExport(HModule, nameof(FormatMessageW)));
+            // Windows
+            AllocConsole = Marshal.GetDelegateForFunctionPointer<AllocConsoleDelegate>(NativeLibrary.GetExport(HModule, nameof(AllocConsole)));
+            GetConsoleWindow = Marshal.GetDelegateForFunctionPointer<GetConsoleWindowDelegate>(NativeLibrary.GetExport(HModule, nameof(GetConsoleWindow)));
         }
     }
 }

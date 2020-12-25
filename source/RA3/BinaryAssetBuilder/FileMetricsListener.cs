@@ -22,7 +22,7 @@ namespace BinaryAssetBuilder
 
         private void FlushMetrics()
         {
-            StringBuilder categories = new StringBuilder("Time,User,Machine,Map");
+            StringBuilder categories = new StringBuilder("Time,User,Machine");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0:G},{1},{2}", DateTime.Now, MetricManager.AppData.UserName, MetricManager.AppData.MachineName);
             foreach (MetricDescriptor descriptor in _descriptors)
