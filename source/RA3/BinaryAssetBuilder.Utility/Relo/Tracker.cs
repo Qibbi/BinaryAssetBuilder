@@ -212,7 +212,7 @@ namespace Relo
                             uint from = bookmarks[import.Index] + import.From;
                             *importsBuffer = from;
                             InplaceEndianToPlatform(importsBuffer);
-                            uint to = import.To;
+                            uint to = import.To + 1u;
                             InplaceEndianToPlatform(&to);
                             *(uint*)(instanceBuffer + from) = to;
                             importsBuffer++;
