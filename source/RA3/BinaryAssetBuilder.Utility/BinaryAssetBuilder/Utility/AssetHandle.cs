@@ -1,6 +1,8 @@
-﻿namespace BinaryAssetBuilder.Utility
+﻿using System;
+
+namespace BinaryAssetBuilder.Utility
 {
-    internal class AssetHandle
+    internal class AssetHandle : IComparable<AssetHandle>
     {
         private uint _instanceId;
         private uint _typeId;
@@ -22,6 +24,19 @@
         {
             _instanceId = src._instanceId;
             _typeId = src._typeId;
+        }
+
+        public virtual int CompareTo(AssetHandle other)
+        {
+            if (_typeId != other._typeId)
+            {
+                return _typeId > other._typeId ? 1 : -1;
+            }
+            if (_instanceId == other._instanceId)
+            {
+                return 0;
+            }
+            return _instanceId > other._instanceId ? 1 : -1;
         }
 
         public override bool Equals(object obj)
