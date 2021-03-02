@@ -28,7 +28,7 @@ namespace BinaryAssetBuilder.Utility
             {
                 for (int idx = 0; idx < _data.Count; ++idx)
                 {
-                    writer.Write(EA.Endian.BigEndian(_data[idx]));
+                    writer.Write(Endian.BigEndian(_data[idx]));
                 }
             }
             else

@@ -1,32 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder", "BinaryAssetBuilder\BinaryAssetBuilder.csproj", "{8AA446DD-830C-43E5-AB05-71B3BF319F65}"
-	ProjectSection(ProjectDependencies) = postProject
-		{620F9402-A138-4376-AD9E-1D4C04731482} = {620F9402-A138-4376-AD9E-1D4C04731482}
-		{49115B06-CA20-4166-830F-9615FF7D7CFB} = {49115B06-CA20-4166-830F-9615FF7D7CFB}
-		{195BC171-7FEA-49D1-9C68-3ECE37D0F4FC} = {195BC171-7FEA-49D1-9C68-3ECE37D0F4FC}
-		{176492B7-3567-447A-AB1A-84F76247C247} = {176492B7-3567-447A-AB1A-84F76247C247}
-		{10381FEE-813C-4FB2-8512-857E99DFD770} = {10381FEE-813C-4FB2-8512-857E99DFD770}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder", "BinaryAssetBuilder\BinaryAssetBuilder.csproj", "{F453E8CE-C1DD-4242-BB14-00CEFE6B40F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.Core", "BinaryAssetBuilder.Core\BinaryAssetBuilder.Core.csproj", "{A245F295-D338-4D4E-9EEF-E293F1881642}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.AudioCompiler", "BinaryAssetBuilder.AudioCompiler\BinaryAssetBuilder.AudioCompiler.csproj", "{28B1B0FE-4F4B-45E0-BC97-246562ECEFA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.XmlCompiler", "BinaryAssetBuilder.XmlCompiler\BinaryAssetBuilder.XmlCompiler.csproj", "{10381FEE-813C-4FB2-8512-857E99DFD770}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.Core", "BinaryAssetBuilder.Core\BinaryAssetBuilder.Core.csproj", "{1F24F170-5591-4D81-B1BB-95080071EA9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.Utility", "BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj", "{236B2050-9714-4EE8-8E63-7E14CB031B02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.GameDataVerifier", "BinaryAssetBuilder.GameDataVerifier\BinaryAssetBuilder.GameDataVerifier.csproj", "{AE7C343E-D80E-4AB5-B119-AB40C2112A2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.GameDataVerifier", "BinaryAssetBuilder.GameDataVerifier\BinaryAssetBuilder.GameDataVerifier.csproj", "{176492B7-3567-447A-AB1A-84F76247C247}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.TextureCompiler", "BinaryAssetBuilder.TextureCompiler\BinaryAssetBuilder.TextureCompiler.csproj", "{9E22D097-02DC-4CEE-B215-25FE60431258}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageBinaryData", "SageBinaryData\SageBinaryData.csproj", "{D0827BF6-CEE5-4DA4-B743-E2B304A88740}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.Utility", "BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj", "{01B49D06-1DF3-4ED3-A75B-D58A9E0B30BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.AudioCompiler", "BinaryAssetBuilder.AudioCompiler\BinaryAssetBuilder.AudioCompiler.csproj", "{49115B06-CA20-4166-830F-9615FF7D7CFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.W3XCompiler", "BinaryAssetBuilder.W3XCompiler\BinaryAssetBuilder.W3XCompiler.csproj", "{6DA95901-DD90-41DC-9807-6DCAC1A41181}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.TextureCompiler", "BinaryAssetBuilder.TextureCompiler\BinaryAssetBuilder.TextureCompiler.csproj", "{195BC171-7FEA-49D1-9C68-3ECE37D0F4FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.XmlCompiler", "BinaryAssetBuilder.XmlCompiler\BinaryAssetBuilder.XmlCompiler.csproj", "{0E317FF2-C463-4F1B-9B2F-D6E01F5C0205}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryAssetBuilder.W3XCompiler", "BinaryAssetBuilder.W3XCompiler\BinaryAssetBuilder.W3XCompiler.csproj", "{620F9402-A138-4376-AD9E-1D4C04731482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageBinaryData", "SageBinaryData\SageBinaryData.csproj", "{2E5DADC8-AB63-4E14-9371-B64BD14C4B95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,47 +27,47 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8AA446DD-830C-43E5-AB05-71B3BF319F65}.Debug|x86.ActiveCfg = Debug|x86
-		{8AA446DD-830C-43E5-AB05-71B3BF319F65}.Debug|x86.Build.0 = Debug|x86
-		{8AA446DD-830C-43E5-AB05-71B3BF319F65}.Release|x86.ActiveCfg = Release|x86
-		{8AA446DD-830C-43E5-AB05-71B3BF319F65}.Release|x86.Build.0 = Release|x86
-		{A245F295-D338-4D4E-9EEF-E293F1881642}.Debug|x86.ActiveCfg = Debug|x86
-		{A245F295-D338-4D4E-9EEF-E293F1881642}.Debug|x86.Build.0 = Debug|x86
-		{A245F295-D338-4D4E-9EEF-E293F1881642}.Release|x86.ActiveCfg = Release|x86
-		{A245F295-D338-4D4E-9EEF-E293F1881642}.Release|x86.Build.0 = Release|x86
-		{10381FEE-813C-4FB2-8512-857E99DFD770}.Debug|x86.ActiveCfg = Debug|x86
-		{10381FEE-813C-4FB2-8512-857E99DFD770}.Debug|x86.Build.0 = Debug|x86
-		{10381FEE-813C-4FB2-8512-857E99DFD770}.Release|x86.ActiveCfg = Release|x86
-		{10381FEE-813C-4FB2-8512-857E99DFD770}.Release|x86.Build.0 = Release|x86
-		{236B2050-9714-4EE8-8E63-7E14CB031B02}.Debug|x86.ActiveCfg = Debug|x86
-		{236B2050-9714-4EE8-8E63-7E14CB031B02}.Debug|x86.Build.0 = Debug|x86
-		{236B2050-9714-4EE8-8E63-7E14CB031B02}.Release|x86.ActiveCfg = Release|x86
-		{236B2050-9714-4EE8-8E63-7E14CB031B02}.Release|x86.Build.0 = Release|x86
-		{176492B7-3567-447A-AB1A-84F76247C247}.Debug|x86.ActiveCfg = Debug|x86
-		{176492B7-3567-447A-AB1A-84F76247C247}.Debug|x86.Build.0 = Debug|x86
-		{176492B7-3567-447A-AB1A-84F76247C247}.Release|x86.ActiveCfg = Release|x86
-		{176492B7-3567-447A-AB1A-84F76247C247}.Release|x86.Build.0 = Release|x86
-		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Debug|x86.ActiveCfg = Debug|x86
-		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Debug|x86.Build.0 = Debug|x86
-		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Release|x86.ActiveCfg = Release|x86
-		{D0827BF6-CEE5-4DA4-B743-E2B304A88740}.Release|x86.Build.0 = Release|x86
-		{49115B06-CA20-4166-830F-9615FF7D7CFB}.Debug|x86.ActiveCfg = Debug|x86
-		{49115B06-CA20-4166-830F-9615FF7D7CFB}.Debug|x86.Build.0 = Debug|x86
-		{49115B06-CA20-4166-830F-9615FF7D7CFB}.Release|x86.ActiveCfg = Release|x86
-		{49115B06-CA20-4166-830F-9615FF7D7CFB}.Release|x86.Build.0 = Release|x86
-		{195BC171-7FEA-49D1-9C68-3ECE37D0F4FC}.Debug|x86.ActiveCfg = Debug|x86
-		{195BC171-7FEA-49D1-9C68-3ECE37D0F4FC}.Debug|x86.Build.0 = Debug|x86
-		{195BC171-7FEA-49D1-9C68-3ECE37D0F4FC}.Release|x86.ActiveCfg = Release|x86
-		{195BC171-7FEA-49D1-9C68-3ECE37D0F4FC}.Release|x86.Build.0 = Release|x86
-		{620F9402-A138-4376-AD9E-1D4C04731482}.Debug|x86.ActiveCfg = Debug|x86
-		{620F9402-A138-4376-AD9E-1D4C04731482}.Debug|x86.Build.0 = Debug|x86
-		{620F9402-A138-4376-AD9E-1D4C04731482}.Release|x86.ActiveCfg = Release|x86
-		{620F9402-A138-4376-AD9E-1D4C04731482}.Release|x86.Build.0 = Release|x86
+		{F453E8CE-C1DD-4242-BB14-00CEFE6B40F0}.Debug|x86.ActiveCfg = Debug|x86
+		{F453E8CE-C1DD-4242-BB14-00CEFE6B40F0}.Debug|x86.Build.0 = Debug|x86
+		{F453E8CE-C1DD-4242-BB14-00CEFE6B40F0}.Release|x86.ActiveCfg = Release|x86
+		{F453E8CE-C1DD-4242-BB14-00CEFE6B40F0}.Release|x86.Build.0 = Release|x86
+		{28B1B0FE-4F4B-45E0-BC97-246562ECEFA2}.Debug|x86.ActiveCfg = Debug|x86
+		{28B1B0FE-4F4B-45E0-BC97-246562ECEFA2}.Debug|x86.Build.0 = Debug|x86
+		{28B1B0FE-4F4B-45E0-BC97-246562ECEFA2}.Release|x86.ActiveCfg = Release|x86
+		{28B1B0FE-4F4B-45E0-BC97-246562ECEFA2}.Release|x86.Build.0 = Release|x86
+		{1F24F170-5591-4D81-B1BB-95080071EA9E}.Debug|x86.ActiveCfg = Debug|x86
+		{1F24F170-5591-4D81-B1BB-95080071EA9E}.Debug|x86.Build.0 = Debug|x86
+		{1F24F170-5591-4D81-B1BB-95080071EA9E}.Release|x86.ActiveCfg = Release|x86
+		{1F24F170-5591-4D81-B1BB-95080071EA9E}.Release|x86.Build.0 = Release|x86
+		{AE7C343E-D80E-4AB5-B119-AB40C2112A2E}.Debug|x86.ActiveCfg = Debug|x86
+		{AE7C343E-D80E-4AB5-B119-AB40C2112A2E}.Debug|x86.Build.0 = Debug|x86
+		{AE7C343E-D80E-4AB5-B119-AB40C2112A2E}.Release|x86.ActiveCfg = Release|x86
+		{AE7C343E-D80E-4AB5-B119-AB40C2112A2E}.Release|x86.Build.0 = Release|x86
+		{9E22D097-02DC-4CEE-B215-25FE60431258}.Debug|x86.ActiveCfg = Debug|x86
+		{9E22D097-02DC-4CEE-B215-25FE60431258}.Debug|x86.Build.0 = Debug|x86
+		{9E22D097-02DC-4CEE-B215-25FE60431258}.Release|x86.ActiveCfg = Release|x86
+		{9E22D097-02DC-4CEE-B215-25FE60431258}.Release|x86.Build.0 = Release|x86
+		{01B49D06-1DF3-4ED3-A75B-D58A9E0B30BE}.Debug|x86.ActiveCfg = Debug|x86
+		{01B49D06-1DF3-4ED3-A75B-D58A9E0B30BE}.Debug|x86.Build.0 = Debug|x86
+		{01B49D06-1DF3-4ED3-A75B-D58A9E0B30BE}.Release|x86.ActiveCfg = Release|x86
+		{01B49D06-1DF3-4ED3-A75B-D58A9E0B30BE}.Release|x86.Build.0 = Release|x86
+		{6DA95901-DD90-41DC-9807-6DCAC1A41181}.Debug|x86.ActiveCfg = Debug|x86
+		{6DA95901-DD90-41DC-9807-6DCAC1A41181}.Debug|x86.Build.0 = Debug|x86
+		{6DA95901-DD90-41DC-9807-6DCAC1A41181}.Release|x86.ActiveCfg = Release|x86
+		{6DA95901-DD90-41DC-9807-6DCAC1A41181}.Release|x86.Build.0 = Release|x86
+		{0E317FF2-C463-4F1B-9B2F-D6E01F5C0205}.Debug|x86.ActiveCfg = Debug|x86
+		{0E317FF2-C463-4F1B-9B2F-D6E01F5C0205}.Debug|x86.Build.0 = Debug|x86
+		{0E317FF2-C463-4F1B-9B2F-D6E01F5C0205}.Release|x86.ActiveCfg = Release|x86
+		{0E317FF2-C463-4F1B-9B2F-D6E01F5C0205}.Release|x86.Build.0 = Release|x86
+		{2E5DADC8-AB63-4E14-9371-B64BD14C4B95}.Debug|x86.ActiveCfg = Debug|x86
+		{2E5DADC8-AB63-4E14-9371-B64BD14C4B95}.Debug|x86.Build.0 = Debug|x86
+		{2E5DADC8-AB63-4E14-9371-B64BD14C4B95}.Release|x86.ActiveCfg = Release|x86
+		{2E5DADC8-AB63-4E14-9371-B64BD14C4B95}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {85CD0E9F-6735-4E21-9A05-43773E11D21C}
+		SolutionGuid = {AD65BE99-6BDE-4CBA-AE74-D908F06CDEC0}
 	EndGlobalSection
 EndGlobal

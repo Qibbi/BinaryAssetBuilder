@@ -33,8 +33,4 @@ public class List
     {
         _currentIterator = _iterator.Clone();
     }
-
-    public void Release()
-    {
-    }
 }

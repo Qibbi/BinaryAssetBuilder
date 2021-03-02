@@ -12,8 +12,4 @@ public class Value
     {
         return _value;
     }
-
-    public void Release()
-    {
-    }
 }

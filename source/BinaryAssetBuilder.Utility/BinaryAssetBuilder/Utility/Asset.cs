@@ -15,6 +15,7 @@ namespace BinaryAssetBuilder.Utility
         public bool HasErrors { get; private set; }
         public string Source { get; }
         public string Message { get; private set; }
+        public string QualifiedName { get; }
         public string TypeName => _id[0];
         public string InstanceName => _id[1];
         public int Index { get; }
@@ -29,6 +30,9 @@ namespace BinaryAssetBuilder.Utility
         public int LinkedRelocationOffset { get; }
         public int LinkedImportsOffset { get; }
         public Manifest SourceManifest { get; }
+#if !VERSION5
+        public unsafe bool Tokenized => _assetEntry->Tokenized != 0;
+#endif
 
         public unsafe Asset(int index,
                             string basePath,
@@ -43,7 +47,8 @@ namespace BinaryAssetBuilder.Utility
         {
             _assetEntry = assetEntry;
             ExternalReferences = externalReferences;
-            _id = Marshal.PtrToStringAnsi(new IntPtr((void*)assetName)).Split(':');
+            QualifiedName = Marshal.PtrToStringAnsi(new IntPtr(assetName));
+            _id = QualifiedName.Split(':');
             HasErrors = false;
             Message = string.Empty;
             Source = new string(assetSource);

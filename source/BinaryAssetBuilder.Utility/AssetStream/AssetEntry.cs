@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿
+using System.Runtime.InteropServices;
 
 namespace AssetStream
 {
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct AssetEntry
     {
         public uint TypeId;
@@ -16,5 +17,8 @@ namespace AssetStream
         public int InstanceDataSize;
         public int RelocationDataSize;
         public int ImportsDataSize;
+#if !VERSION5
+        public uint Tokenized;
+#endif
     }
 }

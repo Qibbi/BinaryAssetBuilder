@@ -13,20 +13,26 @@
         public unsafe int InstanceDataSize { get => Data->InstanceDataSize; set => Data->InstanceDataSize = value; }
         public unsafe int RelocationDataSize { get => Data->RelocationDataSize; set => Data->RelocationDataSize = value; }
         public unsafe int ImportsDataSize { get => Data->ImportsDataSize; set => Data->ImportsDataSize = value; }
+#if !VERSION5
+        public unsafe bool Tokenized { get => Data->Tokenized != 0u; set => Data->Tokenized = value ? 1u : 0u; }
+#endif
 
         protected override unsafe void Swap()
         {
-            Data->TypeId = EA.Endian.BigEndian(Data->TypeId);
-            Data->InstanceId = EA.Endian.BigEndian(Data->InstanceId);
-            Data->TypeHash = EA.Endian.BigEndian(Data->TypeHash);
-            Data->InstanceHash = EA.Endian.BigEndian(Data->InstanceHash);
-            Data->AssetReferenceOffset = EA.Endian.BigEndian(Data->AssetReferenceOffset);
-            Data->AssetReferenceCount = EA.Endian.BigEndian(Data->AssetReferenceCount);
-            Data->NameOffset = EA.Endian.BigEndian(Data->NameOffset);
-            Data->SourceFileNameOffset = EA.Endian.BigEndian(Data->SourceFileNameOffset);
-            Data->InstanceDataSize = EA.Endian.BigEndian(Data->InstanceDataSize);
-            Data->RelocationDataSize = EA.Endian.BigEndian(Data->RelocationDataSize);
-            Data->ImportsDataSize = EA.Endian.BigEndian(Data->ImportsDataSize);
+            Data->TypeId = Endian.BigEndian(Data->TypeId);
+            Data->InstanceId = Endian.BigEndian(Data->InstanceId);
+            Data->TypeHash = Endian.BigEndian(Data->TypeHash);
+            Data->InstanceHash = Endian.BigEndian(Data->InstanceHash);
+            Data->AssetReferenceOffset = Endian.BigEndian(Data->AssetReferenceOffset);
+            Data->AssetReferenceCount = Endian.BigEndian(Data->AssetReferenceCount);
+            Data->NameOffset = Endian.BigEndian(Data->NameOffset);
+            Data->SourceFileNameOffset = Endian.BigEndian(Data->SourceFileNameOffset);
+            Data->InstanceDataSize = Endian.BigEndian(Data->InstanceDataSize);
+            Data->RelocationDataSize = Endian.BigEndian(Data->RelocationDataSize);
+            Data->ImportsDataSize = Endian.BigEndian(Data->ImportsDataSize);
+#if !VERSION5
+            Data->Tokenized = Endian.BigEndian(Data->Tokenized);
+#endif
         }
     }
 }

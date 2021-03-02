@@ -11,7 +11,7 @@ namespace BinaryAssetBuilder.Utility
     {
         private unsafe sbyte* _pBuffer;
         private unsafe AssetStream.ManifestHeader* _pHeader;
-        private IDictionary<uint, string> _stringHashes;
+        private SortedDictionary<uint, string> _stringHashes;
 
         public unsafe bool IsLoaded => (IntPtr)_pBuffer != IntPtr.Zero;
         public Manifest PatchManifest { get; private set; }
@@ -33,6 +33,42 @@ namespace BinaryAssetBuilder.Utility
         public unsafe int AssetNameBufferSize => (IntPtr)_pHeader != IntPtr.Zero ? (int)_pHeader->AssetNameBufferSize : 0;
         public unsafe int SourceFileNameBufferSize => (IntPtr)_pHeader != IntPtr.Zero ? (int)_pHeader->SourceFileNameBufferSize : 0;
 
+        public Manifest()
+        {
+            _stringHashes = new SortedDictionary<uint, string>();
+            PatchManifest = null;
+        }
+
+        public static Manifest Create(string fileName)
+        {
+            Manifest result = new Manifest();
+            return result.Load(fileName, null, true) ? result : null;
+        }
+
+        public static Manifest Create(string fileName, string[] patchSearchPaths)
+        {
+            Manifest result = new Manifest();
+            return result.Load(fileName, patchSearchPaths, true) ? result : null;
+        }
+
+        public static Manifest Create(string fileName, string[] patchSearchPaths, bool validateAssets)
+        {
+            Manifest result = new Manifest();
+            return result.Load(fileName, patchSearchPaths, validateAssets) ? result : null;
+        }
+
+        public static bool IsEquivalent(AssetEntry assetEntry, Asset asset)
+        {
+            return assetEntry.InstanceId == asset.InstanceId
+                && assetEntry.InstanceHash == asset.InstanceHash
+                && assetEntry.TypeId == asset.TypeId
+                && (assetEntry.TypeHash == asset.TypeHash
+#if !VERSION5
+                    || asset.Tokenized
+#endif
+                    );
+        }
+
         private unsafe void Free()
         {
             Assets = null;
@@ -45,30 +81,27 @@ namespace BinaryAssetBuilder.Utility
             _pBuffer = null;
         }
 
-        public Manifest()
+        public bool Reload()
         {
-            _stringHashes = new SortedDictionary<uint, string>();
-            PatchManifest = null;
-        }
-
-        public static Manifest Create(string fileName)
-        {
-            Manifest result = new Manifest();
-            return !result.Load(fileName, null) ? null : result;
-        }
-
-        public static Manifest Create(string fileName, string[] patchSearchPaths)
-        {
-            Manifest result = new Manifest();
-            return !result.Load(fileName, patchSearchPaths) ? null : result;
+            return !string.IsNullOrEmpty(FileName) && Load(FileName, null, true);
         }
 
         public bool Load(string fileName)
         {
-            return Load(fileName, null);
+            return Load(fileName, null, true);
         }
 
-        public unsafe bool Load(string fileName, string[] patchSearchPaths)
+        public bool Load(string fileName, string[] patchSearchPaths)
+        {
+            return Load(fileName, patchSearchPaths, true);
+        }
+
+        public bool Load(string fileName, bool validateAssets)
+        {
+            return Load(fileName, null, validateAssets);
+        }
+
+        public unsafe bool Load(string fileName, string[] patchSearchPaths, bool validateAssets)
         {
             Free();
             FileName = Path.GetFullPath(fileName);
@@ -94,49 +127,50 @@ namespace BinaryAssetBuilder.Utility
             sbyte* assetEntries = pBuffer + 48;
             if (_pHeader->IsBigEndian)
             {
-                _pHeader->Version = EA.Endian.BigEndian(_pHeader->Version);
-                _pHeader->StreamChecksum = EA.Endian.BigEndian(_pHeader->StreamChecksum);
-                _pHeader->AllTypesHash = EA.Endian.BigEndian(_pHeader->AllTypesHash);
-                _pHeader->AssetCount = EA.Endian.BigEndian(_pHeader->AssetCount);
-                _pHeader->TotalInstanceDataSize = EA.Endian.BigEndian(_pHeader->TotalInstanceDataSize);
-                _pHeader->MaxInstanceChunkSize = EA.Endian.BigEndian(_pHeader->MaxInstanceChunkSize);
-                _pHeader->MaxRelocationChunkSize = EA.Endian.BigEndian(_pHeader->MaxRelocationChunkSize);
-                _pHeader->MaxImportsChunkSize = EA.Endian.BigEndian(_pHeader->MaxImportsChunkSize);
-                _pHeader->AssetReferenceBufferSize = EA.Endian.BigEndian(_pHeader->AssetReferenceBufferSize);
-                _pHeader->ReferenceManifestNameBufferSize = EA.Endian.BigEndian(_pHeader->ReferenceManifestNameBufferSize);
-                _pHeader->AssetNameBufferSize = EA.Endian.BigEndian(_pHeader->AssetNameBufferSize);
-                _pHeader->SourceFileNameBufferSize = EA.Endian.BigEndian(_pHeader->SourceFileNameBufferSize);
+                _pHeader->Version = Endian.BigEndian(_pHeader->Version);
+                _pHeader->StreamChecksum = Endian.BigEndian(_pHeader->StreamChecksum);
+                _pHeader->AllTypesHash = Endian.BigEndian(_pHeader->AllTypesHash);
+                _pHeader->AssetCount = Endian.BigEndian(_pHeader->AssetCount);
+                _pHeader->TotalInstanceDataSize = Endian.BigEndian(_pHeader->TotalInstanceDataSize);
+                _pHeader->MaxInstanceChunkSize = Endian.BigEndian(_pHeader->MaxInstanceChunkSize);
+                _pHeader->MaxRelocationChunkSize = Endian.BigEndian(_pHeader->MaxRelocationChunkSize);
+                _pHeader->MaxImportsChunkSize = Endian.BigEndian(_pHeader->MaxImportsChunkSize);
+                _pHeader->AssetReferenceBufferSize = Endian.BigEndian(_pHeader->AssetReferenceBufferSize);
+                _pHeader->ReferenceManifestNameBufferSize = Endian.BigEndian(_pHeader->ReferenceManifestNameBufferSize);
+                _pHeader->AssetNameBufferSize = Endian.BigEndian(_pHeader->AssetNameBufferSize);
+                _pHeader->SourceFileNameBufferSize = Endian.BigEndian(_pHeader->SourceFileNameBufferSize);
             }
-            if (_pHeader->Version < 4)
+#if VERSION5
+            if (_pHeader->Version != 5)
+#elif VERSION6
+            if (_pHeader->Version != 6)
+#endif
             {
                 throw new ArgumentException("Can't read manifest. Unsupported file version");
             }
             Assets = new Asset[_pHeader->AssetCount];
             AssetStream.AssetEntry* currentAsset = (AssetStream.AssetEntry*)assetEntries;
-            sbyte* ptr3 = assetEntries + (_pHeader->AssetCount * sizeof(AssetStream.AssetEntry));
-            sbyte* ptr4 = ptr3;
-            sbyte* referenceManifestNameBuffer = ptr3 + _pHeader->AssetReferenceBufferSize;
-            sbyte* referenceManifestNameBufferPosition = referenceManifestNameBuffer;
-            sbyte* ptr7 = referenceManifestNameBuffer + _pHeader->ReferenceManifestNameBufferSize;
+            sbyte* assetReferenceBuffer = assetEntries + (_pHeader->AssetCount * sizeof(AssetStream.AssetEntry));
+            sbyte* referenceManifestNameBuffer = assetReferenceBuffer + _pHeader->AssetReferenceBufferSize;
+            sbyte* assetNameBuffer = referenceManifestNameBuffer + _pHeader->ReferenceManifestNameBufferSize;
             List<ReferencedManifest> referencedManifests = new List<ReferencedManifest>();
             string path;
-            for (; referenceManifestNameBufferPosition < ptr7; referenceManifestNameBufferPosition += path.Length + 1)
+            for (; referenceManifestNameBuffer < assetNameBuffer; referenceManifestNameBuffer += path.Length + 1)
             {
                 bool isPatch = false;
                 if (_pHeader->Version >= 4)
                 {
-                    if (*referenceManifestNameBufferPosition == 2)
+                    if (*referenceManifestNameBuffer == 2)
                     {
                         isPatch = true;
                     }
-                    ++referenceManifestNameBufferPosition;
+                    ++referenceManifestNameBuffer;
                 }
-                path = new string(referenceManifestNameBufferPosition);
+                path = new string(referenceManifestNameBuffer);
                 referencedManifests.Add(new ReferencedManifest(path, isPatch));
             }
             ReferencedManifests = referencedManifests.ToArray();
-            sbyte* ptr8 = ptr7;
-            sbyte* ptr9 = ptr7 + _pHeader->AssetNameBufferSize;
+            sbyte* sourceFileNameBuffer = assetNameBuffer + _pHeader->AssetNameBufferSize;
             int linkedInstanceOffset = 4;
             int linkedRelocationOffset = 4;
             int linkedImportsOffset = 4;
@@ -145,26 +179,26 @@ namespace BinaryAssetBuilder.Utility
             {
                 if (_pHeader->IsBigEndian)
                 {
-                    currentAsset->TypeId = EA.Endian.BigEndian(currentAsset->TypeId);
-                    currentAsset->InstanceId = EA.Endian.BigEndian(currentAsset->InstanceId);
-                    currentAsset->TypeHash = EA.Endian.BigEndian(currentAsset->TypeHash);
-                    currentAsset->InstanceHash = EA.Endian.BigEndian(currentAsset->InstanceHash);
-                    currentAsset->AssetReferenceOffset = EA.Endian.BigEndian(currentAsset->AssetReferenceOffset);
-                    currentAsset->AssetReferenceCount = EA.Endian.BigEndian(currentAsset->AssetReferenceCount);
-                    currentAsset->NameOffset = EA.Endian.BigEndian(currentAsset->NameOffset);
-                    currentAsset->SourceFileNameOffset = EA.Endian.BigEndian(currentAsset->SourceFileNameOffset);
-                    currentAsset->InstanceDataSize = EA.Endian.BigEndian(currentAsset->InstanceDataSize);
-                    currentAsset->RelocationDataSize = EA.Endian.BigEndian(currentAsset->RelocationDataSize);
-                    currentAsset->ImportsDataSize = EA.Endian.BigEndian(currentAsset->ImportsDataSize);
+                    currentAsset->TypeId = Endian.BigEndian(currentAsset->TypeId);
+                    currentAsset->InstanceId = Endian.BigEndian(currentAsset->InstanceId);
+                    currentAsset->TypeHash = Endian.BigEndian(currentAsset->TypeHash);
+                    currentAsset->InstanceHash = Endian.BigEndian(currentAsset->InstanceHash);
+                    currentAsset->AssetReferenceOffset = Endian.BigEndian(currentAsset->AssetReferenceOffset);
+                    currentAsset->AssetReferenceCount = Endian.BigEndian(currentAsset->AssetReferenceCount);
+                    currentAsset->NameOffset = Endian.BigEndian(currentAsset->NameOffset);
+                    currentAsset->SourceFileNameOffset = Endian.BigEndian(currentAsset->SourceFileNameOffset);
+                    currentAsset->InstanceDataSize = Endian.BigEndian(currentAsset->InstanceDataSize);
+                    currentAsset->RelocationDataSize = Endian.BigEndian(currentAsset->RelocationDataSize);
+                    currentAsset->ImportsDataSize = Endian.BigEndian(currentAsset->ImportsDataSize);
                 }
                 ReferenceHandle[] externalReferences = new ReferenceHandle[currentAsset->AssetReferenceCount];
-                AssetId* assetId = (AssetId*)(ptr4 + currentAsset->AssetReferenceOffset);
+                AssetId* assetId = (AssetId*)(assetReferenceBuffer + currentAsset->AssetReferenceOffset);
                 for (int idx = 0; idx < currentAsset->AssetReferenceCount; ++idx)
                 {
                     if (_pHeader->IsBigEndian)
                     {
-                        assetId->TypeId = EA.Endian.BigEndian(assetId->TypeId);
-                        assetId->InstanceId = EA.Endian.BigEndian(assetId->InstanceId);
+                        assetId->TypeId = Endian.BigEndian(assetId->TypeId);
+                        assetId->InstanceId = Endian.BigEndian(assetId->InstanceId);
                     }
                     externalReferences[idx] = new ReferenceHandle
                     {
@@ -173,19 +207,25 @@ namespace BinaryAssetBuilder.Utility
                         TypeName = StringFromHash(assetId->TypeId),
                         InstanceName = StringFromHash(assetId->InstanceId)
                     };
+                    ReferenceHandle referenceHandle = externalReferences[idx];
+                    externalReferences[idx].QualifiedName = $"{referenceHandle.TypeName}:{referenceHandle.InstanceName}";
                     ++assetId;
                 }
                 Asset asset = new Asset(index,
                                         basePath,
                                         currentAsset,
-                                        ptr8 + currentAsset->NameOffset,
-                                        ptr9 + currentAsset->SourceFileNameOffset,
+                                        assetNameBuffer + currentAsset->NameOffset,
+                                        sourceFileNameBuffer + currentAsset->SourceFileNameOffset,
                                         externalReferences,
                                         this,
                                         linkedInstanceOffset,
                                         linkedRelocationOffset,
                                         linkedImportsOffset);
                 Assets[index] = asset;
+                if (validateAssets)
+                {
+                    Assets[index].Update();
+                }
                 linkedInstanceOffset += currentAsset->InstanceDataSize;
                 linkedRelocationOffset += currentAsset->RelocationDataSize;
                 linkedImportsOffset += currentAsset->ImportsDataSize;
@@ -196,7 +236,7 @@ namespace BinaryAssetBuilder.Utility
                 {
                     Path.GetDirectoryName(fileName)
                 };
-            if (patchSearchPaths != null)
+            if (patchSearchPaths is not null)
             {
                 foreach (string patchSearchPath in patchSearchPaths)
                 {
@@ -226,9 +266,9 @@ namespace BinaryAssetBuilder.Utility
                     throw new ArgumentException($"Base patch manifest {referencedManifest.Path} does not exist.");
                 }
             }
-            if (patchManifest != null)
+            if (patchManifest is not null)
             {
-                IDictionary<AssetHandle, Asset> patchAssets = new SortedDictionary<AssetHandle, Asset>();
+                SortedDictionary<AssetHandle, Asset> patchAssets = new SortedDictionary<AssetHandle, Asset>();
                 foreach (Asset asset in patchManifest.Assets)
                 {
                     patchAssets.Add(new AssetHandle(asset.TypeId, asset.InstanceId), asset);
@@ -236,13 +276,12 @@ namespace BinaryAssetBuilder.Utility
                 for (int idx = 0; idx < Assets.Length; ++idx)
                 {
                     Asset asset = Assets[idx];
-                    if (asset.InstanceDataSize != 0 || asset.RelocationDataSize != 0 || asset.ImportsDataSize != 0)
+                    if (asset.InstanceDataSize == 0 && asset.RelocationDataSize == 0 && asset.ImportsDataSize == 0)
                     {
-                        continue;
-                    }
-                    if (patchAssets.TryGetValue(new AssetHandle(asset.TypeId, asset.InstanceId), out Asset patchAsset))
-                    {
-                        Assets[idx] = patchAsset;
+                        if (patchAssets.TryGetValue(new AssetHandle(asset.TypeId, asset.InstanceId), out Asset patchAsset))
+                        {
+                            Assets[idx] = patchAsset;
+                        }
                     }
                 }
                 PatchManifest = patchManifest;
@@ -250,16 +289,11 @@ namespace BinaryAssetBuilder.Utility
             return true;
         }
 
-        public bool Reload()
-        {
-            return !string.IsNullOrEmpty(FileName) && Load(FileName, null);
-        }
-
         public void LoadStringHashes(string basePath)
         {
             _stringHashes.Clear();
             string inputUri = string.Empty;
-            for (; basePath != null && basePath.Length > 3; basePath = Path.GetDirectoryName(basePath))
+            for (; basePath is not null && basePath.Length > 3; basePath = Path.GetDirectoryName(basePath))
             {
                 string path = Path.Combine(basePath, "StringHashes.xml");
                 if (File.Exists(path))
@@ -268,7 +302,7 @@ namespace BinaryAssetBuilder.Utility
                     break;
                 }
             }
-            if (inputUri == string.Empty)
+            if (inputUri == string.Empty || !File.Exists(inputUri))
             {
                 return;
             }
@@ -279,7 +313,11 @@ namespace BinaryAssetBuilder.Utility
                 {
                     if (reader.Name == "StringAndHash")
                     {
-                        _stringHashes.Add(Convert.ToUInt32(reader.GetAttribute("Hash")), reader.GetAttribute("Text"));
+                        uint hash = Convert.ToUInt32(reader.GetAttribute("Hash"));
+                        if (!_stringHashes.ContainsKey(hash))
+                        {
+                            _stringHashes.Add(hash, reader.GetAttribute("Text"));
+                        }
                     }
                 }
             }
@@ -288,6 +326,19 @@ namespace BinaryAssetBuilder.Utility
                 _stringHashes.Clear();
             }
             reader.Close();
+        }
+
+        public int GetBaseStreamPosition(AssetEntry assetEntry)
+        {
+            for (int idx = 0; idx < Assets.Length; ++idx)
+            {
+                Asset asset = Assets[idx];
+                if (IsEquivalent(assetEntry, asset))
+                {
+                    return idx;
+                }
+            }
+            return -1;
         }
 
         public string StringFromHash(uint hash)

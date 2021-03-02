@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="urn:xmlns:ea.com:babproject" xmlns:mstns="urn:xmlns:ea.com:babproject" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:xmlns:ea.com:babproject" elementFormDefault="qualified" id="BinaryAssetBuilderProject">
+
+    <xs:complexType name="StreamReference">
+        <xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="Name" type="xs:string" use="required"/>
+        <xs:attribute name="Configuration" type="xs:string" use="required"/>
+        <xs:attribute name="Manifest" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="StreamConfiguration">
+        <xs:sequence>
+            <!-- Search paths to search for base streams.  For example, if static_1.manifest is our base, and it references
+                   static_0.manifest (which is in a different directory), static_0 will be searched for in these paths -->
+            <xs:element name="BaseStreamSearchPath" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+            <!-- Already-built streams to use for resolving external references.  Augments the Include type="reference".
+                Necessary to remove ambiguities presented by using buildConfiguration postfixes. -->
+            <xs:element name="StreamReference" type="StreamReference" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="Name" type="xs:string" default=""/>
+        <xs:attribute name="Default" type="xs:boolean" default="false"/>
+        <xs:attribute name="PatchStream" type="xs:string" />
+        <!-- Relative path to add to base stream.  For example, if "aptui/" is specified, base stream "x" will be referenced as "aptui/x" -->
+        <xs:attribute name="RelativeBasePath" type="xs:string" />
+    </xs:complexType>
+
+    <xs:complexType name="BinaryStream">
+        <xs:sequence>
+            <xs:element name="Configuration" type="StreamConfiguration" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="Source" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="BinaryAssetBuilderProject">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Stream" type="BinaryStream" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

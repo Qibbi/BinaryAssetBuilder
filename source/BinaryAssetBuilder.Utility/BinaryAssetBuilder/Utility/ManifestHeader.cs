@@ -4,7 +4,11 @@ namespace BinaryAssetBuilder.Utility
 {
     public class ManifestHeader : AStructWrapper<AssetStream.ManifestHeader>
     {
+#if VERSION5
         public static ushort LatestVersion => 5;
+#elif VERSION6
+        public static ushort LatestVersion => 6;
+#endif
 
         public unsafe bool IsBigEndian => Data->IsBigEndian;
         public unsafe bool IsLinked { get => Data->IsLinked; set => Data->IsLinked = value; }
@@ -35,18 +39,18 @@ namespace BinaryAssetBuilder.Utility
 
         protected override unsafe void Swap()
         {
-            Data->Version = EA.Endian.BigEndian(Data->Version);
-            Data->StreamChecksum = EA.Endian.BigEndian(Data->StreamChecksum);
-            Data->AllTypesHash = EA.Endian.BigEndian(Data->AllTypesHash);
-            Data->AssetCount = EA.Endian.BigEndian(Data->AssetCount);
-            Data->TotalInstanceDataSize = EA.Endian.BigEndian(Data->TotalInstanceDataSize);
-            Data->MaxInstanceChunkSize = EA.Endian.BigEndian(Data->MaxInstanceChunkSize);
-            Data->MaxRelocationChunkSize = EA.Endian.BigEndian(Data->MaxRelocationChunkSize);
-            Data->MaxImportsChunkSize = EA.Endian.BigEndian(Data->MaxImportsChunkSize);
-            Data->AssetReferenceBufferSize = EA.Endian.BigEndian(Data->AssetReferenceBufferSize);
-            Data->ReferenceManifestNameBufferSize = EA.Endian.BigEndian(Data->ReferenceManifestNameBufferSize);
-            Data->AssetNameBufferSize = EA.Endian.BigEndian(Data->AssetNameBufferSize);
-            Data->SourceFileNameBufferSize = EA.Endian.BigEndian(Data->SourceFileNameBufferSize);
+            Data->Version = Endian.BigEndian(Data->Version);
+            Data->StreamChecksum = Endian.BigEndian(Data->StreamChecksum);
+            Data->AllTypesHash = Endian.BigEndian(Data->AllTypesHash);
+            Data->AssetCount = Endian.BigEndian(Data->AssetCount);
+            Data->TotalInstanceDataSize = Endian.BigEndian(Data->TotalInstanceDataSize);
+            Data->MaxInstanceChunkSize = Endian.BigEndian(Data->MaxInstanceChunkSize);
+            Data->MaxRelocationChunkSize = Endian.BigEndian(Data->MaxRelocationChunkSize);
+            Data->MaxImportsChunkSize = Endian.BigEndian(Data->MaxImportsChunkSize);
+            Data->AssetReferenceBufferSize = Endian.BigEndian(Data->AssetReferenceBufferSize);
+            Data->ReferenceManifestNameBufferSize = Endian.BigEndian(Data->ReferenceManifestNameBufferSize);
+            Data->AssetNameBufferSize = Endian.BigEndian(Data->AssetNameBufferSize);
+            Data->SourceFileNameBufferSize = Endian.BigEndian(Data->SourceFileNameBufferSize);
         }
 
         public override unsafe void SaveToStream(Stream output, bool isBigEndian)

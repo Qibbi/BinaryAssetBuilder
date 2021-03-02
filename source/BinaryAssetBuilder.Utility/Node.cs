@@ -3,9 +3,9 @@ using System.Xml.XPath;
 
 public class Node
 {
-    private XPathNavigator _navigator { get; }
-    private string _defaultValue { get; }
-    private XmlNamespaceManager _namespaceManager { get; }
+    private readonly XPathNavigator _navigator;
+    private readonly string _defaultValue;
+    private readonly XmlNamespaceManager _namespaceManager;
 
     public Node(XPathNavigator navigator, XmlNamespaceManager namespaceManager)
     {
@@ -21,7 +21,7 @@ public class Node
     public List GetChildNodes(string name)
     {
         List result = null;
-        if (_navigator != null)
+        if (_navigator is not null)
         {
             if (name is null)
             {
@@ -38,7 +38,7 @@ public class Node
     public Node GetChildNode(string name, string defaultValue)
     {
         Node result = null;
-        if (_navigator != null)
+        if (_navigator is not null)
         {
             if (_navigator.MoveToChild(name, _navigator.NamespaceURI))
             {
@@ -46,7 +46,7 @@ public class Node
                 _navigator.MoveToParent();
             }
         }
-        if (result is null && defaultValue != null)
+        if (result is null && defaultValue is not null)
         {
             result = new Node(defaultValue);
         }
@@ -56,12 +56,12 @@ public class Node
     public Value GetAttributeValue(string name, string defaultValue)
     {
         Value result = null;
-        if (_navigator != null && _navigator.MoveToAttribute(name, string.Empty))
+        if (_navigator is not null && _navigator.MoveToAttribute(name, string.Empty))
         {
             result = new Value(_navigator.Value);
             _navigator.MoveToParent();
         }
-        if (result is null && defaultValue != null)
+        if (result is null && defaultValue is not null)
         {
             result = new Value(defaultValue);
         }
@@ -71,18 +71,14 @@ public class Node
     public Value GetValue()
     {
         Value result = null;
-        if (_navigator != null)
+        if (_navigator is not null)
         {
             result = new Value(_navigator.Value);
         }
-        else if (_defaultValue != null)
+        else if (_defaultValue is not null)
         {
             result = new Value(_defaultValue);
         }
         return result;
-    }
-
-    public void Release()
-    {
     }
 }

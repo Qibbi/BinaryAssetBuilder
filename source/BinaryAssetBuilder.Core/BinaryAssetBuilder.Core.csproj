@@ -1,34 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Platforms>x86</Platforms>
-    <UseWPF>true</UseWPF>
-    <RootNamespace>BinaryAssetBuilder</RootNamespace>
-    <Nullable>disable</Nullable>
+    <RootNamespace></RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <OutputPath>..\..\Release</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;WIN32</DefineConstants>
+    <DefineConstants>TRACE;WIN32;VERSION5</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <OutputPath>..\..\Debug</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;WIN32</DefineConstants>
+    <DefineConstants>TRACE;WIN32;VERSION5</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BinaryAssetBuilder.Utility\BinaryAssetBuilder.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Core\GUIBuildOutput.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
   </ItemGroup>
 
 </Project>

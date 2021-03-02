@@ -1,70 +1,67 @@
-﻿using BinaryAssetBuilder.Core;
+﻿using BinaryAssetBuilder.Core.Diagnostics;
 using System;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace BinaryAssetBuilder
+public class BinaryAssetBuilderException : ApplicationException
 {
-    public class BinaryAssetBuilderException : ApplicationException
+    public ErrorCode ErrorCode { get; }
+
+    public BinaryAssetBuilderException(ErrorCode errorCode, string message, params object[] args) : base(string.Format(message, args))
     {
-        public ErrorCode ErrorCode { get; }
+        ErrorCode = errorCode;
+    }
 
-        public BinaryAssetBuilderException(ErrorCode errorCode, string message, params object[] args) : base(string.Format(message, args))
+    public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode, string message, params object[] args) : base(string.Format(message, args), innerException)
+    {
+        ErrorCode = errorCode;
+    }
+
+    public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode) : base(errorCode.ToString(), innerException)
+    {
+        ErrorCode = errorCode;
+    }
+
+    public void Trace(Tracer tracer)
+    {
+        if (tracer is null)
         {
-            ErrorCode = errorCode;
+            tracer = Tracer.GetTracer("Default Tracer", string.Empty);
         }
-
-        public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode, string message, params object[] args) : base(string.Format(message, args), innerException)
+        if (InnerException != null)
         {
-            ErrorCode = errorCode;
-        }
-
-        public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode) : base(errorCode.ToString(), innerException)
-        {
-            ErrorCode = errorCode;
-        }
-
-        public void Trace(Tracer tracer)
-        {
-            if (tracer is null)
+            if (InnerException is XmlSchemaValidationException xsvException)
             {
-                tracer = Tracer.GetTracer("Default Tracer", string.Empty);
+                tracer.TraceException($"{Message}:\n   XML validation error encountered in {xsvException.SourceUri} (line {xsvException.LineNumber}, position {xsvException.LinePosition}):\n      {xsvException.Message}");
             }
-            if (InnerException != null)
+            else if (InnerException is XmlException xmlException)
             {
-                if (InnerException is XmlSchemaValidationException xsvException)
+                tracer.TraceException($"{Message}:\n   XML formatting error encountered in {xmlException.SourceUri} (line {xmlException.LineNumber}, position {xmlException.LinePosition}):\n      {xmlException.Message}");
+            }
+            else if (InnerException is XmlSchemaException xsException)
+            {
+                string name = "<Name not Available>";
+                if (xsException.SourceSchemaObject != null)
                 {
-                    tracer.TraceException($"{Message}:\n   XML validation error encountered in {xsvException.SourceUri} (line {xsvException.LineNumber}, position {xsvException.LinePosition}):\n      {xsvException.Message}");
-                }
-                else if (InnerException is XmlException xmlException)
-                {
-                    tracer.TraceException($"{Message}:\n   XML formatting error encountered in {xmlException.SourceUri} (line {xmlException.LineNumber}, position {xmlException.LinePosition}):\n      {xmlException.Message}");
-                }
-                else if (InnerException is XmlSchemaException xsException)
-                {
-                    string name = "<Name not Available>";
-                    if (xsException.SourceSchemaObject != null)
+                    if (xsException.SourceSchemaObject is XmlSchemaAttribute xmlSchemaAttribute)
                     {
-                        if (xsException.SourceSchemaObject is XmlSchemaAttribute xmlSchemaAttribute)
-                        {
-                            name = xmlSchemaAttribute.Name;
-                        }
-                        else if (xsException.SourceSchemaObject is XmlSchemaElement xmlSchemaElement)
-                        {
-                            name = xmlSchemaElement.Name;
-                        }
+                        name = xmlSchemaAttribute.Name;
                     }
-                    tracer.TraceException($"{Message}:\n   Schema error encountered in {xsException.SourceUri} (object: {name}, line {xsException.LineNumber}, position {xsException.LinePosition}):\n      {xsException.Message}");
+                    else if (xsException.SourceSchemaObject is XmlSchemaElement xmlSchemaElement)
+                    {
+                        name = xmlSchemaElement.Name;
+                    }
                 }
-                else
-                {
-                    tracer.TraceException($"{Message}:\n   {InnerException.Message}");
-                }
+                tracer.TraceException($"{Message}:\n   Schema error encountered in {xsException.SourceUri} (object: {name}, line {xsException.LineNumber}, position {xsException.LinePosition}):\n      {xsException.Message}");
             }
             else
             {
-                tracer.TraceException(Message);
+                tracer.TraceException($"{Message}:\n   {InnerException.Message}");
             }
+        }
+        else
+        {
+            tracer.TraceException(Message);
         }
     }
 }

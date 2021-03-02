@@ -2,8 +2,8 @@
 {
     internal class AssetHandle
     {
-        private uint _instanceId;
-        private uint _typeId;
+        private readonly uint _instanceId;
+        private readonly uint _typeId;
 
         public uint InstanceId => _instanceId;
         public uint TypeId => _typeId;

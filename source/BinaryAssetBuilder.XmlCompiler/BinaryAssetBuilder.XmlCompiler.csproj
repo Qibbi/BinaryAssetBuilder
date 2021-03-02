@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Platforms>x86</Platforms>
     <RootNamespace></RootNamespace>
-    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -19,10 +18,5 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;WIN32</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BinaryAssetBuilder.Core\BinaryAssetBuilder.Core.csproj" />
-    <ProjectReference Include="..\SageBinaryData\SageBinaryData.csproj" />
-  </ItemGroup>
 
 </Project>

@@ -1,13 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <UseWPF>true</UseWPF>
     <Platforms>x86</Platforms>
-    <Nullable>disable</Nullable>
-    <StartupObject>BinaryAssetBuilder.BinaryAssetBuilder</StartupObject>
+    <RootNamespace></RootNamespace>
+    <StartupObject>BinaryAssetBuilder.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -24,6 +23,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BinaryAssetBuilder.Core\BinaryAssetBuilder.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="BinaryAssetBuilder.cfg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
