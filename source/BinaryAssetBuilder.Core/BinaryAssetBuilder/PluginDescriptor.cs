@@ -2,6 +2,9 @@
 using BinaryAssetBuilder.Core.Xml;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Xml;
 
 namespace BinaryAssetBuilder
@@ -28,7 +31,9 @@ namespace BinaryAssetBuilder
             {
                 return;
             }
-            _plugin = Activator.CreateInstance(Type.GetType(_targetType) ?? throw new ApplicationException($"'{_targetType}' not found")) as IAssetBuilderPluginBase;
+            string[] typeAndAssembly = _targetType.Split(',', 2);
+            Assembly plugin = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, typeAndAssembly[1].Trim() + ".dll"));
+            _plugin = Activator.CreateInstance(plugin.GetType(typeAndAssembly[0].Trim()) ?? throw new ApplicationException($"'{_targetType}' not found")) as IAssetBuilderPluginBase;
             if (_plugin is null)
             {
                 throw new ApplicationException($"'{_targetType}' does not implement {nameof(IAssetBuilderPluginBase)}");
