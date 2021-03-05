@@ -1,6 +1,5 @@
 # Remove files I cannot share
 schemas/xsd/
-SageXml/
 
 # Remove test files
 StringHashes.xml*
