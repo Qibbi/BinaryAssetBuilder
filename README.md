@@ -76,8 +76,8 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] StaticGameLOD
 * [ ] DynamicGameLOD
 * [ ] AudioLOD
-* [ ] VideoEventList
-* [ ] UIConfigList
+* [x] VideoEventList                                            0x999FCBE3
+* [x] UIConfigList                                              0xB3B7607A
 * [x] PackedTextureImage                                        0x2FAEB748
 * [ ] OnDemandTextureImage
 * [ ] TerrainTextureAtlas

@@ -7,6 +7,7 @@ using BinaryAssetBuilder.Metrics;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading;
 
 namespace BinaryAssetBuilder
@@ -57,6 +58,7 @@ namespace BinaryAssetBuilder
 
         public BinaryAssetBuilder()
         {
+            AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SageBinaryData.dll"));
             _pluginRegistry = new PluginRegistry(Settings.Current.Plugins, Settings.Current.TargetPlatform);
             _verifierPluginRegistry = new VerifierPluginRegistry(Settings.Current.VerifierPlugins, Settings.Current.TargetPlatform);
         }
