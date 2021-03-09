@@ -16,5 +16,6 @@ public static partial class Marshaler
         Marshal(node.GetChildNode(nameof(MultiplayerColor.LivingWorldBannerColor), null), &objT->LivingWorldBannerColor, state);
         Marshal(node.GetChildNode(nameof(MultiplayerColor.TooltipName), null), &objT->TooltipName, state);
         Marshal(node.GetChildNode(nameof(MultiplayerColor.AvailableInMetaGame), null), &objT->AvailableInMetaGame, state);
+        Marshal(node, (BaseAssetType*)objT, state);
     }
 }

@@ -69,8 +69,8 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] StringHashTable                                           0x2C112832
 * [ ] InGameUISettings
 * [ ] DamageFX
-* [ ] MultiplayerSettings
-* [ ] OnlineChatColors
+* [x] MultiplayerSettings                                       0x1BAF4C42
+* [x] OnlineChatColors                                          0xF3645AA7
 * [x] MultiplayerColor                                          0x966F336A
 * [x] GameLODPreset                                             0x19DAC24D
 * [x] StaticGameLOD                                             0xBEAF1CC9

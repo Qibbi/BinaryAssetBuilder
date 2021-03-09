@@ -91,6 +91,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x5A48D289u;
                     result.TypeHash = 0x5A48D289u;
                     break;
+                case 0x0B63AEF0u:
+                    result.Type = typeof(MultiplayerSettings);
+                    result.TypeName = nameof(MultiplayerSettings);
+                    result.ProcessingHash = num ^ 0x1BAF4C42u;
+                    result.TypeHash = 0x1BAF4C42u;
+                    break;
                 case 0x0CAD7864u:
                     result.Type = typeof(DLContent);
                     result.TypeName = nameof(DLContent);

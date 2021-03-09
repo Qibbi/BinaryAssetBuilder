@@ -38,5 +38,6 @@ public static partial class Marshaler
         Marshal(node.GetChildNode(nameof(OnlineChatColors.MapUnselected), null), &objT->MapUnselected, state);
         Marshal(node.GetChildNode(nameof(OnlineChatColors.MessageOfTheDay), null), &objT->MessageOfTheDay, state);
         Marshal(node.GetChildNode(nameof(OnlineChatColors.MessageOfTheDayHeading), null), &objT->MessageOfTheDayHeading, state);
+        Marshal(node, (BaseAssetType*)objT, state);
     }
 }
