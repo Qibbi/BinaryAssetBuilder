@@ -133,9 +133,10 @@ public static partial class Marshaler
             MarshalListItemDelegate<T> marshal = marshalDelegate as MarshalListItemDelegate<T>;
             marshal(node, *objT, state);
         }
-        uint typeId = FastHash.GetHashCode(typeof(T).Name);
-        state.InplaceEndianToPlatform(&typeId);
-        *(uint*)*objT = typeId;
+        // No type id for unknown polymorphic
+        // uint typeId = FastHash.GetHashCode(typeof(T).Name);
+        // state.InplaceEndianToPlatform(&typeId);
+        // *(uint*)*objT = typeId;
     }
 
     private static unsafe void Marshal<T>(List list, PolymorphicList<T>* objT, Tracker state) where T : unmanaged

@@ -37,7 +37,7 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             else
             {
-                buffer.RelocationData = new byte[0];
+                buffer.RelocationData = Array.Empty<byte>();
             }
             if (chunk.ImportsBuffer.Length > 0)
             {
@@ -45,7 +45,7 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             else
             {
-                buffer.ImportsData = new byte[0];
+                buffer.ImportsData = Array.Empty<byte>();
             }
         }
 
@@ -216,6 +216,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(InGameUIGroupSelectionCommandSlots);
                     result.ProcessingHash = num ^ 0xF6CE1A68u;
                     result.TypeHash = 0xF6CE1A68u;
+                    break;
+                case 0x66219699u:
+                    result.Type = typeof(PlayerPowerButtonTemplateStore);
+                    result.TypeName = nameof(PlayerPowerButtonTemplateStore);
+                    result.ProcessingHash = num ^ 0xDB57AB4Fu;
+                    result.TypeHash = 0xDB57AB4Fu;
                     break;
                 case 0x6C41E6DCu:
                     result.Type = typeof(AptAptData);

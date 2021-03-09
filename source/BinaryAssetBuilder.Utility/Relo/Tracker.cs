@@ -12,6 +12,11 @@ namespace Relo
             public uint Index;
             public uint From;
             public uint To;
+
+            public override string ToString()
+            {
+                return $"Bookmark [{Index}] From: 0x{From:X08} To: 0x{To:X08}";
+            }
         }
 
         internal class Block

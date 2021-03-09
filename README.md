@@ -129,7 +129,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MP3DialogEvent
 * [ ] MP3AmbientStream
 * [ ] UnitAbilityButtonTemplateStore
-* [ ] PlayerPowerButtonTemplateStore
+* [x] PlayerPowerButtonTemplateStore                            0xDB57AB4F
 * [x] CommandSet                                                0x3CFF78A1
 
 ### Kane's Wrath Only Types

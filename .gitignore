@@ -1,23 +1,22 @@
 # Remove files I cannot share
-schemas/xsd/
+# schemas/xsd/
 
 # Remove test files
-StringHashes.xml*
-StringHashesI.xml*
 test*.xml
 test*.manifest
 test.bin
 test.relo
 test.imp
 test.big
-blb/
-cache/
 test/
+cache/
 BinaryAssetBuilder.SessionCache.*
+StringHashes.xml*
 stringhashes.manifest
 stringhashes.bin
 stringhashes.relo
 stringhashes.imp
+stringhashes/
 global.manifest
 global.xml
 static.manifest

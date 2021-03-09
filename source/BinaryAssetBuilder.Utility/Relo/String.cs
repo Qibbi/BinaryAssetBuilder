@@ -7,5 +7,14 @@ namespace Relo
     {
         public int Length;
         public unsafe T* Target;
+
+        public unsafe override string ToString()
+        {
+            if (typeof(T) == typeof(sbyte))
+            {
+                return new string((sbyte*)Target, 0, Length);
+            }
+            return base.ToString();
+        }
     }
 }
