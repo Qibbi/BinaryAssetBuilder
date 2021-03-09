@@ -68,7 +68,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MissionObjectiveList
 * [x] StringHashTable                                           0x2C112832
 * [ ] InGameUISettings
-* [ ] DamageFX
+* [x] DamageFX                                                  0x4DF81EBD
 * [x] MultiplayerSettings                                       0x1BAF4C42
 * [x] OnlineChatColors                                          0xF3645AA7
 * [x] MultiplayerColor                                          0x966F336A

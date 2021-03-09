@@ -367,6 +367,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x71BAD792u;
                     result.TypeHash = 0x71BAD792u;
                     break;
+                case 0xAD3568F5u:
+                    result.Type = typeof(DamageFX);
+                    result.TypeName = nameof(DamageFX);
+                    result.ProcessingHash = num ^ 0x4DF81EBDu;
+                    result.TypeHash = 0x4DF81EBDu;
+                    break;
                 case 0xB71D7323u:
                     result.Type = typeof(UIConfigList);
                     result.TypeName = nameof(UIConfigList);
