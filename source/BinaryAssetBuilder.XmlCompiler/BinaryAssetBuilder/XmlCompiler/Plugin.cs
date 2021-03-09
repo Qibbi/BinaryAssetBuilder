@@ -199,6 +199,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x3BF7FEB9u;
                     result.TypeHash = 0x3BF7FEB9u;
                     break;
+                case 0x502EED32u:
+                    result.Type = typeof(OnlineChatColors);
+                    result.TypeName = nameof(OnlineChatColors);
+                    result.ProcessingHash = num ^ 0xF3645AA7u;
+                    result.TypeHash = 0xF3645AA7u;
+                    break;
                 case 0x5080A5D8u:
                     result.Type = typeof(MappableKey);
                     result.TypeName = nameof(MappableKey);

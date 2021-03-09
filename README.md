@@ -71,7 +71,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] DamageFX
 * [ ] MultiplayerSettings
 * [ ] OnlineChatColors
-* [ ] MultiplayerColor
+* [x] MultiplayerColor                                          0x966F336A
 * [x] GameLODPreset                                             0x19DAC24D
 * [x] StaticGameLOD                                             0xBEAF1CC9
 * [x] DynamicGameLOD                                            0x71BAD792
