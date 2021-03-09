@@ -85,6 +85,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x7AEB73B2u;
                     result.TypeHash = 0x7AEB73B2u;
                     break;
+                case 0x0B408BD4u:
+                    result.Type = typeof(UnitAbilityButtonTemplateStore);
+                    result.TypeName = nameof(UnitAbilityButtonTemplateStore);
+                    result.ProcessingHash = num ^ 0x5A48D289u;
+                    result.TypeHash = 0x5A48D289u;
+                    break;
                 case 0x0CAD7864u:
                     result.Type = typeof(DLContent);
                     result.TypeName = nameof(DLContent);

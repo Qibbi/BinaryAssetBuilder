@@ -128,7 +128,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MP3MusicTrack
 * [ ] MP3DialogEvent
 * [ ] MP3AmbientStream
-* [ ] UnitAbilityButtonTemplateStore
+* [x] UnitAbilityButtonTemplateStore                            0x5A48D289
 * [x] PlayerPowerButtonTemplateStore                            0xDB57AB4F
 * [x] CommandSet                                                0x3CFF78A1
 
