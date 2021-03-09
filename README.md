@@ -72,10 +72,10 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MultiplayerSettings
 * [ ] OnlineChatColors
 * [ ] MultiplayerColor
-* [ ] GameLODPreset
-* [ ] StaticGameLOD
-* [ ] DynamicGameLOD
-* [ ] AudioLOD
+* [x] GameLODPreset                                             0x19DAC24D
+* [x] StaticGameLOD                                             0xBEAF1CC9
+* [x] DynamicGameLOD                                            0x71BAD792
+* [x] AudioLOD                                                  0x3ABBF00F
 * [x] VideoEventList                                            0x999FCBE3
 * [x] UIConfigList                                              0xB3B7607A
 * [x] PackedTextureImage                                        0x2FAEB748

@@ -1,5 +1,5 @@
 ﻿using Relo;
-using SageBinaryData.InGameUI;
+using SageBinaryData;
 
 public static partial class Marshaler
 {

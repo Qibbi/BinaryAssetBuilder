@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData.Shell
+namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct UIComponentSaveLoad

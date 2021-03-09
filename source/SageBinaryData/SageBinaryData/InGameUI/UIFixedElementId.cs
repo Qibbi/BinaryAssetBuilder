@@ -1,4 +1,4 @@
-﻿namespace SageBinaryData.InGameUI
+﻿namespace SageBinaryData
 {
     public enum UIFixedElementId
     {

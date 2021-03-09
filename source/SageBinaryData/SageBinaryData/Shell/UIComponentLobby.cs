@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData.Shell
+namespace SageBinaryData
 {
     public enum SlotStateType
     {

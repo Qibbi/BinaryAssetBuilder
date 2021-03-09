@@ -1,7 +1,7 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData.InGameUI
+namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct InGameUIDecalCloudSettings

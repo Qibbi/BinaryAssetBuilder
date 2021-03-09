@@ -285,7 +285,7 @@ namespace SageBinaryData
 
     public enum UpgradeIdType
     {
-        UPGRADE_01,
+        UPGRADE_01 = 1014,
         UPGRADE_02,
         UPGRADE_03,
         UPGRADE_04,

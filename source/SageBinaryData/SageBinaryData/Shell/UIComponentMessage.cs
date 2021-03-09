@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData.Shell
+namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct UIComponentMessage

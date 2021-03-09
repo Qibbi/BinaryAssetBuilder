@@ -97,11 +97,23 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x4E1A5713u;
                     result.TypeHash = 0x4E1A5713u;
                     break;
+                case 0x11D8BAC7u:
+                    result.Type = typeof(AudioLOD);
+                    result.TypeName = nameof(AudioLOD);
+                    result.ProcessingHash = num ^ 0x3ABBF00Fu;
+                    result.TypeHash = 0x3ABBF00Fu;
+                    break;
                 case 0x11E5CF64u:
                     result.Type = typeof(StringHashTable);
                     result.TypeName = nameof(StringHashTable);
                     result.ProcessingHash = num ^ 0x2C112832u;
                     result.TypeHash = 0x2C112832u;
+                    break;
+                case 0x151D037Cu:
+                    result.Type = typeof(GameLODPreset);
+                    result.TypeName = nameof(GameLODPreset);
+                    result.ProcessingHash = num ^ 0x19DAC24Du;
+                    result.TypeHash = 0x19DAC24Du;
                     break;
                 case 0x17E53184u:
                     result.Type = typeof(CrowdResponse);
@@ -120,6 +132,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(IntelDB);
                     result.ProcessingHash = num ^ 0xFBB64F90u;
                     result.TypeHash = 0xFBB64F90u;
+                    break;
+                case 0x1FB298D1u:
+                    result.Type = typeof(StaticGameLOD);
+                    result.TypeName = nameof(StaticGameLOD);
+                    result.ProcessingHash = num ^ 0xBEAF1CC9u;
+                    result.TypeHash = 0xBEAF1CC9u;
                     break;
                 case 0x1FD451BFu:
                     result.Type = typeof(LargeGroupAudioMap);
@@ -324,6 +342,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(InGameUITacticalCommandSlots);
                     result.ProcessingHash = num ^ 0xC24AEFF1u;
                     result.TypeHash = 0xC24AEFF1u;
+                    break;
+                case 0xACEF31A4u:
+                    result.Type = typeof(DynamicGameLOD);
+                    result.TypeName = nameof(DynamicGameLOD);
+                    result.ProcessingHash = num ^ 0x71BAD792u;
+                    result.TypeHash = 0x71BAD792u;
                     break;
                 case 0xB71D7323u:
                     result.Type = typeof(UIConfigList);
