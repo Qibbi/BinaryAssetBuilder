@@ -73,9 +73,9 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct Color
     {
-        public byte R;
-        public byte G;
         public byte B;
+        public byte G;
+        public byte R;
         public byte A;
     }
 

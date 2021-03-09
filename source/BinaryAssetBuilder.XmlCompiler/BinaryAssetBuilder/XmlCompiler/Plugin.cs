@@ -277,6 +277,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xED45F096u;
                     result.TypeHash = 0xED45F096u;
                     break;
+                case 0x8E28081Du:
+                    result.Type = typeof(MultiplayerColor);
+                    result.TypeName = nameof(MultiplayerColor);
+                    result.ProcessingHash = num ^ 0x966F336Au;
+                    result.TypeHash = 0x966F336Au;
+                    break;
                 case 0x9053D603u:
                     result.Type = typeof(UnitOverlayIconSettings);
                     result.TypeName = nameof(UnitOverlayIconSettings);
