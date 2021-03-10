@@ -62,7 +62,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MusicScriptConditionNugget_Or
 * [ ] MusicScriptConditionNugget_And
 * [ ] MusicScriptTrack
-* [ ] LocalBuildListMonitor
+* [x] LocalBuildListMonitor                                     0x99CC030A
 * [x] MpGameRules                                               0xEDDBB607
 * [x] ExperienceLevelTemplate                                   0xAE55047B
 * [x] MissionObjectiveList                                      0xC385A8C1

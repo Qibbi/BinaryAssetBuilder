@@ -115,6 +115,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x2C112832u;
                     result.TypeHash = 0x2C112832u;
                     break;
+                case 0x12CFE3EFu:
+                    result.Type = typeof(LocalBuildListMonitor);
+                    result.TypeName = nameof(LocalBuildListMonitor);
+                    result.ProcessingHash = num ^ 0x99CC030Au;
+                    result.TypeHash = 0x99CC030Au;
+                    break;
                 case 0x151D037Cu:
                     result.Type = typeof(GameLODPreset);
                     result.TypeName = nameof(GameLODPreset);
