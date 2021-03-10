@@ -64,8 +64,8 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] MusicScriptTrack
 * [ ] LocalBuildListMonitor
 * [x] MpGameRules                                               0xEDDBB607
-* [ ] ExperienceLevelTemplate
-* [ ] MissionObjectiveList
+* [x] ExperienceLevelTemplate                                   0xAE55047B
+* [x] MissionObjectiveList                                      0xC385A8C1
 * [x] StringHashTable                                           0x2C112832
 * [x] InGameUISettings                                          0x49FE3760
 * [x] DamageFX                                                  0x4DF81EBD

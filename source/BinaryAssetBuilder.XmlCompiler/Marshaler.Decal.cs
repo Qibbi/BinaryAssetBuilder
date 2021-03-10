@@ -48,4 +48,14 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(RadiusDecalTemplate.MaxSelectedUnits), "0"), &objT->MaxSelectedUnits, state);
         Marshal(node.GetAttributeValue(nameof(RadiusDecalTemplate.SpiralAcceleration), "0.0"), &objT->SpiralAcceleration, state);
     }
+
+    public static unsafe void Marshal(Node node, RadiusDecalTemplate** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(RadiusDecalTemplate), 1u);
+        Marshal(node, *objT, state);
+    }
 }

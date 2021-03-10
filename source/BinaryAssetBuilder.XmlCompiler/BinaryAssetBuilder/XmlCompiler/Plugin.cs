@@ -277,6 +277,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xC385A8C1u;
                     result.TypeHash = 0xC385A8C1u;
                     break;
+                case 0x6FBC4A9Fu:
+                    result.Type = typeof(ExperienceLevelTemplate);
+                    result.TypeName = nameof(ExperienceLevelTemplate);
+                    result.ProcessingHash = num ^ 0xAE55047Bu;
+                    result.TypeHash = 0xAE55047Bu;
+                    break;
                 case 0x77AC3B08u:
                     result.Type = typeof(TargetingInTurretArcCompare);
                     result.TypeName = nameof(TargetingInTurretArcCompare);
