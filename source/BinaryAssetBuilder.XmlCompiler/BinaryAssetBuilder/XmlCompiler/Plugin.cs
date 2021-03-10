@@ -73,6 +73,12 @@ namespace BinaryAssetBuilder.XmlCompiler
             }
             switch (typeId)
             {
+                case 0x036B677Bu:
+                    result.Type = typeof(MusicScriptConditionNugget_TrackPlayedCount);
+                    result.TypeName = nameof(MusicScriptConditionNugget_TrackPlayedCount);
+                    result.ProcessingHash = num ^ 0x4FCFFAB1u;
+                    result.TypeHash = 0x4FCFFAB1u;
+                    break;
                 case 0x0559C032u:
                     result.Type = typeof(TargetingCombatChainCompare);
                     result.TypeName = nameof(TargetingCombatChainCompare);
@@ -84,6 +90,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(ConnectionLineManager);
                     result.ProcessingHash = num ^ 0x7AEB73B2u;
                     result.TypeHash = 0x7AEB73B2u;
+                    break;
+                case 0x0B3906FAu:
+                    result.Type = typeof(MusicScriptConditionNugget_LocalPlayerIsObserver);
+                    result.TypeName = nameof(MusicScriptConditionNugget_LocalPlayerIsObserver);
+                    result.ProcessingHash = num ^ 0xAFB6AF3Au;
+                    result.TypeHash = 0xAFB6AF3Au;
                     break;
                 case 0x0B408BD4u:
                     result.Type = typeof(UnitAbilityButtonTemplateStore);
@@ -181,6 +193,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xC8D16E6Du;
                     result.TypeHash = 0xC8D16E6Du;
                     break;
+                case 0x2C108648u:
+                    result.Type = typeof(MusicScriptConditionNugget_SpecificTrackTypePlaying);
+                    result.TypeName = nameof(MusicScriptConditionNugget_SpecificTrackTypePlaying);
+                    result.ProcessingHash = num ^ 0xBCAD9B77u;
+                    result.TypeHash = 0xBCAD9B77u;
+                    break;
                 case 0x2C358B80u:
                     result.Type = typeof(MpGameRules);
                     result.TypeName = nameof(MpGameRules);
@@ -211,11 +229,29 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x58F89E8Bu;
                     result.TypeHash = 0x58F89E8Bu;
                     break;
+                case 0x3DDFA8BDu:
+                    result.Type = typeof(MusicScriptTrack);
+                    result.TypeName = nameof(MusicScriptTrack);
+                    result.ProcessingHash = num ^ 0x702C8407u;
+                    result.TypeHash = 0x702C8407u;
+                    break;
                 case 0x423395E1u:
                     result.Type = typeof(AptDatData);
                     result.TypeName = nameof(AptDatData);
                     result.ProcessingHash = num ^ 0x3BF7FEB9u;
                     result.TypeHash = 0x3BF7FEB9u;
+                    break;
+                case 0x44A5973Du:
+                    result.Type = typeof(ObjectFilterAsset);
+                    result.TypeName = nameof(ObjectFilterAsset);
+                    result.ProcessingHash = num ^ 0x25970AF7u;
+                    result.TypeHash = 0x25970AF7u;
+                    break;
+                case 0x5016F8C3u:
+                    result.Type = typeof(MusicScriptConditionNugget_And);
+                    result.TypeName = nameof(MusicScriptConditionNugget_And);
+                    result.ProcessingHash = num ^ 0x10173347u;
+                    result.TypeHash = 0x10173347u;
                     break;
                 case 0x502EED32u:
                     result.Type = typeof(OnlineChatColors);
@@ -246,6 +282,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(PackedTextureImage);
                     result.ProcessingHash = num ^ 0x2FAEB748u;
                     result.TypeHash = 0x2FAEB748u;
+                    break;
+                case 0x57495B42u:
+                    result.Type = typeof(MusicScriptConditionNugget_TimeFromStartOfLevel);
+                    result.TypeName = nameof(MusicScriptConditionNugget_TimeFromStartOfLevel);
+                    result.ProcessingHash = num ^ 0xAA4A9E23u;
+                    result.TypeHash = 0xAA4A9E23u;
                     break;
                 case 0x582FDC2Au:
                     result.Type = typeof(WaterTransparency);
@@ -307,6 +349,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
                     break;
+                case 0x88011B0Eu:
+                    result.Type = typeof(MusicScriptConditionNugget_Or);
+                    result.TypeName = nameof(MusicScriptConditionNugget_Or);
+                    result.ProcessingHash = num ^ 0x81114695u;
+                    result.TypeHash = 0x81114695u;
+                    break;
                 case 0x8CA5A7D7u:
                     result.Type = typeof(TargetingDistanceCompare);
                     result.TypeName = nameof(TargetingDistanceCompare);
@@ -318,6 +366,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(MultiplayerColor);
                     result.ProcessingHash = num ^ 0x966F336Au;
                     result.TypeHash = 0x966F336Au;
+                    break;
+                case 0x8F7DC19Bu:
+                    result.Type = typeof(MusicPalette);
+                    result.TypeName = nameof(MusicPalette);
+                    result.ProcessingHash = num ^ 0x6A7AF822u;
+                    result.TypeHash = 0x6A7AF822u;
                     break;
                 case 0x9053D603u:
                     result.Type = typeof(UnitOverlayIconSettings);
@@ -367,6 +421,18 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x73FE99B0u;
                     result.TypeHash = 0x73FE99B0u;
                     break;
+                case 0x9C361A08u:
+                    result.Type = typeof(MusicScriptConditionNugget_UnitsFarFromBase);
+                    result.TypeName = nameof(MusicScriptConditionNugget_UnitsFarFromBase);
+                    result.ProcessingHash = num ^ 0xD889BF98u;
+                    result.TypeHash = 0xD889BF98u;
+                    break;
+                case 0xA38DB775u:
+                    result.Type = typeof(MusicScriptConditionNugget_EvaEventPlayedRecently);
+                    result.TypeName = nameof(MusicScriptConditionNugget_EvaEventPlayedRecently);
+                    result.ProcessingHash = num ^ 0x1F200F13u;
+                    result.TypeHash = 0x1F200F13u;
+                    break;
                 case 0xA6E6BBA7u:
                     result.Type = typeof(HotKeySlot);
                     result.TypeName = nameof(HotKeySlot);
@@ -415,6 +481,18 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x84C1C2F0u;
                     result.TypeHash = 0x84C1C2F0u;
                     break;
+                case 0xC9DD2E6Du:
+                    result.Type = typeof(MusicScriptConditionNugget_ObjectsNearEvaEvent);
+                    result.TypeName = nameof(MusicScriptConditionNugget_ObjectsNearEvaEvent);
+                    result.ProcessingHash = num ^ 0x0EC4D160u;
+                    result.TypeHash = 0x0EC4D160u;
+                    break;
+                case 0xCAD58CC1u:
+                    result.Type = typeof(MusicScriptConditionNugget_AnyTrackPlaying);
+                    result.TypeName = nameof(MusicScriptConditionNugget_AnyTrackPlaying);
+                    result.ProcessingHash = num ^ 0x337BC326u;
+                    result.TypeHash = 0x337BC326u;
+                    break;
                 case 0xD19D90C6u:
                     result.Type = typeof(Road);
                     result.TypeName = nameof(Road);
@@ -426,6 +504,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(UnitTypeIcon);
                     result.ProcessingHash = num ^ 0xF7AB74BEu;
                     result.TypeHash = 0xF7AB74BEu;
+                    break;
+                case 0xD7D07964u:
+                    result.Type = typeof(MusicScriptConditionNugget_ScoredKillCount);
+                    result.TypeName = nameof(MusicScriptConditionNugget_ScoredKillCount);
+                    result.ProcessingHash = num ^ 0x5C0F93DCu;
+                    result.TypeHash = 0x5C0F93DCu;
                     break;
                 case 0xD99C40A9u:
                     result.Type = typeof(PhaseEffect);
@@ -457,6 +541,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xBD8F61A4u;
                     result.TypeHash = 0xBD8F61A4u;
                     break;
+                case 0xEED6A240u:
+                    result.Type = typeof(MusicScriptConditionNugget_Not);
+                    result.TypeName = nameof(MusicScriptConditionNugget_Not);
+                    result.ProcessingHash = num ^ 0xB886383Bu;
+                    result.TypeHash = 0xB886383Bu;
+                    break;
                 case 0xF7CE0BBDu:
                     result.Type = typeof(ShadowMap);
                     result.TypeName = nameof(ShadowMap);
@@ -468,6 +558,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(TheVersion);
                     result.ProcessingHash = num ^ 0xF659EF49u;
                     result.TypeHash = 0xF659EF49u;
+                    break;
+                case 0xFF7BDFBFu:
+                    result.Type = typeof(MusicScriptConditionNugget_ObjectsOfTypeExist);
+                    result.TypeName = nameof(MusicScriptConditionNugget_ObjectsOfTypeExist);
+                    result.ProcessingHash = num ^ 0x9586411Cu;
+                    result.TypeHash = 0x9586411Cu;
                     break;
                 default:
                     result.TypeName = "<unknown>";

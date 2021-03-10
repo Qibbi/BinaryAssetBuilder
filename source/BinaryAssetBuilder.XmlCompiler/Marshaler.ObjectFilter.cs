@@ -28,4 +28,15 @@ public static partial class Marshaler
         using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(ObjectFilter), 1u);
         Marshal(node, *objT, state);
     }
+
+
+    public static unsafe void Marshal(Node node, ObjectFilterAsset* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetChildNode(nameof(ObjectFilterAsset.Filter), null), &objT->Filter, state);
+        Marshal(node, (BaseAssetType*)objT, state);
+    }
 }
