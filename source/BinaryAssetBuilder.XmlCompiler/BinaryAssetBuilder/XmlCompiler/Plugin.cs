@@ -271,6 +271,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x36866072u;
                     result.TypeHash = 0x36866072u;
                     break;
+                case 0x6CDDC801u:
+                    result.Type = typeof(MissionObjectiveList);
+                    result.TypeName = nameof(MissionObjectiveList);
+                    result.ProcessingHash = num ^ 0xC385A8C1u;
+                    result.TypeHash = 0xC385A8C1u;
+                    break;
                 case 0x77AC3B08u:
                     result.Type = typeof(TargetingInTurretArcCompare);
                     result.TypeName = nameof(TargetingInTurretArcCompare);

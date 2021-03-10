@@ -169,6 +169,25 @@ public static partial class Marshaler
         Marshal(node.GetValue(), objT, state);
     }
 
+    private static unsafe void Marshal(Value value, float** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(float), 1u);
+        Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, float** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, Percentage* objT, Tracker state)
     {
         int index = text.IndexOf('%');
@@ -227,6 +246,25 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(Value value, Angle** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Angle), 1u);
+        Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, Angle** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private const int _timeMaxPostfixes = 2;
     private static readonly string[] _timePostFixes = new[] { "ms", "s" };
     private static readonly float[] _timeMultipliers = new[] { 0.001f, 1.0f };
@@ -261,6 +299,25 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Value value, Time** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Time), 1u);
+        Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, Time** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal(string text, Duration* objT, Tracker state)
