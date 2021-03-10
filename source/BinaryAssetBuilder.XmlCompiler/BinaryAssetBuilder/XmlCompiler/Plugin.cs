@@ -181,6 +181,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xEDDBB607u;
                     result.TypeHash = 0xEDDBB607u;
                     break;
+                case 0x33A671F8u:
+                    result.Type = typeof(InGameUISettings);
+                    result.TypeName = nameof(InGameUISettings);
+                    result.ProcessingHash = num ^ 0x49FE3760u;
+                    result.TypeHash = 0x49FE3760u;
+                    break;
                 case 0x395A0FD6u:
                     result.Type = typeof(InGameUILookAtCommandSlots);
                     result.TypeName = nameof(InGameUILookAtCommandSlots);

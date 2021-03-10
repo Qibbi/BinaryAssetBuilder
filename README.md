@@ -67,7 +67,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] ExperienceLevelTemplate
 * [ ] MissionObjectiveList
 * [x] StringHashTable                                           0x2C112832
-* [ ] InGameUISettings
+* [x] InGameUISettings                                          0x49FE3760
 * [x] DamageFX                                                  0x4DF81EBD
 * [x] MultiplayerSettings                                       0x1BAF4C42
 * [x] OnlineChatColors                                          0xF3645AA7
