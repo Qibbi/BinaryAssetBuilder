@@ -47,6 +47,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(RadiusDecalTemplate.MinRadius), "0.0"), &objT->MinRadius, state);
         Marshal(node.GetAttributeValue(nameof(RadiusDecalTemplate.MaxSelectedUnits), "0"), &objT->MaxSelectedUnits, state);
         Marshal(node.GetAttributeValue(nameof(RadiusDecalTemplate.SpiralAcceleration), "0.0"), &objT->SpiralAcceleration, state);
+        Marshal(node.GetChildNode(nameof(RadiusDecalTemplate.Color), null), &objT->Color, state);
     }
 
     public static unsafe void Marshal(Node node, RadiusDecalTemplate** objT, Tracker state)

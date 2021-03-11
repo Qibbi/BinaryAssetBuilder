@@ -90,6 +90,10 @@ public static partial class Marshaler
         {
             result = uint.Parse(text.Substring(2), System.Globalization.NumberStyles.HexNumber);
         }
+        else if (text.Contains('.')) // This is a fix because some default to 0.0 in the schema
+        {
+            result = (uint)float.Parse(text);
+        }
         else
         {
             result = uint.Parse(text);
@@ -373,6 +377,25 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal<T>(Node node, T* objT, Tracker state) where T : unmanaged, Enum
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
+    private static unsafe void Marshal<T>(Value value, T** objT, Tracker state) where T : unmanaged, Enum
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(T), 1u);
+        Marshal(value, *objT, state);
+    }
+
     private static unsafe void Marshal(string text, AnsiString* objT, Tracker state)
     {
         uint length = (uint)text.Length;
@@ -561,6 +584,46 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(Color4f.g), null), &objT->g, state);
         Marshal(node.GetAttributeValue(nameof(Color4f.b), null), &objT->b, state);
         Marshal(node.GetAttributeValue(nameof(Color4f.a), null), &objT->a, state);
+    }
+
+    private static unsafe void Marshal(Node node, RealRange* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(RealRange.Low), null), &objT->Low, state);
+        Marshal(node.GetAttributeValue(nameof(RealRange.High), null), &objT->High, state);
+    }
+
+    private static unsafe void Marshal(Node node, RealRange** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(RealRange), 1u);
+        Marshal(node, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, IntRange* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(IntRange.Low), null), &objT->Low, state);
+        Marshal(node.GetAttributeValue(nameof(IntRange.High), null), &objT->High, state);
+    }
+
+    private static unsafe void Marshal(Node node, IntRange** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(IntRange), 1u);
+        Marshal(node, *objT, state);
     }
 
     private static unsafe void Marshal(Node node, Coord2D* objT, Tracker state)

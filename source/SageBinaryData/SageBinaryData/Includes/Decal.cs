@@ -54,7 +54,7 @@ namespace SageBinaryData
         public float MinRadius;
         public uint MaxSelectedUnits;
         public float SpiralAcceleration;
+        public Color Color;
         public SageBool OnlyVisibleToOwningPlayer;
-        public unsafe Color* Color;
     }
 }

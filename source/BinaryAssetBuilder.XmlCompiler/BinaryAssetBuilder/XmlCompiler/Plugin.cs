@@ -205,6 +205,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xEDDBB607u;
                     result.TypeHash = 0xEDDBB607u;
                     break;
+                case 0x30D2F544u:
+                    result.Type = typeof(RadiusCursorLibrary);
+                    result.TypeName = nameof(RadiusCursorLibrary);
+                    result.ProcessingHash = num ^ 0xD62B490Fu;
+                    result.TypeHash = 0xD62B490Fu;
+                    break;
                 case 0x33A671F8u:
                     result.Type = typeof(InGameUISettings);
                     result.TypeName = nameof(InGameUISettings);
@@ -331,6 +337,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xAE55047Bu;
                     result.TypeHash = 0xAE55047Bu;
                     break;
+                case 0x7046D9F8u:
+                    result.Type = typeof(MusicTrack);
+                    result.TypeName = nameof(MusicTrack);
+                    result.ProcessingHash = num ^ 0x1469548Au;
+                    result.TypeHash = 0x1469548Au;
+                    break;
                 case 0x77AC3B08u:
                     result.Type = typeof(TargetingInTurretArcCompare);
                     result.TypeName = nameof(TargetingInTurretArcCompare);
@@ -348,6 +360,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(LogicCommand);
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
+                    break;
+                case 0x844D7B9Fu:
+                    result.Type = typeof(AudioEvent);
+                    result.TypeName = nameof(AudioEvent);
+                    result.ProcessingHash = num ^ 0x1B886049u;
+                    result.TypeHash = 0x1B886049u;
                     break;
                 case 0x88011B0Eu:
                     result.Type = typeof(MusicScriptConditionNugget_Or);
@@ -433,6 +451,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x1F200F13u;
                     result.TypeHash = 0x1F200F13u;
                     break;
+                case 0xA3A7AF37u:
+                    result.Type = typeof(Multisound);
+                    result.TypeName = nameof(Multisound);
+                    result.ProcessingHash = num ^ 0x12B1C67Cu;
+                    result.TypeHash = 0x12B1C67Cu;
+                    break;
                 case 0xA6E6BBA7u:
                     result.Type = typeof(HotKeySlot);
                     result.TypeName = nameof(HotKeySlot);
@@ -499,6 +523,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xDCF3C28Bu;
                     result.TypeHash = 0xDCF3C28Bu;
                     break;
+                case 0xD414D1C3u:
+                    result.Type = typeof(DialogEvent);
+                    result.TypeName = nameof(DialogEvent);
+                    result.ProcessingHash = num ^ 0x8655CDB4u;
+                    result.TypeHash = 0x8655CDB4u;
+                    break;
                 case 0xD76B50C7u:
                     result.Type = typeof(UnitTypeIcon);
                     result.TypeName = nameof(UnitTypeIcon);
@@ -523,11 +553,17 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x5AC6FA18u;
                     result.TypeHash = 0x5AC6FA18u;
                     break;
-                case 0xDEFCA2F6:
+                case 0xDEFCA2F6u:
                     result.Type = typeof(DefaultHotKeys);
                     result.TypeName = nameof(DefaultHotKeys);
                     result.ProcessingHash = num ^ 0x0E12479Du;
                     result.TypeHash = 0x0E12479Du;
+                    break;
+                case 0xEA2C2798u:
+                    result.Type = typeof(AmbientStream);
+                    result.TypeName = nameof(AmbientStream);
+                    result.ProcessingHash = num ^ 0xDABB1C4Bu;
+                    result.TypeHash = 0xDABB1C4Bu;
                     break;
                 case 0xEC066D65u:
                     result.Type = typeof(LogicCommandSet);

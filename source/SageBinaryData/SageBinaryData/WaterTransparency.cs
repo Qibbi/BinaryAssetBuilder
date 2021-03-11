@@ -11,8 +11,8 @@ namespace SageBinaryData
         public float TransparentWaterMinOpacity;
         public AssetReference<Texture> StandingWaterTexture;
         public float RiverTransparencyMultiplier;
-        public unsafe Color StandingWaterColor;
-        public unsafe Color RadarWaterColor;
+        public Color StandingWaterColor;
+        public Color RadarWaterColor;
         public unsafe Coord2D* ReflectionGuard;
         public SageBool AdditiveBlending;
     }

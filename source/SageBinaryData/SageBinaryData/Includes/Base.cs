@@ -42,6 +42,20 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct RealRange
+    {
+        public float Low;
+        public float High;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct IntRange
+    {
+        public int Low;
+        public int High;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct Coord2D
     {
 #pragma warning disable IDE1006 // Naming Styles

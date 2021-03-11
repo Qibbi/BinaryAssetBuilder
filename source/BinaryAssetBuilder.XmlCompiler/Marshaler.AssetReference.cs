@@ -22,6 +22,15 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal<T>(Node node, AssetReference<T>* objT, Tracker state) where T : unmanaged
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal<T>(Value value, AssetReference<T>** objT, Tracker state) where T : unmanaged
     {
         if (value is null)
@@ -30,15 +39,6 @@ public static partial class Marshaler
         }
         using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AssetReference<T>), 1u);
         Marshal(value, *objT, state);
-    }
-
-    private static unsafe void Marshal<T>(Node node, AssetReference<T>* objT, Tracker state) where T : unmanaged
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal<T>(Node node, AssetReference<T>** objT, Tracker state) where T : unmanaged
@@ -69,6 +69,15 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal<T, U>(Node node, AssetReference<T, U>* objT, Tracker state) where T : unmanaged where U : unmanaged
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal<T, U>(Value value, AssetReference<T, U>** objT, Tracker state) where T : unmanaged where U : unmanaged
