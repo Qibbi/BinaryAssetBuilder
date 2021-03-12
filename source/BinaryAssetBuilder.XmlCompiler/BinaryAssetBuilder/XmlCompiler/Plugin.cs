@@ -559,6 +559,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x8655CDB4u;
                     result.TypeHash = 0x8655CDB4u;
                     break;
+                case 0xD51AE5E1u:
+                    result.Type = typeof(GameMap);
+                    result.TypeName = nameof(GameMap);
+                    result.ProcessingHash = num ^ 0x3EC9C79Bu;
+                    result.TypeHash = 0x3EC9C79Bu;
+                    break;
                 case 0xD76B50C7u:
                     result.Type = typeof(UnitTypeIcon);
                     result.TypeName = nameof(UnitTypeIcon);
