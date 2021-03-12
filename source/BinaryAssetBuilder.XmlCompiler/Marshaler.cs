@@ -139,7 +139,7 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(Node node, int* objT, Tracker state)
+    public static unsafe void Marshal(Node node, int* objT, Tracker state)
     {
         if (node is null)
         {

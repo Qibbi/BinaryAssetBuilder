@@ -145,6 +145,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x66FB33A0u;
                     result.TypeHash = 0x66FB33A0u;
                     break;
+                case 0x1A2DC767u:
+                    result.Type = typeof(TheaterOfWarTemplate);
+                    result.TypeName = nameof(TheaterOfWarTemplate);
+                    result.ProcessingHash = num ^ 0xE60C9724u;
+                    result.TypeHash = 0xE60C9724u;
+                    break;
                 case 0x1E0FC59Eu:
                     result.Type = typeof(InGameUIPlayerPowerCommandSlots);
                     result.TypeName = nameof(InGameUIPlayerPowerCommandSlots);
@@ -300,6 +306,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(WaterTransparency);
                     result.ProcessingHash = num ^ 0x331DA6CEu;
                     result.TypeHash = 0x331DA6CEu;
+                    break;
+                case 0x585E034Eu:
+                    result.Type = typeof(CampaignTemplate);
+                    result.TypeName = nameof(CampaignTemplate);
+                    result.ProcessingHash = num ^ 0xAC60B530u;
+                    result.TypeHash = 0xAC60B530u;
                     break;
                 case 0x5F969146u:
                     result.Type = typeof(MapMetaDataType);
@@ -516,6 +528,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(MusicScriptConditionNugget_AnyTrackPlaying);
                     result.ProcessingHash = num ^ 0x337BC326u;
                     result.TypeHash = 0x337BC326u;
+                    break;
+                case 0xCF4AED23u:
+                    result.Type = typeof(MissionTemplate);
+                    result.TypeName = nameof(MissionTemplate);
+                    result.ProcessingHash = num ^ 0x0D283295u;
+                    result.TypeHash = 0x0D283295u;
                     break;
                 case 0xD19D90C6u:
                     result.Type = typeof(Road);

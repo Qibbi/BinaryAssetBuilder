@@ -535,8 +535,8 @@ namespace SageBinaryData
         public WeaponPrefireType PreAttackType;
         public WeaponReAcquireDetailType ReAcquireDetailType;
         public WeaponReloadType AutoReloadsClip;
-        public AssetReference<BaseAudioEventInfo> SingleAmmoReloadedNotFullSound;
-        public AssetReference<BaseAudioEventInfo> ClipReloadedSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> SingleAmmoReloadedNotFullSound;
+        public AssetReference<BaseAudioEventInfo, AudioEventInfo> ClipReloadedSound;
         public WeaponAffectsBitFlags RadiusDamageAffects;
         public AnsiString FXTrigger;
         public WeaponCollideBitFlags ProjectileCollidesWith;

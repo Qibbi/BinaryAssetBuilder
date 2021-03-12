@@ -37,9 +37,9 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] GameMap
 * [ ] AttributeModifier
 * [ ] ArmorTemplate
-* [ ] MissionTemplate
-* [ ] TheaterOfWarTemplate
-* [ ] CampaignTemplate
+* [x] MissionTemplate                                           0x0D283295
+* [x] TheaterOfWarTemplate                                      0xE60C9724
+* [x] CampaignTemplate                                          0xAC60B530
 * [x] RadiusCursorLibrary                                       0xD62B490F
 * [ ] AudioFile
 * [x] AudioEvent                                                0x1B886049
