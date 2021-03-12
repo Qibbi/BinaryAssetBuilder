@@ -391,6 +391,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x97D0A46Eu;
                     result.TypeHash = 0x97D0A46Eu;
                     break;
+                case 0x81D85EFAu:
+                    result.Type = typeof(SpecialPowerTemplate);
+                    result.TypeName = nameof(SpecialPowerTemplate);
+                    result.ProcessingHash = num ^ 0x5EF0ACA9u;
+                    result.TypeHash = 0x5EF0ACA9u;
+                    break;
                 case 0x844D7B9Fu:
                     result.Type = typeof(AudioEvent);
                     result.TypeName = nameof(AudioEvent);
@@ -630,6 +636,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(DefaultHotKeys);
                     result.ProcessingHash = num ^ 0x0E12479Du;
                     result.TypeHash = 0x0E12479Du;
+                    break;
+                case 0xE1AFE75Bu:
+                    result.Type = typeof(UpgradeTemplate);
+                    result.TypeName = nameof(UpgradeTemplate);
+                    result.ProcessingHash = num ^ 0x1E53F384u;
+                    result.TypeHash = 0x1E53F384u;
                     break;
                 case 0xEA2C2798u:
                     result.Type = typeof(AmbientStream);

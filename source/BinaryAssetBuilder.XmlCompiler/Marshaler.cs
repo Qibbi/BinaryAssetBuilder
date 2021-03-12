@@ -827,6 +827,25 @@ public static partial class Marshaler
         Marshal(node.GetValue(), objT, state);
     }
 
+    private static unsafe void Marshal(Value value, StringHash** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(StringHash), 1u);
+        Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, StringHash** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(Node node, BaseAssetType* objT, Tracker state)
     {
         if (node is null)

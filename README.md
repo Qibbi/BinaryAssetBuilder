@@ -27,8 +27,8 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] FXList
 * [ ] ObjectCreationList
 * [x] ObjectFilterAsset                                         0x25970AF7
-* [ ] SpecialPowerTemplate
-* [ ] UpgradeTemplate
+* [x] SpecialPowerTemplate                                      0x5EF0ACA9
+* [x] UpgradeTemplate                                           0x1E53F384
 * [x] SkirmishOpeningMove                                       0x21EE29FA
 * [x] AIStateDefinition                                         0x262BE85F
 * [x] AIStrategicStateDefinition                                0x1E27DA26
