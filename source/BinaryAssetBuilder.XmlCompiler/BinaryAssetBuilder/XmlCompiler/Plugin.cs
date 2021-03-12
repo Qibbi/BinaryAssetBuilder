@@ -223,6 +223,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x49FE3760u;
                     result.TypeHash = 0x49FE3760u;
                     break;
+                case 0x373E10FAu:
+                    result.Type = typeof(AITargetingHeuristic);
+                    result.TypeName = nameof(AITargetingHeuristic);
+                    result.ProcessingHash = num ^ 0xB7A2C222u;
+                    result.TypeHash = 0xB7A2C222u;
+                    break;
                 case 0x395A0FD6u:
                     result.Type = typeof(InGameUILookAtCommandSlots);
                     result.TypeName = nameof(InGameUILookAtCommandSlots);
