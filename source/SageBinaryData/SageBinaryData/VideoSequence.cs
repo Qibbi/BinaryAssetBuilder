@@ -13,7 +13,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VideoEvent : IPolymophic
+    public struct VideoEvent : IPolymorphic
     {
         public uint TypeId;
         public unsafe FadeData* FadeIn;

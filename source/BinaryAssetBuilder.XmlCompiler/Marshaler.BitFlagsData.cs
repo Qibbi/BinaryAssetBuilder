@@ -5,6 +5,66 @@ public static partial class Marshaler
 {
     // Hold BitFlags<uint, Type> Marshalers here as C# has no support of values as generic arguments. Hopefully they come in the future, so this is just copy/paste.
 
+    public static unsafe void Marshal(string text, AIDifficultyBitFlags* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        for (int idy = 0; idy < tokens.Length; ++idy)
+        {
+            string token = tokens[idy];
+            bool includeToken = true;
+            if (token[0] == '+')
+            {
+                includeToken = true;
+            }
+            else if (token[0] == '-')
+            {
+                includeToken = false;
+            }
+            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
+            {
+                for (int idx = 0; idx < AIDifficultyBitFlags.NumSpans; ++idx)
+                {
+                    objT->Value[idx] = uint.MaxValue;
+                }
+                continue;
+            }
+            AIDifficulty value = (AIDifficulty)(-1);
+            Marshal(token, &value, state);
+            if (value != (AIDifficulty)(-1))
+            {
+                uint uintValue = (uint)value;
+                if (uintValue < AIDifficultyBitFlags.Count)
+                {
+                    if (includeToken)
+                    {
+                        objT->Value[uintValue / AIDifficultyBitFlags.BitsInSpan] |= (uint)(1 << (int)(uintValue % AIDifficultyBitFlags.BitsInSpan));
+                    }
+                    else
+                    {
+                        objT->Value[uintValue / AIDifficultyBitFlags.BitsInSpan] ^= (uint)(1 << (int)(uintValue % AIDifficultyBitFlags.BitsInSpan));
+                    }
+                }
+            }
+        }
+        for (int idx = 0; idx < AIDifficultyBitFlags.NumSpans; ++idx)
+        {
+            state.InplaceEndianToPlatform(&objT->Value[idx]);
+        }
+    }
+
+    public static unsafe void Marshal(Value value, AIDifficultyBitFlags* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     public static unsafe void Marshal(string text, AttributeModifierCategoryBitFlags* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);

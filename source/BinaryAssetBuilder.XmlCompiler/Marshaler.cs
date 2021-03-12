@@ -148,6 +148,25 @@ public static partial class Marshaler
         Marshal(node.GetValue(), objT, state);
     }
 
+    private static unsafe void Marshal(Value value, int** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(int), 1u);
+        Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, int** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, float* objT, Tracker state)
     {
         float result = float.Parse(text);
@@ -212,6 +231,25 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Value value, Percentage** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Percentage), 1u);
+        Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, Percentage** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private const int _angleMaxPostfixes = 2;
@@ -394,6 +432,15 @@ public static partial class Marshaler
         }
         using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(T), 1u);
         Marshal(value, *objT, state);
+    }
+
+    private static unsafe void Marshal<T>(Node node, T** objT, Tracker state) where T : unmanaged, Enum
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal(string text, AnsiString* objT, Tracker state)

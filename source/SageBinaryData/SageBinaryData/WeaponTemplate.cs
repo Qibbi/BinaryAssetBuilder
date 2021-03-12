@@ -187,7 +187,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct WeaponEffectNugget : IPolymophic
+    public struct WeaponEffectNugget : IPolymorphic
     {
         public uint TypeId;
         public PartitionManagerDistTestType PartitionFilterTestType;

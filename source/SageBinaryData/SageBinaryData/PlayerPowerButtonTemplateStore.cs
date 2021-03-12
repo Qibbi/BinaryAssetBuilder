@@ -5,7 +5,7 @@ using AnsiString = Relo.String<sbyte>;
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct PlayerPowerButtonTemplateData : IPolymophic
+    public struct PlayerPowerButtonTemplateData : IPolymorphic
     {
         public uint TypeId;
         public AssetReference<SpecialPowerTemplate> Id;

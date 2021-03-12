@@ -21,7 +21,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct GameScriptParameterBase : IPolymophic
+    public struct GameScriptParameterBase : IPolymorphic
     {
         public uint TypeId;
     }

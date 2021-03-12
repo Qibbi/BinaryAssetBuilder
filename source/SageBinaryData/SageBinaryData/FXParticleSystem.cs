@@ -3,7 +3,7 @@
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticleBaseModule : IPolymophic
+    public struct FXParticleBaseModule : IPolymorphic
     {
         public uint TypeId;
     }

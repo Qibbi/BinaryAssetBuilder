@@ -86,7 +86,7 @@ public static partial class Marshaler
         }
     }
 
-    private static unsafe void MarshalPolymorphicType<T, U>(Node node, U** objT, Tracker state) where T : unmanaged where U : unmanaged, IPolymophic
+    private static unsafe void MarshalPolymorphicType<T, U>(Node node, U** objT, Tracker state) where T : unmanaged where U : unmanaged, IPolymorphic
     {
         using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(T), 1u))
         {
@@ -112,7 +112,7 @@ public static partial class Marshaler
         *(uint*)*objT = typeId;
     }
 
-    private static unsafe void MarshalUnknownPolymorphicType<T>(Node node, T** objT, Tracker state) where T : unmanaged, IPolymophic
+    private static unsafe void MarshalUnknownPolymorphicType<T>(Node node, T** objT, Tracker state) where T : unmanaged, IPolymorphic
     {
         using (Tracker.Context context = state.Push((void**)objT, (uint)sizeof(T), 1u))
         {

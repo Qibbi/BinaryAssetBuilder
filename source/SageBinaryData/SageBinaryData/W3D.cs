@@ -87,7 +87,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXShaderConstant : IPolymophic
+    public struct FXShaderConstant : IPolymorphic
     {
         public uint TypeId;
         public AnsiString Name;
@@ -325,7 +325,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct AnimationChannelBase : IPolymophic
+    public struct AnimationChannelBase : IPolymorphic
     {
         public uint TypeId;
         public AnimationChannelType Type;
@@ -362,7 +362,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct AnimationChannelBaseRuntime : IPolymophic
+    public struct AnimationChannelBaseRuntime : IPolymorphic
     {
         public uint TypeId;
         public AnimationChannelType Type;

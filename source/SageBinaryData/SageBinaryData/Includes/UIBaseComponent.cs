@@ -3,7 +3,7 @@
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct UIBaseComponent : IPolymophic
+    public struct UIBaseComponent : IPolymorphic
     {
         public uint TypeId;
         public int Priority;

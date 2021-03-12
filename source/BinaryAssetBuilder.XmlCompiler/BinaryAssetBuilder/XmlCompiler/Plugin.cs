@@ -181,6 +181,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x217CF953u;
                     result.TypeHash = 0x217CF953u;
                     break;
+                case 0x242FF6D4u:
+                    result.Type = typeof(AIStrategicStateDefinition);
+                    result.TypeName = nameof(AIStrategicStateDefinition);
+                    result.ProcessingHash = num ^ 0x1E27DA26u;
+                    result.TypeHash = 0x1E27DA26u;
+                    break;
                 case 0x245EB4F9u:
                     result.Type = typeof(InGameUIVoiceChatCommandSlots);
                     result.TypeName = nameof(InGameUIVoiceChatCommandSlots);
@@ -499,6 +505,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xC24AEFF1u;
                     result.TypeHash = 0xC24AEFF1u;
                     break;
+                case 0xAC78CE63u:
+                    result.Type = typeof(AIBudgetStateDefinition);
+                    result.TypeName = nameof(AIBudgetStateDefinition);
+                    result.ProcessingHash = num ^ 0xA10F9630u;
+                    result.TypeHash = 0xA10F9630u;
+                    break;
                 case 0xACEF31A4u:
                     result.Type = typeof(DynamicGameLOD);
                     result.TypeName = nameof(DynamicGameLOD);
@@ -522,6 +534,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(TargetingCompareList);
                     result.ProcessingHash = num ^ 0x57CA5C81u;
                     result.TypeHash = 0x57CA5C81u;
+                    break;
+                case 0xC11D7E83u:
+                    result.Type = typeof(AIStateDefinition);
+                    result.TypeName = nameof(AIStateDefinition);
+                    result.ProcessingHash = num ^ 0x262BE85Fu;
+                    result.TypeHash = 0x262BE85Fu;
                     break;
                 case 0xC5E07887u:
                     result.Type = typeof(AttributeModifier);
@@ -571,6 +589,18 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x3EC9C79Bu;
                     result.TypeHash = 0x3EC9C79Bu;
                     break;
+                case 0xD5D580F6u:
+                    result.Type = typeof(ArmyDefinition);
+                    result.TypeName = nameof(ArmyDefinition);
+                    result.ProcessingHash = num ^ 0x57213EA5u;
+                    result.TypeHash = 0x57213EA5u;
+                    break;
+                case 0xD6D4F18Eu:
+                    result.Type = typeof(AIPersonalityDefinition);
+                    result.TypeName = nameof(AIPersonalityDefinition);
+                    result.ProcessingHash = num ^ 0x7DCE182Fu;
+                    result.TypeHash = 0x7DCE182Fu;
+                    break;
                 case 0xD76B50C7u:
                     result.Type = typeof(UnitTypeIcon);
                     result.TypeName = nameof(UnitTypeIcon);
@@ -612,6 +642,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(LogicCommandSet);
                     result.ProcessingHash = num ^ 0x6D148BD7u;
                     result.TypeHash = 0x6D148BD7u;
+                    break;
+                case 0xECBE73E8u:
+                    result.Type = typeof(SkirmishOpeningMove);
+                    result.TypeName = nameof(SkirmishOpeningMove);
+                    result.ProcessingHash = num ^ 0x21EE29FAu;
+                    result.TypeHash = 0x21EE29FAu;
                     break;
                 case 0xECC2A1D3u:
                     result.Type = typeof(LocomotorTemplate);
