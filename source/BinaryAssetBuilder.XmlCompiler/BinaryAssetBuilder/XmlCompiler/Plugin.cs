@@ -229,6 +229,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x8F9F9918u;
                     result.TypeHash = 0x8F9F9918u;
                     break;
+                case 0x3A6C5E8Eu:
+                    result.Type = typeof(ArmorTemplate);
+                    result.TypeName = nameof(ArmorTemplate);
+                    result.ProcessingHash = num ^ 0x9CDD1086u;
+                    result.TypeHash = 0x9CDD1086u;
+                    break;
                 case 0x3A9CE0B0u:
                     result.Type = typeof(AptConstData);
                     result.TypeName = nameof(AptConstData);
@@ -510,6 +516,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(TargetingCompareList);
                     result.ProcessingHash = num ^ 0x57CA5C81u;
                     result.TypeHash = 0x57CA5C81u;
+                    break;
+                case 0xC5E07887u:
+                    result.Type = typeof(AttributeModifier);
+                    result.TypeName = nameof(AttributeModifier);
+                    result.ProcessingHash = num ^ 0xD24E7201u;
+                    result.TypeHash = 0xD24E7201u;
                     break;
                 case 0xC8E41828u:
                     result.Type = typeof(BootupDisplaySequence);

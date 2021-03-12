@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using Relo;
+using System.Runtime.InteropServices;
+using AnsiString = Relo.String<sbyte>;
 
 namespace SageBinaryData
 {
@@ -75,6 +77,17 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct AttributeModifier
     {
-        // TODO:
+        public BaseAssetType Base;
+        public AttributeModifierCategoryType Category;
+        public Time Duration;
+        public AssetReference<FXList> StartFX;
+        public AssetReference<FXList> EndFX;
+        public AnsiString ModelConditionsSet;
+        public AnsiString ModelConditionsClear;
+        public ObjectStatusBitFlags ObjectStatusToSet;
+        public uint StackingLimit;
+        public List<AttributeModifierListType> Modifier;
+        public SageBool ReplaceInCategroyIfLongest;
+        public SageBool IgnoreIfAnticategoryActive;
     }
 }

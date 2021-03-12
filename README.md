@@ -35,8 +35,8 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] AIBudgetStateDefinition
 * [ ] AITargetingHeuristic
 * [ ] GameMap
-* [ ] AttributeModifier
-* [ ] ArmorTemplate
+* [x] AttributeModifier                                         0xD24E7201
+* [x] ArmorTemplate                                             0x9CDD1086
 * [x] MissionTemplate                                           0x0D283295
 * [x] TheaterOfWarTemplate                                      0xE60C9724
 * [x] CampaignTemplate                                          0xAC60B530
