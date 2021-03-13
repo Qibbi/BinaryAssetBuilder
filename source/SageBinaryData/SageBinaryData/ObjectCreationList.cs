@@ -98,7 +98,7 @@ namespace SageBinaryData
     {
         public OCNugget Base;
         public TypedAssetId<GameObject> PutInContainer;
-        public AssetReference<FXParticleSystem> ParticleSystem;
+        public AssetReference<FXParticleSystemTemplate> ParticleSystem;
         public AssetReference<FXList> CreateFX;
         public uint Count;
         public OCNuggetOptionFlag Options;

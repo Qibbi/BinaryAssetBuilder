@@ -1,89 +1,114 @@
-﻿using System.Runtime.InteropServices;
+﻿using Relo;
+using System.Runtime.InteropServices;
 
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticleBaseModule : IPolymorphic
+    public struct RandomAlphaKeyframe
     {
-        public uint TypeId;
+        public ClientRandomVariable Base;
+        public Percentage RelativeAge;
+        public uint Frame;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RandCoord3D
+    public struct RGBColorKeyframe
     {
-        public ClientRandomVariable X;
-        public ClientRandomVariable Y;
-        public ClientRandomVariable Z;
-    }
-
-    public enum FXParticleSystem_Type
-    {
-        INVALID_TYPE,
-        PARTICLE,
-        DRAWABLE,
-        STREAK,
-        VOLUME_PARTICLE,
-        GPU_PARTICLE,
-        GPU_TERRAINFIRE,
-        SWARM,
-        TRAIL
-    }
-
-    public enum FXParticleSystem_Priority
-    {
-        INVALID_PRIORITY,
-        ULTRA_HIGH_ONLY,
-        HIGH_OR_ABOVE,
-        MEDIUM_OR_ABOVE,
-        LOW_OR_ABOVE,
-        VERY_LOW_OR_ABOVE,
-        ALWAYS_RENDER
-    }
-
-    public enum FXParticleSystem_WindMotion
-    {
-        INVALID,
-        NOT_USED,
-        PING_PONG,
-        CIRCULAR
-    }
-
-    public enum FXParticleSystem_GeometryType
-    {
-        INVALID,
-        SIMPLE_QUAD,
-        CENTERED_QUAD,
-        TWO_CONCENTRIC_QUADS
-    }
-
-    public enum FXParticleSystem_ShaderType
-    {
-        INVALID_SHADER,
-        ADDITIVE,
-        ADDITIVE_ALPHA_TEST,
-        ALPHA,
-        ALPHA_TEST,
-        MULTIPLY,
-        ADDITIVE_NO_DEPTH_TEST,
-        ALPHA_NO_DEPTH_TEST,
-        W3D_DIFFUSE,
-        W3D_ALPHA,
-        W3D_EMISSIVE
-    }
-
-    public enum FXParticleSystem_RotationType
-    {
-        INVALID_ROTATION,
-        ROTATION_OFF,
-        ROTATE_X,
-        ROTATE_Y,
-        ROTATE_Z,
-        ROTATE_V
+        public Percentage RelativeAge;
+        public uint Frame;
+        public Color3f Color;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticleSystem
+    public struct FXParticlePhysicsBase
     {
-        // TODO:
+        public FXParticleBaseModule Base;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleDefaultPhysics
+    {
+        public FXParticlePhysicsBase Base;
+        public float Gravity;
+        public ClientRandomVariable VelocityDamping;
+        public Coord3D DriftVelocity;
+        public SageBool Swirly;
+        public SageBool ParticlesAttachToBone;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleSwarmPhysics
+    {
+        public FXParticlePhysicsBase Base;
+        public float AttractStrength;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleAlpha
+    {
+        public List<RandomAlphaKeyframe> Alpha;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleColor
+    {
+        public float HouseColorSaturation;
+        public List<RGBColorKeyframe> Color;
+        public ClientRandomVariable ColorScale;
+        public SageBool UseHouseColor;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleWind
+    {
+        public FXParticleSystem_WindMotion Motion;
+        public float Strength;
+        public float FullStrengthDist;
+        public float ZeroStrengthDist;
+        public float AngleChangeMin;
+        public float AngleChangeMax;
+        public float PingPongStartAngleMin;
+        public float PingPongStartAngleMax;
+        public float PingPongEndAngleMin;
+        public float PingPongEndAngleMax;
+        public float TurbulenceAmplitude;
+        public float TurbulenceFrequency;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleSystemTemplate
+    {
+        public BaseAssetType Base;
+        public FXParticleSystem_Priority Priority;
+        public FXParticleSystem_ShaderType Shader;
+        public FXParticleSystem_Type Type;
+        public AssetReference<Texture> ParticleTexture;
+        public AssetReference<BaseRenderAssetType> Drawable;
+        public TypedAssetId<FXParticleSystemTemplate> SlaveSystem;
+        public TypedAssetId<FXParticleSystemTemplate> PerParticleAttachedSystem;
+        public uint SystemLifetime;
+        public uint SortLevel;
+        public unsafe AssetReference<BaseAudioEventInfo, AudioEventInfo>* EmitterSound;
+        public Coord3D SlavePosOffset;
+        public ClientRandomVariable Lifetime;
+        public ClientRandomVariable Size;
+        public ClientRandomVariable StartSizeRate;
+        public ClientRandomVariable BurstDelay;
+        public ClientRandomVariable BurstCount;
+        public ClientRandomVariable InitialDelay;
+        public unsafe FXParticleAlpha* Alphas;
+        public unsafe FXParticleColor* Colors;
+        public unsafe FXParticleWind* Wind;
+        public unsafe FXParticlePhysicsBase* Physics;
+        public unsafe FXParticleDrawBase* Draw;
+        public unsafe FXParticleEmissionVolumeBase* Volume;
+        public unsafe FXParticleEmissionVelocityBase* Velocity;
+        public PolymorphicList<FXParticleEventBase> Event;
+        public unsafe FXParticleUpdateBase* Update;
+        public SageBool IsOneShot;
+        public SageBool IsGroundAligned;
+        public SageBool IsEmitAboveGroundOnly;
+        public SageBool IsParticleUpTowardsEmitter;
+        public SageBool UseMaximumHeight;
     }
 }

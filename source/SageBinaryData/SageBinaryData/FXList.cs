@@ -194,7 +194,7 @@ namespace SageBinaryData
         public FXTriggerType TriggerType;
         public int HoldBetweenStateID;
         public FXActionType ActionType;
-        public AssetReference<FXParticleSystem> Particle;
+        public AssetReference<FXParticleSystemTemplate> Particle;
         public Coord3D Offset;
         public SageBool RequireFrequentUpdate;
     }
@@ -211,7 +211,7 @@ namespace SageBinaryData
     public struct ParticleSystemFXNugget
     {
         public FXNugget Base;
-        public AssetReference<FXParticleSystem> Particle;
+        public AssetReference<FXParticleSystemTemplate> Particle;
         public int Count;
         public AnsiString AttachToBone;
         public AnsiString CreateOverrideBone;
