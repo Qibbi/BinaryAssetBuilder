@@ -24,7 +24,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] W3DCollisionBox
 * [x] ArmyDefinition                                            0x57213EA5
 * [x] AIPersonalityDefinition                                   0x7DCE182F
-* [ ] FXList
+* [x] FXList                                                    0xEBE8A8A4
 * [x] ObjectCreationList                                        0x683D4DE5
 * [x] ObjectFilterAsset                                         0x25970AF7
 * [x] SpecialPowerTemplate                                      0x5EF0ACA9

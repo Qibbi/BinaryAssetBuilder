@@ -403,6 +403,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x1B886049u;
                     result.TypeHash = 0x1B886049u;
                     break;
+                case 0x86682E78u:
+                    result.Type = typeof(FXList);
+                    result.TypeName = nameof(FXList);
+                    result.ProcessingHash = num ^ 0xEBE8A8A4u;
+                    result.TypeHash = 0xEBE8A8A4u;
+                    break;
                 case 0x88011B0Eu:
                     result.Type = typeof(MusicScriptConditionNugget_Or);
                     result.TypeName = nameof(MusicScriptConditionNugget_Or);
