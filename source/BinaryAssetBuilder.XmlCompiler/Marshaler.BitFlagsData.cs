@@ -305,6 +305,66 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    public static unsafe void Marshal(string text, DispositionTypeFlag* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        for (int idy = 0; idy < tokens.Length; ++idy)
+        {
+            string token = tokens[idy];
+            bool includeToken = true;
+            if (token[0] == '+')
+            {
+                includeToken = true;
+            }
+            else if (token[0] == '-')
+            {
+                includeToken = false;
+            }
+            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
+            {
+                for (int idx = 0; idx < DispositionTypeFlag.NumSpans; ++idx)
+                {
+                    objT->Value[idx] = uint.MaxValue;
+                }
+                continue;
+            }
+            DispositionType value = (DispositionType)(-1);
+            Marshal(token, &value, state);
+            if (value != (DispositionType)(-1))
+            {
+                uint uintValue = (uint)value;
+                if (uintValue < DispositionTypeFlag.Count)
+                {
+                    if (includeToken)
+                    {
+                        objT->Value[uintValue / DispositionTypeFlag.BitsInSpan] |= (uint)(1 << (int)(uintValue % DispositionTypeFlag.BitsInSpan));
+                    }
+                    else
+                    {
+                        objT->Value[uintValue / DispositionTypeFlag.BitsInSpan] ^= (uint)(1 << (int)(uintValue % DispositionTypeFlag.BitsInSpan));
+                    }
+                }
+            }
+        }
+        for (int idx = 0; idx < DispositionTypeFlag.NumSpans; ++idx)
+        {
+            state.InplaceEndianToPlatform(&objT->Value[idx]);
+        }
+    }
+
+    public static unsafe void Marshal(Value value, DispositionTypeFlag* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     public static unsafe void Marshal(string text, HotKeyModifierFlags* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
@@ -795,6 +855,66 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    public static unsafe void Marshal(string text, OCNuggetOptionFlag* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        for (int idy = 0; idy < tokens.Length; ++idy)
+        {
+            string token = tokens[idy];
+            bool includeToken = true;
+            if (token[0] == '+')
+            {
+                includeToken = true;
+            }
+            else if (token[0] == '-')
+            {
+                includeToken = false;
+            }
+            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
+            {
+                for (int idx = 0; idx < OCNuggetOptionFlag.NumSpans; ++idx)
+                {
+                    objT->Value[idx] = uint.MaxValue;
+                }
+                continue;
+            }
+            OCNuggetOption value = (OCNuggetOption)(-1);
+            Marshal(token, &value, state);
+            if (value != (OCNuggetOption)(-1))
+            {
+                uint uintValue = (uint)value;
+                if (uintValue < OCNuggetOptionFlag.Count)
+                {
+                    if (includeToken)
+                    {
+                        objT->Value[uintValue / OCNuggetOptionFlag.BitsInSpan] |= (uint)(1 << (int)(uintValue % OCNuggetOptionFlag.BitsInSpan));
+                    }
+                    else
+                    {
+                        objT->Value[uintValue / OCNuggetOptionFlag.BitsInSpan] ^= (uint)(1 << (int)(uintValue % OCNuggetOptionFlag.BitsInSpan));
+                    }
+                }
+            }
+        }
+        for (int idx = 0; idx < OCNuggetOptionFlag.NumSpans; ++idx)
+        {
+            state.InplaceEndianToPlatform(&objT->Value[idx]);
+        }
+    }
+
+    public static unsafe void Marshal(Value value, OCNuggetOptionFlag* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     public static unsafe void Marshal(string text, ObjectFilterRelationshipBitMask* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
@@ -924,6 +1044,7 @@ public static partial class Marshaler
         using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(ObjectStatusBitFlags), 1u);
         Marshal(value, *objT, state);
     }
+
     public static unsafe void Marshal(string text, SpecialPowerTemplateBitFlag* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);

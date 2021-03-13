@@ -25,7 +25,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] ArmyDefinition                                            0x57213EA5
 * [x] AIPersonalityDefinition                                   0x7DCE182F
 * [ ] FXList
-* [ ] ObjectCreationList
+* [x] ObjectCreationList                                        0x683D4DE5
 * [x] ObjectFilterAsset                                         0x25970AF7
 * [x] SpecialPowerTemplate                                      0x5EF0ACA9
 * [x] UpgradeTemplate                                           0x1E53F384

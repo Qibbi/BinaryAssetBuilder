@@ -80,4 +80,10 @@ namespace SageBinaryData
         ROTATE_Z,
         ROTATE_V
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXParticleSystem
+    {
+        // TODO:
+    }
 }

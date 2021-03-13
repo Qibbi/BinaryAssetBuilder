@@ -643,6 +643,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x1E53F384u;
                     result.TypeHash = 0x1E53F384u;
                     break;
+                case 0xE86E4D61u:
+                    result.Type = typeof(ObjectCreationList);
+                    result.TypeName = nameof(ObjectCreationList);
+                    result.ProcessingHash = num ^ 0x683D4DE5u;
+                    result.TypeHash = 0x683D4DE5u;
+                    break;
                 case 0xEA2C2798u:
                     result.Type = typeof(AmbientStream);
                     result.TypeName = nameof(AmbientStream);
