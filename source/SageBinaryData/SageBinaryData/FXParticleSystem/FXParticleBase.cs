@@ -11,9 +11,11 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct RandCoord3D
     {
-        public ClientRandomVariable X;
-        public ClientRandomVariable Y;
-        public ClientRandomVariable Z;
+#pragma warning disable IDE1006 // Naming Styles
+        public ClientRandomVariable x;
+        public ClientRandomVariable y;
+        public ClientRandomVariable z;
+#pragma warning restore IDE1006 // Naming Styles
     }
 
     public enum FXParticleSystem_Type

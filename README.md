@@ -11,7 +11,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] WeaponTemplate                                            0xE3996069
 * [x] LocomotorTemplate                                         0xBD8F61A4
 * [ ] GameObject
-* [ ] FXParticleSystemTemplate
+* [x] FXParticleSystemTemplate                                  0xA148D511
 * [x] Weather                                                   0x368A8BA2
 * [x] ShadowMap                                                 0xC6389FA6
 * [x] WaterTransparency                                         0x331DA6CE

@@ -199,6 +199,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x878C42E0u;
                     result.TypeHash = 0x878C42E0u;
                     break;
+                case 0x28E7FD7Fu:
+                    result.Type = typeof(FXParticleSystemTemplate);
+                    result.TypeName = nameof(FXParticleSystemTemplate);
+                    result.ProcessingHash = num ^ 0xA148D511u;
+                    result.TypeHash = 0xA148D511u;
+                    break;
                 case 0x2B49BF71u:
                     result.Type = typeof(Achievement);
                     result.TypeName = nameof(Achievement);

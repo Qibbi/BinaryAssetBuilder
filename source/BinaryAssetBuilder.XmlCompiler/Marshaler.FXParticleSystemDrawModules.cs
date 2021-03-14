@@ -144,6 +144,9 @@ public static partial class Marshaler
             case 0x85FE07DFu:
                 MarshalPolymorphicType<FXParticleDrawGpu, FXParticleDrawBase>(node, objT, state);
                 break;
+            case 0xBED78E9Du:
+                MarshalPolymorphicType<FXParticleDrawBase, FXParticleDrawBase>(node, objT, state);
+                break;
         }
     }
 }

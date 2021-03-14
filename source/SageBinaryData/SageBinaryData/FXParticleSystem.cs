@@ -20,7 +20,7 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticlePhysicsBase
+    public struct FXParticlePhysicsBase : IPolymorphic
     {
         public FXParticleBaseModule Base;
     }
@@ -84,8 +84,8 @@ namespace SageBinaryData
         public FXParticleSystem_Type Type;
         public AssetReference<Texture> ParticleTexture;
         public AssetReference<BaseRenderAssetType> Drawable;
-        public TypedAssetId<FXParticleSystemTemplate> SlaveSystem;
-        public TypedAssetId<FXParticleSystemTemplate> PerParticleAttachedSystem;
+        public TypedAssetId<BaseAssetType> SlaveSystem; // should be TypedAssetId<FXParticleSystemTemplate> but .net thinks it might be a circular reference
+        public TypedAssetId<BaseAssetType> PerParticleAttachedSystem; // should be TypedAssetId<FXParticleSystemTemplate> but .net thinks it might be a circular reference
         public uint SystemLifetime;
         public uint SortLevel;
         public unsafe AssetReference<BaseAudioEventInfo, AudioEventInfo>* EmitterSound;

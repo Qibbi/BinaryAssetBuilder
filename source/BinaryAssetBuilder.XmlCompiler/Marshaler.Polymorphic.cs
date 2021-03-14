@@ -62,8 +62,13 @@ public static partial class Marshaler
         // *(uint*)*objT = typeId;
     }
 
-    private static unsafe void MarshalSinglePolymorphic<T>(List list, T** objT, Tracker state) where T : unmanaged, IPolymorphic
+    private static unsafe void MarshalSinglePolymorphic<T>(Node node, T** objT, Tracker state) where T : unmanaged, IPolymorphic
     {
+        if (node is null)
+        {
+            return;
+        }
+        List list = node.GetChildNodes(null);
         if (list is null || list.GetCount() != 1)
         {
             return;
