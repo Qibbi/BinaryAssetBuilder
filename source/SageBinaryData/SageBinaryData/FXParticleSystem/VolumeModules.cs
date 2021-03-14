@@ -3,7 +3,7 @@
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticleEmissionVolumeBase
+    public struct FXParticleEmissionVolumeBase : IPolymorphic
     {
         public FXParticleBaseModule Base;
         public SageBool IsHollow;

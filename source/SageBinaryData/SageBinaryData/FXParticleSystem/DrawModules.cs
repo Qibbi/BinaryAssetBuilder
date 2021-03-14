@@ -5,7 +5,7 @@ using AnsiString = Relo.String<sbyte>;
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticleDrawBase
+    public struct FXParticleDrawBase : IPolymorphic
     {
         public FXParticleBaseModule Base;
     }

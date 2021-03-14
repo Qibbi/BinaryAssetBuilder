@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FXParticleEventBase
+    public struct FXParticleEventBase : IPolymorphic
     {
         public FXParticleBaseModule Base;
         public AssetReference<FXList> EventFX;
