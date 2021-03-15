@@ -34,4 +34,34 @@ namespace SageBinaryData
         public BaseAssetType Base;
         public List<AssetReference<TargetingBaseCompare>> Compare;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BaseAITargetChooserData
+    {
+        public Time IdleScanDelay;
+        public Time ReacquireDelay;
+        public Time StartupDelay;
+        public float SympathyRange;
+        public SageBool CheckVisionRange;
+        public SageBool CanPickDynamicTargets;
+        public SageBool RotateToTargetWhenAiming;
+        public SageBool CanAutoAcquireNonAutoAcquirable;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct UnitAITargetChooserData
+    {
+        public BaseAITargetChooserData Base;
+        public AssetReference<TargetingCompareList> TargetingCompareList;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TurretAITargetChooserData
+    {
+        public BaseAITargetChooserData Base;
+        public AssetReference<TargetingCompareList> TargetingCompareList;
+        public SageBool ActiveWhenPerformingSpecialAbility;
+        public SageBool CanAcquireDynamicIfAssignedOutOfRange;
+        public SageBool CanPickTargetsOutOfTurretAngle;
+    }
 }

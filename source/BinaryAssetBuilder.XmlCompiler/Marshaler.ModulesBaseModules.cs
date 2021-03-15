@@ -3,6 +3,27 @@ using SageBinaryData;
 
 public static partial class Marshaler
 {
+    public static unsafe void Marshal(Node node, AnimAndDuration* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(AnimAndDuration.AnimState), null), &objT->AnimState, state);
+        Marshal(node.GetAttributeValue(nameof(AnimAndDuration.Frames), "0"), &objT->Frames, state);
+        Marshal(node.GetAttributeValue(nameof(AnimAndDuration.Trigger), "0"), &objT->Trigger, state);
+    }
+
+    public static unsafe void Marshal(Node node, AnimAndDuration** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnimAndDuration), 1u);
+        Marshal(node, *objT, state);
+    }
+
     public static unsafe void Marshal(Node node, ModuleData* objT, Tracker state)
     {
         if (node is null)

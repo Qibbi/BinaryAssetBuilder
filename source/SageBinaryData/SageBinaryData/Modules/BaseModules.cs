@@ -4,6 +4,14 @@ namespace SageBinaryData
 {
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct AnimAndDuration
+    {
+        public ModelConditionFlagType AnimState;
+        public uint Frames;
+        public uint Trigger;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ModuleData : IPolymorphic
     {
         public uint TypeId;

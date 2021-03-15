@@ -13,12 +13,30 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {
-            case 0x6F3323A5u:
-                MarshalPolymorphicType<FXParticleDrawTrail, BehaviorModuleData>(node, objT, state);
+            case 0x815A9161u:
+                MarshalPolymorphicType<BuildingBehaviorModuleData, BehaviorModuleData>(node, objT, state);
                 break;
-            default:
+            case 0x0BBF2A39u:
+                MarshalPolymorphicType<BezierProjectileBehaviorModuleData, BehaviorModuleData>(node, objT, state);
                 break;
-                // throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Behavior module {0:X08} is not implemented.", typeId);
+            case 0xC8E1225Fu:
+                MarshalPolymorphicType<SlavedUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC939197Bu:
+                MarshalPolymorphicType<BeamTargetModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xA1FE37ACu:
+                MarshalPolymorphicType<ArmorUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x239D954Fu:
+                MarshalPolymorphicType<AttackTargetSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x74A24C45u:
+                MarshalPolymorphicType<AttributeModifierUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x2B847E06u:
+                MarshalPolymorphicType<AISpecialPowerUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
         }
     }
 }
