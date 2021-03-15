@@ -28,7 +28,7 @@ namespace SageBinaryData
         public unsafe AnsiString* LocalPlayerProductionStartedEvaEvent;
         public unsafe AnsiString* LocalPlayerBuildOnHoldEvaEvent;
         public unsafe AnsiString* LocalPlayerBuildCancelledEvaEvent;
-        public TypedAssetId<GameObject> UseObjectTemplateForCostDiscount;
+        public TypedAssetId<BaseAssetType> UseObjectTemplateForCostDiscount; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
         public AnsiString GroupName;
         public uint GroupOrder;
         public AIUpgradeHeuristicType SkirmishAIHeuristic;

@@ -47,8 +47,8 @@ namespace SageBinaryData
         public ObjectFilterAlignment Alignment;
         public KindOfBitFlags Include;
         public KindOfBitFlags Exclude;
-        public List<TypedAssetId<GameObject>> IncludeThing;
-        public List<TypedAssetId<GameObject>> ExcludeThing;
+        public List<TypedAssetId<BaseAssetType>> IncludeThing; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
+        public List<TypedAssetId<BaseAssetType>> ExcludeThing; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
 
         public unsafe bool TestObject([In] Object* @object, [In] Player* playerOwningFilter = null)
         {

@@ -3,8 +3,8 @@
 namespace SageBinaryData
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct BodyModuleData : IPolymorphic
+    public struct ImmortalBodyModuleData
     {
-        public BehaviorModuleData Base;
+        public ActiveBodyModuleData Base;
     }
 }

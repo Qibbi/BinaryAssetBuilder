@@ -541,7 +541,7 @@ namespace SageBinaryData
         public AnsiString FXTrigger;
         public WeaponCollideBitFlags ProjectileCollidesWith;
         public WeaponAntiBitFlags AntiMask;
-        public TypedAssetId<GameObject> ProjectileStreamName;
+        public TypedAssetId<BaseAssetType> ProjectileStreamName; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
         public unsafe SoundOrEvaEvent* OverrideVoiceAttackSound;
         public unsafe SoundOrEvaEvent* OverrideVoiceEnterStateAttackSound;
         public unsafe RangeDuration* PreAttackDelay;

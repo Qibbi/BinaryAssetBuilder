@@ -497,6 +497,30 @@ public static partial class Marshaler
         Marshal(node.GetValue(), objT, state);
     }
 
+    private static unsafe void Marshal(string text, AnsiString** objT, Tracker state)
+    {
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnsiString), 1u);
+        Marshal(text, *objT, state);
+    }
+
+    private static unsafe void Marshal(Value value, AnsiString** objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, AnsiString** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, List<AnsiString>* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, StringSplitOptions.RemoveEmptyEntries);
@@ -524,13 +548,13 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(string text, AnsiString** objT, Tracker state)
+    private static unsafe void Marshal(string text, List<AnsiString>** objT, Tracker state)
     {
-        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AnsiString), 1u);
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(List<AnsiString>), 1u);
         Marshal(text, *objT, state);
     }
 
-    private static unsafe void Marshal(Value value, AnsiString** objT, Tracker state)
+    private static unsafe void Marshal(Value value, List<AnsiString>** objT, Tracker state)
     {
         if (value is null)
         {
@@ -539,7 +563,7 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(Node node, AnsiString** objT, Tracker state)
+    private static unsafe void Marshal(Node node, List<AnsiString>** objT, Tracker state)
     {
         if (node is null)
         {
@@ -748,6 +772,16 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(Color.G), "0"), &objT->G, state);
         Marshal(node.GetAttributeValue(nameof(Color.B), "0"), &objT->B, state);
         Marshal(node.GetAttributeValue(nameof(Color.A), "255"), &objT->A, state);
+    }
+
+    private static unsafe void Marshal(Node node, Color** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Color), 1u);
+        Marshal(node, *objT, state);
     }
 
     private static unsafe void Marshal(Node node, RandomVariable* objT, Tracker state)

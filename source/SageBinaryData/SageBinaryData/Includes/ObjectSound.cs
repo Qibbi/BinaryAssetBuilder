@@ -15,7 +15,7 @@ namespace SageBinaryData
     {
         public SoundOrEvaEvent Base;
         public ThingTemplateObjectSpecificVoiceType AudioType;
-        public TypedAssetId<GameObject> TargetObject;
+        public TypedAssetId<BaseAssetType> TargetObject; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
     }
 
     [StructLayout(LayoutKind.Sequential)]

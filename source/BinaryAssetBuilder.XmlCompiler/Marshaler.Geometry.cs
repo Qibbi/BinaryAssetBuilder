@@ -43,4 +43,14 @@ public static partial class Marshaler
         Marshal(node.GetChildNodes(nameof(Geometry.Shape)), &objT->Shape, state);
         Marshal(node.GetChildNodes(nameof(Geometry.ContactPoint)), &objT->ContactPoint, state);
     }
+
+    private static unsafe void Marshal(Node node, Geometry** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Geometry), 1u);
+        Marshal(node, *objT, state);
+    }
 }

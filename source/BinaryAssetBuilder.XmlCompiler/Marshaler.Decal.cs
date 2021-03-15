@@ -29,6 +29,16 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(ShadowInfo.SunAngle), "0.0"), &objT->SunAngle, state);
     }
 
+    private static unsafe void Marshal(Node node, ShadowInfo** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(ShadowInfo), 1u);
+        Marshal(node, *objT, state);
+    }
+
     public static unsafe void Marshal(Node node, RadiusDecalTemplate* objT, Tracker state)
     {
         if (node is null)

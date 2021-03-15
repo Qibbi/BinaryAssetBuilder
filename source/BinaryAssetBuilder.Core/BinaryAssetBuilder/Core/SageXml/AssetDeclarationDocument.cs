@@ -822,7 +822,10 @@ namespace BinaryAssetBuilder.Core.SageXml
             if (_current.IsLoaded && !_current.DocumentProcessor.VerifierPlugins.GetPlugin(asset.Instance.Handle.TypeId).VerifyInstance(declaration))
             {
                 _current.VerificationErrors = true;
-                throw new BinaryAssetBuilderException(ErrorCode.GameDataVerification, "FATAL: An asset failed the Game Data verification step.");
+                if (Settings.Current.ErrorLevel > 0)
+                {
+                    throw new BinaryAssetBuilderException(ErrorCode.GameDataVerification, "FATAL: An asset failed the Game Data verification step.");
+                }
             }
         }
 

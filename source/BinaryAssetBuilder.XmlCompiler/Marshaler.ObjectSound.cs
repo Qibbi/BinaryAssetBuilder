@@ -55,6 +55,16 @@ public static partial class Marshaler
         Marshal(node.GetChildNodes(nameof(AudioArrayVoice.NamedEntry)), &objT->NamedEntry, state);
     }
 
+    private static unsafe void Marshal(Node node, AudioArrayVoice** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AudioArrayVoice), 1u);
+        Marshal(node, *objT, state);
+    }
+
     public static unsafe void Marshal(Node node, AudioArraySound* objT, Tracker state)
     {
         if (node is null)
@@ -62,5 +72,15 @@ public static partial class Marshaler
             return;
         }
         Marshal(node.GetChildNodes(nameof(AudioArraySound.AudioEntry)), &objT->AudioEntry, state);
+    }
+
+    private static unsafe void Marshal(Node node, AudioArraySound** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(AudioArraySound), 1u);
+        Marshal(node, *objT, state);
     }
 }

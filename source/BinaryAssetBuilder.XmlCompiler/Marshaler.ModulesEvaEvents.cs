@@ -39,4 +39,14 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(GameObjectEvaEvents.EvaEventManuallyPoweredOff), null), &objT->EvaEventManuallyPoweredOff, state);
         Marshal(node.GetAttributeValue(nameof(GameObjectEvaEvents.EvaEventManuallyPoweredOn), null), &objT->EvaEventManuallyPoweredOn, state);
     }
+
+    private static unsafe void Marshal(Node node, GameObjectEvaEvents** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(GameObjectEvaEvents), 1u);
+        Marshal(node, *objT, state);
+    }
 }

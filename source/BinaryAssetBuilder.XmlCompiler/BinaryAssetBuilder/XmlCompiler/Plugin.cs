@@ -493,6 +493,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xD889BF98u;
                     result.TypeHash = 0xD889BF98u;
                     break;
+                case 0x942FFF2Du:
+                    result.Type = typeof(GameObject);
+                    result.TypeName = nameof(GameObject);
+                    result.ProcessingHash = num ^ 0x132408DBu;
+                    result.TypeHash = 0x132408DBu;
+                    break;
                 case 0xA38DB775u:
                     result.Type = typeof(MusicScriptConditionNugget_EvaEventPlayedRecently);
                     result.TypeName = nameof(MusicScriptConditionNugget_EvaEventPlayedRecently);

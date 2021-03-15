@@ -12,7 +12,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             Append = 0,
             Overwrite = 1,
             Override = Overwrite,
-            Replcate = Overwrite,
+            Replace = Overwrite,
             Remove = 2
         }
 

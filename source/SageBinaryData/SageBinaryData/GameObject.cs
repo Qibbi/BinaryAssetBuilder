@@ -195,7 +195,7 @@ namespace SageBinaryData
         public Angle PlacementViewAngle;
         public Time BuildFadeInOnCreateTimeSeconds;
         public float FactoryExitWidth;
-        public float FactoryExitBibWidth;
+        public float FactoryExtraBibWidth;
         public AnsiString Side;
         public AnsiString EditorName;
         public EditorSortingType EditorSorting;
@@ -258,7 +258,7 @@ namespace SageBinaryData
         public unsafe DeadCollideSizeType* DeadCollideSize;
         public unsafe List<AnsiString>* BuildFadeInOnCreateList;
         public unsafe List<AnsiString>* BuildVariations;
-        public unsafe TypedAssetId<BaseAssetType> EquivalentTo; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
+        public unsafe List<TypedAssetId<BaseAssetType>> EquivalentTo; // should be TypedAssetId<GameObject> but .net thinks it might be a circular reference
         public unsafe Color* DisplayColor;
         public unsafe Flammability* Flammability;
         public unsafe SkirmishAIInformation* SkirmishAIInformation;
@@ -300,11 +300,11 @@ namespace SageBinaryData
         public SageBool IsHarvestable;
         public byte StructureRubbleHeight;
         public SageBool ForceLuaRegistration;
-        public SageBool ShowHealthInSelectionDetail;
+        public SageBool ShowHealthInSelectionDecal;
         public SageBool KeepSelectableWhenDead;
         public SageBool IsAutoBuilt;
         public SageBool CanPathThroughGates;
         public SageBool ShouldClearShotsOnIdle;
-        public SageBool BuildInProximityToSamePlayerStructure;
+        public SageBool BuildInProximityToSamePlayerStucture;
     }
 }

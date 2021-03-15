@@ -134,4 +134,14 @@ public static partial class Marshaler
         }
         Marshal(node.GetChildNodes(null), objT, state);
     }
+
+    private static unsafe void Marshal<T>(Node node, PolymorphicList<T>** objT, Tracker state) where T : unmanaged
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(PolymorphicList<T>), 1u);
+        Marshal(node, *objT, state);
+    }
 }

@@ -9,6 +9,7 @@ test.relo
 test.imp
 test.big
 test/
+BaseObjects/
 cache/
 BinaryAssetBuilder.SessionCache.*
 StringHashes.xml*

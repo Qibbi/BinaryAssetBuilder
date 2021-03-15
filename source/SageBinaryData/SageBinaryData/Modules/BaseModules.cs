@@ -62,4 +62,13 @@ namespace SageBinaryData
         CATAPULT_ROCK,
         TREBUCHET_ROCK
     }
+
+    public enum BodySideDestroyedType
+    {
+        NONE,
+        FRONT_DESTROYED,
+        RIGHT_DESTROYED,
+        BACK_DESTROYED,
+        LEFT_DESTROYED
+    }
 }
