@@ -54,6 +54,20 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    private static unsafe void Marshal(string text, sbyte* objT, Tracker state)
+    {
+        *objT = sbyte.Parse(text);
+    }
+
+    private static unsafe void Marshal(Value value, sbyte* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, ushort* objT, Tracker state)
     {
         ushort result = ushort.Parse(text);

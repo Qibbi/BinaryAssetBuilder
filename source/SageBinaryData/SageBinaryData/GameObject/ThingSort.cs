@@ -1,0 +1,105 @@
+﻿namespace SageBinaryData
+{
+    public enum EditorSortingType
+    {
+        NONE,
+        STRUCTURE,
+        UNIT,
+        SHRUBBERY,
+        MISC_MAN_MADE,
+        MISC_NATURAL,
+        DEBRIS,
+        SYSTEM,
+        AUDIO,
+        TEST,
+        FOR_REVIEW,
+        ROAD,
+        WAYPOINT,
+        EMITTERS,
+        SCORCH,
+        OBSOLETE
+    }
+
+    public enum DeadCollideSizeType
+    {
+        SMALL,
+        MEDIUM,
+        LARGE
+    }
+
+    public enum ThingClassType
+    {
+        UNSPECIFIED,
+        HORDE_UNIT,
+        CHARACTER_UNIT,
+        CAVALRY_UNIT,
+        MEDIUM_MONSTER,
+        LARGE_MONSTER,
+        PROP,
+        CIV_BUILDING,
+        WALL_PIECE,
+        FACTION_BUILDING,
+        LANDMARK_BUILDING,
+        GROUND_COVER,
+        BUSH,
+        TREE,
+        MACHINE,
+        BUFF
+    }
+
+    public enum BrowserSortingType
+    {
+        NONE,
+        STRUCTURE,
+        UNIT,
+        SHRUBBERY,
+        MISC_MAN_MADE,
+        DEBRIS,
+        SYSTEM,
+        AUDIO,
+        TEST,
+        FOR_REVIEW,
+        ROAD,
+        WAYPOINT,
+        EMITTERS,
+        SCORCH,
+        OBSOLETE,
+        NEXT,
+        GDI,
+        NOD,
+        ALIEN,
+        NEUTRAL,
+        PROPS,
+        HEROES,
+        TROOPS,
+        REGION,
+        MISC_VILLAGE,
+        MISC_TALL_GRASSLAND,
+        MISC_TOWN,
+        MISC_WOODLAND,
+        MISC_WATER,
+        ROCKS,
+        TREES,
+        MOUNTAINS,
+        GRASSLANDS,
+        FORESTS,
+        BARREN,
+        AI,
+        TACTICAL_MARKERS,
+        CINEMATICS,
+        SKYBOXES,
+        ATMOSPHERIC_EFFECTS,
+        AUSTRALIA_AS,
+        BRAZIL_BR,
+        EASTERN_EUROPE_EE,
+        EGYPT_EG,
+        GERMANY_GR,
+        GODDARD_SPACE_CENTER_GO,
+        ITALY_IT,
+        NORTH_CAROLINA_BADLANDS_NC,
+        WASHINGTON_DC_DC,
+        GDI_STRUCTURES,
+        NOD_STRUCTURES,
+        ALIEN_STRUCTURES
+    }
+}
