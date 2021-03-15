@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using Relo;
+using System.Runtime.InteropServices;
+using AnsiString = Relo.String<sbyte>;
 
 namespace SageBinaryData
 {
@@ -78,5 +80,18 @@ namespace SageBinaryData
         RIGHT_DESTROYED,
         BACK_DESTROYED,
         LEFT_DESTROYED
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DieMuxDataType
+    {
+        public List<AnsiString> VeterancyLevels;
+        public ObjectStatusBitFlags ExemptStatus;
+        public ObjectStatusBitFlags RequiredStatus;
+        public float DamageAmountRequired;
+        public Angle MinKillerAngle;
+        public Angle MaxKillerAngle;
+        public DeathBitFlags DeathTypes;
+        public DeathBitFlags DeathTypesForbidden;
     }
 }

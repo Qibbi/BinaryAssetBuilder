@@ -86,4 +86,20 @@ public static partial class Marshaler
         }
         Marshal(node, (ContainModuleData*)objT, state);
     }
+
+    public static unsafe void Marshal(Node node, DieMuxDataType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.VeterancyLevels), null), &objT->VeterancyLevels, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.ExemptStatus), null), &objT->ExemptStatus, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.RequiredStatus), null), &objT->RequiredStatus, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.DamageAmountRequired), "-1"), &objT->DamageAmountRequired, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.MinKillerAngle), "1d"), &objT->MinKillerAngle, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.MaxKillerAngle), "-1d"), &objT->MaxKillerAngle, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.DeathTypes), null), &objT->DeathTypes, state);
+        Marshal(node.GetAttributeValue(nameof(DieMuxDataType.DeathTypesForbidden), null), &objT->DeathTypesForbidden, state);
+    }
 }
