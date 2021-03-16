@@ -65,7 +65,7 @@ namespace SageBinaryData
     public struct AssetIdListPropertyPair
     {
         public AnsiString Key;
-        public AnsiString Value;
+        public List<AnsiString> Value;
     }
 
     [StructLayout(LayoutKind.Sequential)]

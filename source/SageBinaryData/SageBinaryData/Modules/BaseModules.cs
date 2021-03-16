@@ -13,6 +13,13 @@ namespace SageBinaryData
         public uint Trigger;
     }
 
+    public enum ParseCondStateType
+    {
+        PARSE_NORMAL,
+        PARSE_DEFAULT,
+        PARSE_TRANSITION
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct ModuleData : IPolymorphic
     {
@@ -71,6 +78,21 @@ namespace SageBinaryData
         NONE,
         CATAPULT_ROCK,
         TREBUCHET_ROCK
+    }
+
+    public enum BodyDamageType
+    {
+        PRISTINE,
+        DAMAGED,
+        REALLY_DAMAGED,
+        RUBBLE
+    }
+
+    public enum MaxHealthChangeType
+    {
+        SAME_CURRENTHEALTH,
+        PRESERVE_RATIO,
+        ADD_CURRENT_HEALTH_TOO
     }
 
     public enum BodySideDestroyedType
