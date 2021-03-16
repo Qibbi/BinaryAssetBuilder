@@ -102,4 +102,14 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(DieMuxDataType.DeathTypes), null), &objT->DeathTypes, state);
         Marshal(node.GetAttributeValue(nameof(DieMuxDataType.DeathTypesForbidden), null), &objT->DeathTypesForbidden, state);
     }
+
+    public static unsafe void Marshal(Node node, DieMuxDataType** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(DieMuxDataType), 1u);
+        Marshal(node, *objT, state);
+    }
 }
