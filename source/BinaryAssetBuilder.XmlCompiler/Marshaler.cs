@@ -823,6 +823,16 @@ public static partial class Marshaler
         Marshal(node, *objT, state);
     }
 
+    private static unsafe void Marshal(Node node, ReplaceTexture* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ReplaceTexture.Original), null), &objT->Original, state);
+        Marshal(node.GetAttributeValue(nameof(ReplaceTexture.New), null), &objT->New, state);
+    }
+
     private static unsafe void Marshal<T>(string text, TypedAssetId<T>* objT, Tracker state) where T : unmanaged
     {
         HashProvider.RecordHash("POID", text);

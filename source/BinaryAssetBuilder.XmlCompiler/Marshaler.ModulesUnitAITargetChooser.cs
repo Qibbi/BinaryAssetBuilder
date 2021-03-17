@@ -98,4 +98,14 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(TurretAITargetChooserData.CanPickTargetsOutOfTurretAngle), "false"), &objT->CanPickTargetsOutOfTurretAngle, state);
         Marshal(node, (BaseAITargetChooserData*)objT, state);
     }
+
+    public static unsafe void Marshal(Node node, TurretAITargetChooserData** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(TurretAITargetChooserData), 1u);
+        Marshal(node, *objT, state);
+    }
 }

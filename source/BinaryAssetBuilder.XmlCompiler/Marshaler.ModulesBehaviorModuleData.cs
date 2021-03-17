@@ -13,6 +13,108 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {
+            case 0xD3302D7Eu:
+                MarshalPolymorphicType<EMPUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x42409853u:
+                MarshalPolymorphicType<DeletionUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC001089Bu:
+                MarshalPolymorphicType<InheritUpgradeCreateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC2EBB54Du:
+                MarshalPolymorphicType<ExperienceLevelCreateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xBAE3BC7Du:
+                MarshalPolymorphicType<GarrisonContainModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x90CEB49Cu:
+                MarshalPolymorphicType<FireWeaponWhenDeadBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x0897B555u:
+                MarshalPolymorphicType<FireWeaponWhenDamagedBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x4CA37F3Eu:
+                MarshalPolymorphicType<AutoAbilityBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x3CFBDE26u:
+                MarshalPolymorphicType<DistributedMoneyBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xE42D5618u:
+                MarshalPolymorphicType<AimWeaponBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xD6297BD1u:
+                MarshalPolymorphicType<SupplyWarehouseDockUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC2F1EC20u:
+                MarshalPolymorphicType<SupplyCenterDockUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x0A2B8743u:
+                MarshalPolymorphicType<RepairUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xD9A4DA61u:
+                MarshalPolymorphicType<DockUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x2E546F8Eu:
+                MarshalPolymorphicType<RadarBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xAE3A906Cu:
+                MarshalPolymorphicType<TiberiumGrowthModBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x0F2D5192u:
+                MarshalPolymorphicType<TiberiumCrystalBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x6BC9FD0Eu:
+                MarshalPolymorphicType<TiberiumFieldBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xF4568855u:
+                MarshalPolymorphicType<TiberiumThiefSpecialAbilityUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x1E45A393u:
+                MarshalPolymorphicType<WeaponFireSpecialAbilityUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x313998B5u:
+                MarshalPolymorphicType<CaptureSpecialAbilityUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xA0AA07E1u:
+                MarshalPolymorphicType<BeamSpecialAbilityUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x431722A9u:
+                MarshalPolymorphicType<WeaponSetUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x22ED33D8u:
+                MarshalPolymorphicType<AudioLoopUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xAE60AE98u:
+                MarshalPolymorphicType<UpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x3FECABBBu:
+                MarshalPolymorphicType<UnpauseSpecialPowerUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x4758FED0u:
+                MarshalPolymorphicType<HordeContainModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x408E9A3Fu:
+                MarshalPolymorphicType<HordeTransportContainModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x578C272Fu:
+                MarshalPolymorphicType<TransportContainModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x5A0E7D7Bu:
+                MarshalPolymorphicType<TerrainResourceBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x5F06BA81u:
+                MarshalPolymorphicType<SubObjectsUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x643A2AC3u:
+                MarshalPolymorphicType<ShieldBodyUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x5E1CAFDBu:
+                MarshalPolymorphicType<AttributeModifierAuraUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC6F3F62Du:
+                MarshalPolymorphicType<InitiateRepairDieModuleData, BehaviorModuleData>(node, objT, state);
+                break;
             case 0x8CE2210Cu:
                 MarshalPolymorphicType<StructureCollapseUpdateModuleData, BehaviorModuleData>(node, objT, state);
                 break;

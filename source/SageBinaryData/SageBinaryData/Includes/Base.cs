@@ -134,6 +134,13 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ReplaceTexture
+    {
+        public AssetReference<Texture> Original;
+        public AssetReference<Texture> New;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct AudioEventInfo
     {
     }
