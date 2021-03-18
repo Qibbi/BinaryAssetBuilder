@@ -13,6 +13,27 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {
+            case 0xFBF6592Du:
+                MarshalPolymorphicType<AutoHealBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xD014A1C2u:
+                MarshalPolymorphicType<KeepObjectDieModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x510D79C7u:
+                MarshalPolymorphicType<UpgradeDieModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x696245D9u:
+                MarshalPolymorphicType<RadarUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x786C9458u:
+                MarshalPolymorphicType<StatusBitsUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x884BDE51u:
+                MarshalPolymorphicType<ProductionSpeedBonusUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x5A7BCED3u:
+                MarshalPolymorphicType<DelayedUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
             case 0xD3302D7Eu:
                 MarshalPolymorphicType<EMPUpdateModuleData, BehaviorModuleData>(node, objT, state);
                 break;
