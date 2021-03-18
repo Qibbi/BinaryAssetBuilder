@@ -266,6 +266,33 @@ public static partial class Marshaler
         Marshal(node.GetValue(), objT, state);
     }
 
+    private static unsafe void Marshal(string text, List<Percentage>* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        uint objectCount = (uint)tokens.Length;
+        uint num = objectCount;
+        state.InplaceEndianToPlatform(&num);
+        objT->Count = num;
+        using Tracker.Context context = state.Push((void**)&objT->Items, (uint)sizeof(Percentage), objectCount);
+        for (int idx = 0; idx < objectCount; ++idx)
+        {
+            Marshal(tokens[idx], &objT->Items[idx], state);
+        }
+    }
+
+    private static unsafe void Marshal(Value value, List<Percentage>* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
+    }
+
     private const int _angleMaxPostfixes = 2;
     private static readonly char[] _anglePostFixes = new[] { 'r', 'd' };
     private static readonly float[] _angleMultipliers = new[] { 1.0f, PI / 180.0f };

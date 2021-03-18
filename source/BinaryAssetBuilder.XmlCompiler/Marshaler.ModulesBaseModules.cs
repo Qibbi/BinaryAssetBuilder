@@ -87,6 +87,26 @@ public static partial class Marshaler
         Marshal(node, (ContainModuleData*)objT, state);
     }
 
+    public static unsafe void Marshal(Node node, InvisibilityNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenConditions), "PREATTACK_A FIRING_A FIRING_OR_PREATTACK_A RELOADING_A USING_WEAPON_A PREATTACK_B FIRING_B FIRING_OR_PREATTACK_B RELOADING_B USING_WEAPON_B PREATTACK_C FIRING_C FIRING_OR_PREATTACK_C RELOADING_C USING_WEAPON_C"), &objT->ForbiddenConditions, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenConditionExceptions), ""), &objT->ForbiddenConditionExceptions, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenWeaponSets), null), &objT->ForbiddenWeaponSets, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenStatus), "IS_FIRING_WEAPON IS_AIMING_WEAPON SPECIAL_ABILITY_PACKING_UNPACKING_OR_USING USING_ABILITY"), &objT->ForbiddenStatus, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.CamouflageLevel), null), &objT->CamouflageLevel, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.InvisibilityType), "STEALTH"), &objT->InvisibilityType, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.Options), null), &objT->Options, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.EnteringStealthFX), null), &objT->EnteringStealthFX, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.LeavingStealthFX), null), &objT->LeavingStealthFX, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.HintDetectableStates), "IS_ATTACKING"), &objT->HintDetectableStates, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.NoStealthForAttackWindow), "0s"), &objT->NoStealthForAttackWindow, state);
+        Marshal(node.GetChildNodes(nameof(InvisibilityNuggetType.IgnoreTreeCheckUpgrade)), &objT->IgnoreTreeCheckUpgrade, state);
+    }
+
     public static unsafe void Marshal(Node node, DieMuxDataType* objT, Tracker state)
     {
         if (node is null)

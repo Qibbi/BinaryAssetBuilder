@@ -105,6 +105,23 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct InvisibilityNuggetType
+    {
+        public ModelConditionBitFlags ForbiddenConditions;
+        public ModelConditionBitFlags ForbiddenConditionExceptions;
+        public WeaponSetBitFlags ForbiddenWeaponSets;
+        public ObjectStatusBitFlags ForbiddenStatus;
+        public uint CamouflageLevel;
+        public InvisibilityType InvisibilityType;
+        public InvisibilityNuggetOptionsBitFlags Options;
+        public AssetReference<FXList> EnteringStealthFX;
+        public AssetReference<FXList> LeavingStealthFX;
+        public ObjectStatusBitFlags HintDetectableStates;
+        public Time NoStealthForAttackWindow;
+        public List<TypedAssetId<UpgradeTemplate>> IgnoreTreeCheckUpgrade;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct DieMuxDataType
     {
         public List<AnsiString> VeterancyLevels;
