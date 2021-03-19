@@ -13,6 +13,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(WeaponSlot_WeaponData.Template), null), &objT->Template, state);
         Marshal(node.GetAttributeValue(nameof(WeaponSlot_WeaponData.Upgrade), null), &objT->Upgrade, state);
         Marshal(node.GetAttributeValue(nameof(WeaponSlot_WeaponData.ObjectStatus), ""), &objT->ObjectStatus, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponSlot_WeaponData.IsPlayerUpgradePermanent), "false"), &objT->IsPlayerUpgradePermanent, state);
     }
 
     public static unsafe void Marshal(Node node, WeaponSlot_Hardpoint* objT, Tracker state)

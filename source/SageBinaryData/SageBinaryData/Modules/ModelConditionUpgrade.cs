@@ -8,7 +8,7 @@ namespace SageBinaryData
         public UpgradeModuleData Base;
         public ModelConditionBitFlags AddConditionFlags;
         public ModelConditionBitFlags RemoveConditionFlags;
-        public ModelConditionBitFlags AddTempConditionFlag;
+        public ModelConditionFlagType AddTempConditionFlag;
         public Time TempConditionTime;
     }
 }

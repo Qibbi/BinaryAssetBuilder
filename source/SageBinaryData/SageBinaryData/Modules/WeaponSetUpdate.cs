@@ -10,6 +10,7 @@ namespace SageBinaryData
         public AssetReference<WeaponTemplate> Template;
         public AssetReference<UpgradeTemplate> Upgrade;
         public ObjectStatusBitFlags ObjectStatus;
+        public SageBool IsPlayerUpgradePermanent;
     }
 
     public enum WeaponSlotInterleavedStyleType

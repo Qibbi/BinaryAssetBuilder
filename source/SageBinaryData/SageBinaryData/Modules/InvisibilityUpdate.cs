@@ -32,6 +32,6 @@ namespace SageBinaryData
         public unsafe StringHash* NamedVoiceNameToUseAsVoiceEnterStateMoveToStealthyArea;
         public InvisibilityNuggetType InvisibilityNugget;
         public unsafe ObjectFilter* BroadcastObjectFilter;
-        public unsafe TypedAssetId<UpgradeTemplate> RequiresUpgrade;
+        public unsafe TypedAssetId<UpgradeTemplate>* RequiresUpgrade;
     }
 }
