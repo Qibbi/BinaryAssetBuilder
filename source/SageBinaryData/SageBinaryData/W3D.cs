@@ -256,18 +256,11 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RenderObjectReference
-    {
-        public AssetReference<W3DMesh> Mesh;
-        public AssetReference<W3DCollisionBox> CollisionBox;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct SubObject
     {
         public uint BoneIndex;
         public AnsiString SubObjectID;
-        public RenderObjectReference RenderObject;
+        public AssetReference<BaseAssetType> RenderObject;
     }
 
     [StructLayout(LayoutKind.Sequential)]

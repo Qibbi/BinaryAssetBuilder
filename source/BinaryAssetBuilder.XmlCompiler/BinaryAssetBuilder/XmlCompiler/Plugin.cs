@@ -349,6 +349,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xF6CE1A68u;
                     result.TypeHash = 0xF6CE1A68u;
                     break;
+                case 0x61D7EA40u:
+                    result.Type = typeof(W3DHierarchy);
+                    result.TypeName = nameof(W3DHierarchy);
+                    result.ProcessingHash = num ^ 0x3BC26A7Au;
+                    result.TypeHash = 0x3BC26A7Au;
+                    break;
                 case 0x66219699u:
                     result.Type = typeof(PlayerPowerButtonTemplateStore);
                     result.TypeName = nameof(PlayerPowerButtonTemplateStore);
@@ -661,6 +667,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0x1E53F384u;
                     result.TypeHash = 0x1E53F384u;
                     break;
+                case 0xE3181C04u:
+                    result.Type = typeof(W3DCollisionBox);
+                    result.TypeName = nameof(W3DCollisionBox);
+                    result.ProcessingHash = num ^ 0xC917E725u;
+                    result.TypeHash = 0xC917E725u;
+                    break;
                 case 0xE86E4D61u:
                     result.Type = typeof(ObjectCreationList);
                     result.TypeName = nameof(ObjectCreationList);
@@ -696,6 +708,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.TypeName = nameof(MusicScriptConditionNugget_Not);
                     result.ProcessingHash = num ^ 0xB886383Bu;
                     result.TypeHash = 0xB886383Bu;
+                    break;
+                case 0xF0F08712u:
+                    result.Type = typeof(W3DContainer);
+                    result.TypeName = nameof(W3DContainer);
+                    result.ProcessingHash = num ^ 0x909DD93Fu;
+                    result.TypeHash = 0x909DD93Fu;
                     break;
                 case 0xF7CE0BBDu:
                     result.Type = typeof(ShadowMap);

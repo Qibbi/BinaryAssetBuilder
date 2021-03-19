@@ -10,7 +10,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] TestTextureCollection
 * [x] WeaponTemplate                                            0xE3996069
 * [x] LocomotorTemplate                                         0xBD8F61A4
-* [ ] GameObject
+* [x] GameObject                                                0x132408DB
 * [x] FXParticleSystemTemplate                                  0xA148D511
 * [x] Weather                                                   0x368A8BA2
 * [x] ShadowMap                                                 0xC6389FA6
@@ -18,10 +18,10 @@ I decided to first make a TW version so I can be sure everything works.
 * [ ] Texture
 * [ ] OnDemandTexture
 * [ ] W3DMesh
-* [ ] W3DContainer
-* [ ] W3DHierarchy
+* [x] W3DContainer                                              0x909DD93F
+* [x] W3DHierarchy                                              0x3BC26A7A
 * [x] W3DAnimation                                              0xCC069193
-* [ ] W3DCollisionBox
+* [x] W3DCollisionBox                                           0xC917E725
 * [x] ArmyDefinition                                            0x57213EA5
 * [x] AIPersonalityDefinition                                   0x7DCE182F
 * [x] FXList                                                    0xEBE8A8A4
