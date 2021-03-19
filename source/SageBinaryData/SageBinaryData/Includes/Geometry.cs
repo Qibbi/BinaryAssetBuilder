@@ -51,4 +51,32 @@ namespace SageBinaryData
         public List<ContactPoint> ContactPoint;
         public SageBool IsSmall;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GeometryShape
+    {
+        public GeometryType Type;
+        public float Height;
+        public float MajorRadius;
+        public float MinorRadius;
+        public AnsiString Name;
+        public unsafe Coord3D* Offset;
+        public SageBool BActive;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GeometryInfo
+    {
+        public float BoundingCircleRadius;
+        public float BoundingSphereRadius;
+        public float XWidth;
+        public float YDepth;
+        public List<GeometryShape> Shapes;
+        public unsafe Coord2D* RotationAnchorOffset;
+        public unsafe Coord3D* Center;
+        public unsafe Coord3D* HighestContactPoint;
+        public unsafe Coord3D* InnermostContactPoint;
+        public unsafe ContactPoint* ContactPoints;
+        public SageBool IsSmall;
+    }
 }

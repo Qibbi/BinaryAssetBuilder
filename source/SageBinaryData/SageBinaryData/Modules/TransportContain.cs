@@ -27,7 +27,7 @@ namespace SageBinaryData
         public AnsiString ExitBone;
         public Velocity ExitPitchRate;
         public float HealthRegenPercentPerSec;
-        public uint ExitDelay;
+        public Duration ExitDelay;
         public KindOfBitFlags TypeOneForWeaponSet;
         public KindOfBitFlags TypeTwoForWeaponSet;
         public KindOfBitFlags TypeOneForWeaponState;
@@ -35,7 +35,7 @@ namespace SageBinaryData
         public KindOfBitFlags TypeThreeForWeaponState;
         public AssetReference<WeaponTemplate> GrabWeapon;
         public ModelConditionFlagType ConditionForEntry;
-        public uint ThrowOutPassengersDelay;
+        public Duration ThrowOutPassengersDelay;
         public AssetReference<WeaponTemplate> ThrowOutPassengersLandingWarhead;
         public float EnterFadeTime;
         public float ExitFadeTime;

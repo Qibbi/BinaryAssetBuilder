@@ -8,8 +8,8 @@ namespace SageBinaryData
     {
         public UpdateModuleData Base;
         public AssetReference<ObjectCreationList> OCL;
-        public uint MinDelay;
-        public uint MaxDelay;
+        public Duration MinDelay;
+        public Duration MaxDelay;
         public int Amount;
         public SageBool CreateAtEdge;
     }

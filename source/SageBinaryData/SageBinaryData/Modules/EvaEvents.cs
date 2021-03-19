@@ -15,7 +15,7 @@ namespace SageBinaryData
         public unsafe AnsiString* EvaEventDamagedByFireOwner;
         public unsafe AnsiString* EvaEventSecondDamageFarFromFirstOwner;
         public float EvaEventSecondDamageFarFromFirstScanRange;
-        public uint EvaEventSecondDamageFarFromFirstTimeoutMS;
+        public Duration EvaEventSecondDamageFarFromFirstTimeoutMS;
         public unsafe AnsiString* EvaEventAmbushed;
         public unsafe AnsiString* EvaEventRepairingOwner;
         public unsafe AnsiString* EvaEnemyObjectSightedEvent;

@@ -49,6 +49,9 @@ public static partial class Marshaler
             case 0x08DBC00Eu:
                 MarshalPolymorphicType<AIUpdateModuleData, UpdateModuleData>(node, objT, state);
                 break;
+            default:
+                break;
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "AI module {0:X08} is not implemented.", typeId);
         }
     }
 }

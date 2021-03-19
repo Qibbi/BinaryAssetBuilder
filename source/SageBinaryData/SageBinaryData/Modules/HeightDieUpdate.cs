@@ -8,7 +8,7 @@ namespace SageBinaryData
         public UpdateModuleData Base;
         public float TargetHeight;
         public float DestroyAttachedParticlesAtHeight;
-        public uint InitialDelay;
+        public Duration InitialDelay;
         public SageBool TargetHeightIncludesStructures;
         public SageBool OnlyWhenMovingDown;
         public SageBool SnapToGroundOnDeath;

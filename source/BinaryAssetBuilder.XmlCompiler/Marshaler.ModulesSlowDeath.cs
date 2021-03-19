@@ -48,7 +48,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetChildNodes(nameof(SlowDeathSoundType.List)), &objT->List, state);
+        Marshal(node.GetAttributeValue(nameof(SlowDeathSoundType.List), null), &objT->List, state);
         Marshal(node, (SlowDeathBaseType*)objT, state);
     }
 

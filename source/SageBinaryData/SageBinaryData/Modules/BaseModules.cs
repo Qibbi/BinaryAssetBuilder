@@ -65,6 +65,118 @@ namespace SageBinaryData
         public ContainModuleData Base;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ModelConditionStateTurret
+    {
+        public AnsiString TurretNameKey;
+        public Angle TurretArtAngle;
+        public AnsiString TurretPitch;
+        public Angle TurretArtPitch;
+        public int TurretID;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FXEvent
+    {
+        public int Frame;
+        public int FrameStep;
+        public int FrameStop;
+        public AssetReference<FXList> Effect;
+        public AnsiString Bone;
+        public SageBool FireWhenSkipped;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct LuaEvent
+    {
+        public int Frame;
+        public AnsiString Data;
+        public unsafe ModelConditionStateTurret* Turret;
+        public SageBool OnStateEnter;
+        public SageBool OnStateLeave;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ParticleSysBone
+    {
+        public AnsiString BoneName;
+        public AssetReference<FXParticleSystemTemplate> FXParticleSystemTemplate;
+        public AnsiString FXTrigger;
+        public AnsiString Persist;
+        public int PersistID;
+#pragma warning disable IDE1006 // Naming Styles
+        public AnsiString id;
+#pragma warning restore IDE1006 // Naming Styles
+        public SageBool FollowBone;
+        public SageBool OnlyIfOnWater;
+        public SageBool OnlyIfOnLand;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ScriptedModelDrawModel
+    {
+        public AssetReference<BaseRenderAssetType> Name;
+        public SageBool ExtraMesh;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BoneAttachPoint
+    {
+        public int WeaponSlotID;
+        public WeaponSlotType WeaponSlotType;
+        public AnsiString BoneName;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ModelConditionState
+    {
+        public ParseCondStateType ParseCondStateType;
+        public AnsiString Name;
+        public AnsiString ConditionsYes;
+        public AnsiString Skeleton;
+        public AnsiString ModelAnimationPrefix;
+        public AssetReference<PackedTextureImage> PortraitImage;
+        public AssetReference<PackedTextureImage> ButtonImage;
+        public AnsiString OverrideTooltip;
+#pragma warning disable IDE1006 // Naming Styles
+        public AnsiString id;
+#pragma warning restore IDE1006 // Naming Styles
+        public List<ScriptedModelDrawModel> Model;
+        public List<ReplaceTexture> Texture;
+        public List<BoneAttachPoint> WeaponFireFXBone;
+        public List<BoneAttachPoint> WeaponRecoilBone;
+        public List<BoneAttachPoint> WeaponMuzzleFlash;
+        public List<BoneAttachPoint> WeaponLaunchBone;
+        public List<ParticleSysBone> ParticleSysBone;
+        public List<FXEvent> FXEvent;
+        public unsafe ShadowInfo* ShadowInfo;
+        public List<ModelConditionStateTurret> Turret;
+        public SageBool RetainSubObjects;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AttachModelStruct
+    {
+        public AnsiString Object;
+        public int Probability;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ScriptedModelDrawAttachModel
+    {
+        public ModelConditionBitFlags FlagMask;
+        public AnsiString Bone;
+        public AttachModelStruct Model;
+        public Coord3D Offset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ScriptedModelDrawEmbedPortal
+    {
+        public WaypointPortalType PortalType;
+        public AnsiString BonePrefix;
+    }
+
     public enum FXActionType
     {
         NONE,
@@ -105,6 +217,13 @@ namespace SageBinaryData
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct WeatherTexture
+    {
+        public WeatherType Weather;
+        public AssetReference<Texture> Texture;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct InvisibilityNuggetType
     {
         public ModelConditionBitFlags ForbiddenConditions;
@@ -132,5 +251,12 @@ namespace SageBinaryData
         public Angle MaxKillerAngle;
         public DeathBitFlags DeathTypes;
         public DeathBitFlags DeathTypesForbidden;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectStatusValidationDataType
+    {
+        public ObjectStatusBitFlags ForbiddenStatus;
+        public ObjectStatusBitFlags RequiredStatus;
     }
 }

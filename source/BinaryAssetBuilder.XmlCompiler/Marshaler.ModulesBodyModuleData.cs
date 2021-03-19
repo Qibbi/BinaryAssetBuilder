@@ -31,6 +31,9 @@ public static partial class Marshaler
             case 0x5A0E3D9Bu:
                 MarshalPolymorphicType<ActiveBodyModuleData, BodyModuleData>(node, objT, state);
                 break;
+            default:
+                break;
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Body module {0:X08} is not implemented.", typeId);
         }
     }
 }

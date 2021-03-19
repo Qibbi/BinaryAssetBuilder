@@ -14,7 +14,7 @@ namespace SageBinaryData
         public AssetReference<AttributeModifier> AttributeModifier;
         public float AttributeModifierRange;
         public AssetReference<FXList> AttributeModifierFX;
-        public uint WeatherDuration;
+        public Duration WeatherDuration;
         public List<AnsiString> RequirementsFilterMPSkirmish;
         public AssetReference<FXList> InitiateFX;
         public AssetReference<FXList> TriggerFX;

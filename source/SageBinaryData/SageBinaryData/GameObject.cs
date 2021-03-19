@@ -215,7 +215,7 @@ namespace SageBinaryData
         public float Scale;
         public float HealthBoxScale;
         public float HealthBoxHeightOffset;
-        public uint OcclusionDelay;
+        public Duration OcclusionDelay;
         public float LiveCameraPitch;
         public int FormationWidth;
         public int FormationDepth;

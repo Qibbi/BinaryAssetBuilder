@@ -144,7 +144,7 @@ public static partial class Marshaler
         *objT = result;
     }
 
-    private static unsafe void Marshal(Value value, int* objT, Tracker state)
+    public static unsafe void Marshal(Value value, int* objT, Tracker state)
     {
         if (value is null)
         {
@@ -179,6 +179,33 @@ public static partial class Marshaler
             return;
         }
         Marshal(node.GetValue(), objT, state);
+    }
+
+    private static unsafe void Marshal(string text, List<int>* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        uint objectCount = (uint)tokens.Length;
+        uint num = objectCount;
+        state.InplaceEndianToPlatform(&num);
+        objT->Count = num;
+        using Tracker.Context context = state.Push((void**)&objT->Items, (uint)sizeof(int), objectCount);
+        for (int idx = 0; idx < objectCount; ++idx)
+        {
+            Marshal(tokens[idx], &objT->Items[idx], state);
+        }
+    }
+
+    private static unsafe void Marshal(Value value, List<int>* objT, Tracker state)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        Marshal(value.GetText(), objT, state);
     }
 
     private static unsafe void Marshal(string text, float* objT, Tracker state)
@@ -686,6 +713,16 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(Color3f.b), null), &objT->b, state);
     }
 
+    public static unsafe void Marshal(Node node, Color3f** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(Color3f), 1u);
+        Marshal(node, *objT, state);
+    }
+
     private static unsafe void Marshal(Node node, Color4f* objT, Tracker state)
     {
         if (node is null)
@@ -850,7 +887,7 @@ public static partial class Marshaler
         Marshal(node, *objT, state);
     }
 
-    private static unsafe void Marshal(Node node, ReplaceTexture* objT, Tracker state)
+    public static unsafe void Marshal(Node node, ReplaceTexture* objT, Tracker state)
     {
         if (node is null)
         {

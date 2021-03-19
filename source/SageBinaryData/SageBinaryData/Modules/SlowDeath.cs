@@ -1,5 +1,6 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
+using AnsiString = Relo.String<sbyte>;
 
 namespace SageBinaryData
 {
@@ -42,7 +43,7 @@ namespace SageBinaryData
     public struct SlowDeathSoundType
     {
         public SlowDeathBaseType Base;
-        public List<AssetReference<BaseAudioEventInfo, AudioEventInfo>> List;
+        public List<AnsiString> List;
     }
 
     [StructLayout(LayoutKind.Sequential)]

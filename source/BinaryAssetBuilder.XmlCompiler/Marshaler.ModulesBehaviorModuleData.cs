@@ -13,6 +13,141 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {
+            case 0x25E1EFA5u:
+                MarshalPolymorphicType<CreateCrateDieModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x2827372Cu:
+                MarshalPolymorphicType<ShareExperienceBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xB2483B20u:
+                MarshalPolymorphicType<TooltipUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xAA507848u:
+                MarshalPolymorphicType<RespawnUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x9E322E47u:
+                MarshalPolymorphicType<CashHackSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x2E021907u:
+                MarshalPolymorphicType<PlayerPowerManagerBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x7C27AD44u:
+                MarshalPolymorphicType<DestroyObjectsUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x2F4536A8u:
+                MarshalPolymorphicType<SetLocomotorSpeedUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xB956A21Au:
+                MarshalPolymorphicType<GrantUpgradeAreaOfEffectSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x1E5C747Au:
+                MarshalPolymorphicType<LinearDamageUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xDFD38381u:
+                MarshalPolymorphicType<ShroudClearBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x8DA12662u:
+                MarshalPolymorphicType<MonitorSpecialPowerTimerUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x0FEC21CBu:
+                MarshalPolymorphicType<MonitorConditionUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x47E7EAC9u:
+                MarshalPolymorphicType<AreaRestrictSpecialPowerBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x953C7F5Bu:
+                MarshalPolymorphicType<RestrictSpecialPowerBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xDA2F4EE5u:
+                MarshalPolymorphicType<RadarScanMapSpecialAbilityUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x39B825FFu:
+                MarshalPolymorphicType<RepairSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x146948BCu:
+                MarshalPolymorphicType<HighlightReachableTargetsSpecialAbilityUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xBEB7D7A3u:
+                MarshalPolymorphicType<FindCoverBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x384E25E7u:
+                MarshalPolymorphicType<BannerCarrierUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x977F8391u:
+                MarshalPolymorphicType<StructureUnpackUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xF3F8ADFAu:
+                MarshalPolymorphicType<WallHubBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xE622F055u:
+                MarshalPolymorphicType<AttributeModifierPoolUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xBCFB5BB7u:
+                MarshalPolymorphicType<SuppressionUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x877ACEADu:
+                MarshalPolymorphicType<RunOffMapBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xD6791F61u:
+                MarshalPolymorphicType<MoveToPositionAndReplaceSelfSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xAC7E2A4Au:
+                MarshalPolymorphicType<MoveToPositionAndEvacuateSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x38C496D8u:
+                MarshalPolymorphicType<CreateAndEnterObjectSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC3A62C68u:
+                MarshalPolymorphicType<PowerUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x08E25591u:
+                MarshalPolymorphicType<PassiveAreaEffectBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xA2F69397u:
+                MarshalPolymorphicType<BridgeBuilderModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x4A32BF8Eu:
+                MarshalPolymorphicType<SpawnCrateUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x21068FF6u:
+                MarshalPolymorphicType<StealUnitUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xE502295Eu:
+                MarshalPolymorphicType<BoobyTrapUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xE9FD14C9u:
+                MarshalPolymorphicType<AttachUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x0EA26C39u:
+                MarshalPolymorphicType<ClearanceTestingSlowDeathBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x006DBEBFu:
+                MarshalPolymorphicType<HelicopterSlowDeathBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x55F9E6EDu:
+                MarshalPolymorphicType<ReplaceObjectUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x59D12990u:
+                MarshalPolymorphicType<HitReactionBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x0BA45362u:
+                MarshalPolymorphicType<ClickReactionBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x18A4208Fu:
+                MarshalPolymorphicType<ObjectDefectionHelperModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x54203FA0u:
+                MarshalPolymorphicType<SpecialPowerTimerRefreshSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x98270BD0u:
+                MarshalPolymorphicType<FiringTrackerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x311B2FAFu:
+                MarshalPolymorphicType<RubbleRiseUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xC0A1E43Du:
+                MarshalPolymorphicType<StancesBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
             case 0x264EC61Au:
                 MarshalPolymorphicType<GatherSlavesUpdateModuleData, BehaviorModuleData>(node, objT, state);
                 break;
@@ -520,6 +655,9 @@ public static partial class Marshaler
             case 0x2B847E06u:
                 MarshalPolymorphicType<AISpecialPowerUpdateModuleData, BehaviorModuleData>(node, objT, state);
                 break;
+            default:
+                break;
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, "Behavior module {0:X08} is not implemented.", typeId);
         }
     }
 }
