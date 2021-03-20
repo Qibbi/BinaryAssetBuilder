@@ -727,6 +727,12 @@ namespace BinaryAssetBuilder.XmlCompiler
                     result.ProcessingHash = num ^ 0xF659EF49u;
                     result.TypeHash = 0xF659EF49u;
                     break;
+                case 0xFE0E84BBu:
+                    result.Type = typeof(OnDemandTextureImage);
+                    result.TypeName = nameof(OnDemandTextureImage);
+                    result.ProcessingHash = num ^ 0xF3F4AEECu;
+                    result.TypeHash = 0xF3F4AEECu;
+                    break;
                 case 0xFF7BDFBFu:
                     result.Type = typeof(MusicScriptConditionNugget_ObjectsOfTypeExist);
                     result.TypeName = nameof(MusicScriptConditionNugget_ObjectsOfTypeExist);

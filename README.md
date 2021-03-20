@@ -79,7 +79,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] VideoEventList                                            0x999FCBE3
 * [x] UIConfigList                                              0xB3B7607A
 * [x] PackedTextureImage                                        0x2FAEB748
-* [ ] OnDemandTextureImage
+* [x] OnDemandTextureImage                                      0xF3F4AEEC
 * [ ] TerrainTextureAtlas
 * [x] Mouse                                                     0x73FE99B0
 * [x] Achievement                                               0xC8D16E6D

@@ -107,6 +107,15 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
+    public static unsafe void Marshal(Node node, uint* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
+    }
+
     private static unsafe void Marshal(string text, int* objT, Tracker state)
     {
         if (text.Length == 0)
@@ -158,6 +167,15 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    private static unsafe void Marshal(Node node, float* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetValue(), objT, state);
     }
 
     private static unsafe void Marshal(string text, Percentage* objT, Tracker state)
@@ -392,6 +410,16 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(RGBColor.R), null), &objT->R, state);
         Marshal(node.GetAttributeValue(nameof(RGBColor.G), null), &objT->G, state);
         Marshal(node.GetAttributeValue(nameof(RGBColor.B), null), &objT->B, state);
+    }
+
+    private static unsafe void Marshal(Node node, RGBAColor* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(RGBAColor.A), null), &objT->A, state);
+        Marshal(node, (RGBColor*)objT, state);
     }
 
     private static unsafe void Marshal(Node node, Coord2D* objT, Tracker state)

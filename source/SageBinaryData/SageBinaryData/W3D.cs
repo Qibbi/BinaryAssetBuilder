@@ -158,7 +158,8 @@ namespace SageBinaryData
 
             public Vector3 Min;
             public Vector3 Max;
-
+            public unsafe NodeChild* Children;
+            public unsafe NodePoly* Polys;
         }
 
         public TreePolyIndices PolyIndices;
@@ -169,7 +170,7 @@ namespace SageBinaryData
     public struct W3DMeshMarshalerHelper
     {
         public BaseRenderAssetType Base;
-        public bool VertexData;
+        public SageBool VertexData;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -242,6 +243,7 @@ namespace SageBinaryData
             public List<Triangle> T;
         }
 
+        public W3DMeshMarshalerHelper Base;
         public MeshGeometryType GeometryType;
         public W3DMeshMarshalerHelper Base;
         public BoxMinMax BoundingBox;
