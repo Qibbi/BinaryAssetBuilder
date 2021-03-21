@@ -22,7 +22,7 @@ public static partial class Marshaler
         objT->Value = result;
     }
 
-    private static unsafe void Marshal(Value value, SageBool* objT, Tracker state)
+    public static unsafe void Marshal(Value value, SageBool* objT, Tracker state)
     {
         if (value is null)
         {
@@ -31,7 +31,7 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(Node node, SageBool* objT, Tracker state)
+    public static unsafe void Marshal(Node node, SageBool* objT, Tracker state)
     {
         if (node is null)
         {
@@ -215,7 +215,7 @@ public static partial class Marshaler
         *objT = result;
     }
 
-    private static unsafe void Marshal(Value value, float* objT, Tracker state)
+    public static unsafe void Marshal(Value value, float* objT, Tracker state)
     {
         if (value is null)
         {
@@ -224,7 +224,7 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    private static unsafe void Marshal(Node node, float* objT, Tracker state)
+    public static unsafe void Marshal(Node node, float* objT, Tracker state)
     {
         if (node is null)
         {

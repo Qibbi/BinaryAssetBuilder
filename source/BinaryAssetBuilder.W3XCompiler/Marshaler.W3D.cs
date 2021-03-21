@@ -12,7 +12,7 @@ public static partial class Marshaler
         Marshal(node, (BaseAssetType*)objT, state);
     }
 
-    private static unsafe void Marshal(Node node, Vector2* objT, Tracker state)
+    public static unsafe void Marshal(Node node, Vector2* objT, Tracker state)
     {
         if (node is null)
         {
@@ -22,7 +22,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(Vector2.Y), null), &objT->Y, state);
     }
 
-    private static unsafe void Marshal(Node node, Vector3* objT, Tracker state)
+    public static unsafe void Marshal(Node node, Vector3* objT, Tracker state)
     {
         if (node is null)
         {
@@ -33,7 +33,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(Vector3.Z), null), &objT->Z, state);
     }
 
-    private static unsafe void Marshal(Node node, Vector4* objT, Tracker state)
+    public static unsafe void Marshal(Node node, Vector4* objT, Tracker state)
     {
         if (node is null)
         {
@@ -45,7 +45,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(Vector4.W), null), &objT->W, state);
     }
 
-    private static unsafe void Marshal(Node node, Quaternion* objT, Tracker state)
+    public static unsafe void Marshal(Node node, Quaternion* objT, Tracker state)
     {
         if (node is null)
         {
@@ -405,9 +405,10 @@ public static partial class Marshaler
         Marshal(node.GetChildNodes(nameof(W3DMeshPipelineVertexData.TexCoords)), &pipelineData->TexCoords, helperTracker);
         Marshal(node.GetChildNodes(nameof(W3DMeshPipelineVertexData.BoneInfluences)), &pipelineData->BoneInfluences, helperTracker);
         Marshal(node.GetChildNode(nameof(W3DMeshPipelineVertexData.ShadeIndices), null), &pipelineData->ShadeIndices, helperTracker);
-        using (Tracker.Context context = state.Push((void**)&objT->VertexData, (uint)sizeof(W3DMeshVertexData), 1u))
+        using (Tracker.Context context = state.Push(&objT->VertexData, (uint)sizeof(W3DMeshVertexData), 1u))
         {
-            W3DMeshProcessor.BuildVertexData(pipelineData, *(W3DMeshVertexData**)&objT->VertexData, state);
+            using W3DMeshProcessor processor = new W3DMeshProcessor();
+            processor.BuildVertexData(pipelineData, (W3DMeshVertexData*)objT->VertexData, state);
         }
         Marshal(node, (BaseRenderAssetType*)objT, state);
     }
@@ -427,6 +428,7 @@ public static partial class Marshaler
         Marshal(node.GetChildNode(nameof(W3DMesh.Triangles), null), &objT->Triangles, state);
         Marshal(node.GetChildNode(nameof(W3DMesh.FXShader), null), &objT->FXShader, state);
         Marshal(node.GetChildNode(nameof(W3DMesh.AABTree), null), &objT->AABTree, state);
+        Marshal(node, (W3DMeshMarshalerHelper*)objT, state);
     }
 
     public static unsafe void Marshal(Node node, W3DAnimation.CompressionSetting* objT, Tracker state)

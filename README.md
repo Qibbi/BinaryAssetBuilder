@@ -17,7 +17,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] WaterTransparency                                         0x331DA6CE
 * [ ] Texture
 * [ ] OnDemandTexture
-* [ ] W3DMesh
+* [x] W3DMesh                                                   0xC9D7E778
 * [x] W3DContainer                                              0x909DD93F
 * [x] W3DHierarchy                                              0x3BC26A7A
 * [x] W3DAnimation                                              0xCC069193

@@ -170,7 +170,7 @@ namespace SageBinaryData
     public struct W3DMeshMarshalerHelper
     {
         public BaseRenderAssetType Base;
-        public SageBool VertexData;
+        public unsafe void* VertexData;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -245,10 +245,8 @@ namespace SageBinaryData
 
         public W3DMeshMarshalerHelper Base;
         public MeshGeometryType GeometryType;
-        public W3DMeshMarshalerHelper Base;
         public BoxMinMax BoundingBox;
         public Sphere BoundingSphere;
-        public W3DMeshPipelineVertexData Data;
         public MeshTriangles Triangles;
         public FXShaderMaterial FXShader;
         public unsafe AABTree* AABTree;
