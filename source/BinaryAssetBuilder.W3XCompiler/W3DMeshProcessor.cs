@@ -413,15 +413,18 @@ internal class W3DMeshProcessor : IDisposable
                     result += sizeof(uint);
                     break;
                 case UsageType.BlendIndex:
-                    result += sizeof(byte);
+                    if (mapping.UsageIndex == 0)
+                    {
+                        result += sizeof(uint);
+                    }
+                    else
+                    {
+                        mapping.Offset -= 4 - mapping.UsageIndex;
+                    }
                     break;
                 case UsageType.BlendWeight:
                     result += sizeof(float);
                     break;
-            }
-            if (mapping.UsageIndex != 0)
-            {
-                result = (result + 3) & -4;
             }
         }
         result = (result + 3) & -4;
@@ -455,12 +458,16 @@ internal class W3DMeshProcessor : IDisposable
         System.Collections.Generic.List<D3DVertexElement9> elements = new System.Collections.Generic.List<D3DVertexElement9>();
         foreach (DataMapping mapping in mappings)
         {
-            if (mapping.UsageType == UsageType.BlendIndex || mapping.UsageType == UsageType.BlendWeight)
+            if (mapping.UsageType == UsageType.BlendIndex && mapping.UsageIndex >= 1)
             {
-                if (mapping.UsageIndex == 1)
-                {
-                    continue;
-                }
+                continue;
+            }
+            if (mapping.UsageType == UsageType.BlendWeight && mapping.UsageIndex >= 1)
+            {
+                D3DVertexElement9 last = elements[^1];
+                last.Usage = (VertexElementUsage)((byte)last.Usage + 1);
+                elements[^1] = last;
+                continue;
             }
             D3DVertexElement9 vertexElement = new D3DVertexElement9();
             vertexElement.Usage = mapping.UsageType switch
@@ -485,7 +492,7 @@ internal class W3DMeshProcessor : IDisposable
                 UsageType.TexCoord => VertexElementType.FLOAT2,
                 UsageType.VertexColor => VertexElementType.D3DCOLOR,
                 UsageType.BlendIndex => VertexElementType.D3DCOLOR,
-                UsageType.BlendWeight => VertexElementType.FLOAT2,
+                UsageType.BlendWeight => VertexElementType.FLOAT1,
                 _ => throw new ArgumentOutOfRangeException(nameof(vertexElement.Usage))
             };
             vertexElement.Offset = (short)mapping.Offset;
