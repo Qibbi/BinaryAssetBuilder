@@ -5,6 +5,7 @@ using BinaryAssetBuilder.Core.Xml;
 using BinaryAssetBuilder.Metrics;
 using BinaryAssetBuilder.Remote;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -116,6 +117,8 @@ namespace BinaryAssetBuilder
 
         private static void Main(string[] args)
         {
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             using (ResidentInstance residentInstance = new ResidentInstance())
             {
                 if (!residentInstance.IsFirstInstance)
