@@ -1,5 +1,6 @@
 ﻿using BinaryAssetBuilder.Core;
 using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.Hashing;
 using System.Collections.Generic;
 using System.Xml;
 
@@ -162,6 +163,38 @@ namespace BinaryAssetBuilder.GameDataVerifier
             }
         }
 
+        private static class W3DHierarchyVerifier
+        {
+            private static readonly Tracer _tracer = Tracer.GetTracer(nameof(W3DHierarchyVerifier), "Verifies that there are no hash collisions in bones of a hierarchy.");
+
+            public static bool Verify(InstanceDeclaration instance)
+            {
+                bool result = true;
+                XmlNodeList list = instance.Node.SelectNodes("ea:Pivot", instance.Document.NamespaceManager);
+                Dictionary<uint, string> hashMap = new Dictionary<uint, string>();
+                foreach (XmlNode pivot in list)
+                {
+                    string name = pivot.Attributes["Name"]?.Value;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        _tracer.TraceError("W3DHierarchy {0} has a pivot without a name.", instance.Node.Attributes["id"].Value);
+                        result = false;
+                    }
+                    uint hash = HashProvider.GetCaseInsensitiveSymbolHash(name);
+                    if (hashMap.ContainsKey(hash))
+                    {
+                        _tracer.TraceError("W3DHierarchy {0} has two pivots ('{1}' and '{2}') sharing a common hash", instance.Node.Attributes["id"].Value, hashMap[hash], name);
+                        result = false;
+                    }
+                    else
+                    {
+                        hashMap.Add(hash, name);
+                    }
+                }
+                return result;
+            }
+        }
+
         public void Initialize(TargetPlatform platform)
         {
         }
@@ -179,6 +212,7 @@ namespace BinaryAssetBuilder.GameDataVerifier
             return instance.Node.Name switch
             {
                 "GameObject" => GameObjectVerifier.Verify(instance),
+                "W3DHierarchy" => W3DHierarchyVerifier.Verify(instance),
                 _ => true,
             };
         }

@@ -166,12 +166,12 @@ namespace BinaryAssetBuilder.Core.Hashing
             return FastHash.GetHashCode(FastHash.GetHashCode(combine, type.FullName), type.Module.ModuleVersionId.ToByteArray());
         }
 
-        public static uint GetCaseInsenstitiveSymbolHash(string symbol)
+        public static uint GetCaseInsensitiveSymbolHash(string symbol)
         {
             return FastHash.GetHashCode(symbol.ToLower());
         }
 
-        public static uint GetCaseSenstitiveSymbolHash(string symbol)
+        public static uint GetCaseSensitiveSymbolHash(string symbol)
         {
             return FastHash.GetHashCode(symbol);
         }
