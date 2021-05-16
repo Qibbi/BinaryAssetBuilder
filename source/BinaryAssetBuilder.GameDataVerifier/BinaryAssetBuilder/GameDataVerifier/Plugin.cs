@@ -71,6 +71,11 @@ namespace BinaryAssetBuilder.GameDataVerifier
                         if (!dictionary.ContainsKey(value))
                         {
                             string[] flags = value.Split(' ');
+                            if (flags.Length == 0 || (flags.Length == 1 && flags[0] == "NONE"))
+                            {
+                                _tracer.TraceWarning("GameObject {0} has a PARSE_NORMAL without ConditionsYes set in draw element {1}", gameObjectId, draw.Name);
+                                result = false;
+                            }
                             bool hasDuplicates = false;
                             foreach (string other in dictionary.Keys)
                             {
