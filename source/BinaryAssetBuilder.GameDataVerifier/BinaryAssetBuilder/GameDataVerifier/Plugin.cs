@@ -2,6 +2,7 @@
 using BinaryAssetBuilder.Core.Diagnostics;
 using BinaryAssetBuilder.Core.Hashing;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace BinaryAssetBuilder.GameDataVerifier
@@ -12,6 +13,7 @@ namespace BinaryAssetBuilder.GameDataVerifier
         {
             private static readonly Tracer _tracer = Tracer.GetTracer(nameof(GameDataVerifier), "Verifies that Sage RTS data is logic correct");
             private static XmlNamespaceManager _namespaceManager;
+            private static readonly Regex _transitionStateNameRegex = new Regex(@"CurDrawableSetTransitionAnimState\s*\(\""(?<arg>\w+)\""\)", RegexOptions.Compiled);
 
             private static bool VerifyModuleIds(XmlNode node, string gameObjectId, string srcFile)
             {
@@ -135,7 +137,35 @@ namespace BinaryAssetBuilder.GameDataVerifier
 
             private static bool VerifyDrawModules_StateNameReferences(XmlNode draw, Dictionary<string, int> stateNameAttributes, string gameObjectId)
             {
-                return true;
+                bool result = true;
+                XmlNodeList nodes = draw.SelectNodes("ea:AnimationState/ea:Script", _namespaceManager);
+                foreach (XmlNode node in nodes)
+                {
+                    MatchCollection matches = _transitionStateNameRegex.Matches(node.FirstChild.Value);
+                    foreach (Match match in matches)
+                    {
+                        if (stateNameAttributes.TryGetValue(match.Groups["arg"].Value, out int amount))
+                        {
+                            if (amount > 1)
+                            {
+                                _tracer.TraceWarning("GameObject {0} has a script with an ambiguous StateName reference to {1}, in Draw '{2}'",
+                                                     gameObjectId,
+                                                     match.Groups["arg"].Value,
+                                                     draw.Name);
+                                result = false;
+                            }
+                        }
+                        else
+                        {
+                            _tracer.TraceWarning("GameObject {0} has a script with an invalid StateName reference to {1}, in Draw '{2}'",
+                                                 gameObjectId,
+                                                 match.Groups["arg"].Value,
+                                                 draw.Name);
+                            result = false;
+                        }
+                    }
+                }
+                return result;
             }
 
             private static bool VerifyDrawModules(XmlNode node, string gameObjectId)
