@@ -147,12 +147,12 @@ namespace BinaryAssetBuilder.Core
 
         public static uint GetTypeId(string typeName)
         {
-            return HashProvider.GetCaseSenstitiveSymbolHash(typeName);
+            return HashProvider.GetCaseSensitiveSymbolHash(typeName);
         }
 
         public static uint GetInstanceId(string instanceName)
         {
-            return HashProvider.GetCaseInsenstitiveSymbolHash(instanceName);
+            return HashProvider.GetCaseInsensitiveSymbolHash(instanceName);
         }
 
         public void ReadXml(Node node)

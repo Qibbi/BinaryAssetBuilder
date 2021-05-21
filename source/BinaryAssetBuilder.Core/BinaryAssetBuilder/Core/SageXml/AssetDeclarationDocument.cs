@@ -925,7 +925,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                                                       instanceName,
                                                       instance);
             }
-            refTypeIds.Write(HashProvider.GetCaseSenstitiveSymbolHash(typeName));
+            refTypeIds.Write(HashProvider.GetCaseSensitiveSymbolHash(typeName));
             if (other.TypeId == 0u)
             {
                 other.TypeName = typeName;
@@ -1046,7 +1046,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                     }
                     if (navigator.SchemaInfo?.SchemaType?.Name is not null)
                     {
-                        navigator.CreateAttribute(string.Empty, "TypeId", string.Empty, HashProvider.GetCaseSenstitiveSymbolHash(navigator.SchemaInfo.SchemaType.Name).ToString());
+                        navigator.CreateAttribute(string.Empty, "TypeId", string.Empty, HashProvider.GetCaseSensitiveSymbolHash(navigator.SchemaInfo.SchemaType.Name).ToString());
                     }
                 }
                 foreach (string referencedFile in instance.ReferencedFiles)

@@ -56,7 +56,7 @@ namespace BinaryAssetBuilder.Core.Xml
 
         private void NodeInsertedHandler(object sender, XmlNodeChangedEventArgs args)
         {
-            uint typeId = HashProvider.GetCaseSenstitiveSymbolHash(args.Node.Name);
+            uint typeId = HashProvider.GetCaseSensitiveSymbolHash(args.Node.Name);
             if (!_nodes.TryGetValue(typeId, out List<XmlNode> nodes))
             {
                 nodes = new List<XmlNode>();
@@ -108,7 +108,7 @@ namespace BinaryAssetBuilder.Core.Xml
 
         public Node GetNode(string typeId, string instanceId = null)
         {
-            if (!_nodes.TryGetValue(HashProvider.GetCaseSenstitiveSymbolHash(typeId), out List<XmlNode> nodes))
+            if (!_nodes.TryGetValue(HashProvider.GetCaseSensitiveSymbolHash(typeId), out List<XmlNode> nodes))
             {
                 return null;
             }
@@ -116,11 +116,11 @@ namespace BinaryAssetBuilder.Core.Xml
             {
                 return new Node(nodes[0].CreateNavigator(), _namespaceManager);
             }
-            uint id = HashProvider.GetCaseSenstitiveSymbolHash(instanceId);
+            uint id = HashProvider.GetCaseSensitiveSymbolHash(instanceId);
             foreach (XmlNode node in nodes)
             {
                 Node result = new Node(node.CreateNavigator(), _namespaceManager);
-                uint resultId = HashProvider.GetCaseInsenstitiveSymbolHash(result.GetAttributeValue("id", string.Empty).GetText());
+                uint resultId = HashProvider.GetCaseInsensitiveSymbolHash(result.GetAttributeValue("id", string.Empty).GetText());
                 if (resultId == id)
                 {
                     return result;

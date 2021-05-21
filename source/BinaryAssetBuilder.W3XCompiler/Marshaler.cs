@@ -468,9 +468,8 @@ public static partial class Marshaler
     {
         if (Enum.TryParse(text, false, out T value))
         {
-            T result = (T)Enum.Parse(typeof(T), text, false);
-            state.InplaceEndianToPlatform((uint*)&result);
-            *objT = result;
+            state.InplaceEndianToPlatform((uint*)&value);
+            *objT = value;
         }
     }
 

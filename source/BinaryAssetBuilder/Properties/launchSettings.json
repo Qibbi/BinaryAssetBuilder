@@ -2,7 +2,7 @@
   "profiles": {
     "BinaryAssetBuilder": {
       "commandName": "Project",
-      "commandLineArgs": "test.xml -csc:false -ls -mr"
+      "commandLineArgs": "\"G:\\A\\A\\Data\\static\\blackhandpacifier\\blackhandpacifier.xml\" -csc:false -ls -mr"
     }
   }
 }
