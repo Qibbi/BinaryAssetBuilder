@@ -41,7 +41,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] TheaterOfWarTemplate                                      0xE60C9724
 * [x] CampaignTemplate                                          0xAC60B530
 * [x] RadiusCursorLibrary                                       0xD62B490F
-* [ ] AudioFile
+* [x] AudioFile                                                 0x46410F77
 * [x] AudioEvent                                                0x1B886049
 * [x] MusicTrack                                                0x1469548A
 * [x] DialogEvent                                               0x8655CDB4
@@ -124,7 +124,7 @@ I decided to first make a TW version so I can be sure everything works.
 * [x] InGameUIFixedElementHotKeySlotMap                         0x475EA260
 
 ### Tiberium Wars Only Types
-* [ ] AudioFileMP3Passthrough
+* [x] AudioFileMP3Passthrough                                   0x610DB321
 * [ ] MP3MusicTrack
 * [ ] MP3DialogEvent
 * [ ] MP3AmbientStream

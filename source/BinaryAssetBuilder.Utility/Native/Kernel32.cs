@@ -8,6 +8,7 @@ namespace Native
         private const string _moduleName = "kernel32.dll";
 
         public static readonly IntPtr HModule;
+
         static Kernel32()
         {
             HModule = NativeLibrary.Load(_moduleName);

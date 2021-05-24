@@ -1,5 +1,6 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
+using AnsiString = Relo.String<sbyte>;
 
 namespace SageBinaryData
 {
@@ -20,7 +21,47 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct AudioFile
     {
-        // TODO:
+        public BaseAssetType Base;
+        public AnsiString File;
+        public unsafe int* PCSampleRate;
+        public unsafe PCAudioCompressionSetting* PCCompression;
+        public int PCQuality;
+        public unsafe SageBool* IsStreamedOnPC;
+        public unsafe int* XenonSampleRate;
+        public unsafe XenonAudioCompressionSetting* XenonCompression;
+        public int XenonQuality;
+        public unsafe SageBool* IsStreamedOnXenon;
+        public unsafe AnsiString* SubtitleStringName;
+        public unsafe AnsiString* GUIPreset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AudioFileRuntime
+    {
+        public BaseAssetType Base;
+        public unsafe AnsiString* SubtitleStringName;
+        public int NumberOfSamples;
+        public int SampleRate;
+        public int HeaderData;
+        public int HeaderDataSize;
+        public byte NumberOfChannels;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AudioFileMP3Passthrough
+    {
+        public BaseAssetType Base;
+        public AnsiString File;
+        public unsafe AnsiString* SubtitleStringName;
+        public SageBool IsStreamed;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AudioFileMP3PassthroughRuntime
+    {
+        public BaseAssetType Base;
+        public unsafe AnsiString* SubtitleStringName;
+        public SageBool IsStreamed;
     }
 
     public enum AudioPriority
