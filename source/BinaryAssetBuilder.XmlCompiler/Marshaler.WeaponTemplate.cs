@@ -473,6 +473,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(CrushTiberiumNuggetType.ProductionModifer), "100"), &objT->ProductionModifer, state);
         Marshal(node, (WeaponEffectNugget*)objT, state);
     }
+#endif
 
     public static unsafe void Marshal(Node node, WeaponEffectNugget** objT, Tracker state)
     {
@@ -574,6 +575,7 @@ public static partial class Marshaler
                 break;
 #endif
             default:
+                Tracer.GetTracer("Marshaler", "Marshalling").TraceWarning("Marshalling unknown type {0} from {1}.", typeId, nameof(PolymorphicList<WeaponEffectNugget>));
                 MarshalUnknownPolymorphicType(node, objT, state);
                 break;
 
