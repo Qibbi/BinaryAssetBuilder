@@ -1,4 +1,5 @@
-﻿using Relo;
+﻿using BinaryAssetBuilder.Core.Diagnostics;
+using Relo;
 using SageBinaryData;
 
 public static partial class Marshaler
