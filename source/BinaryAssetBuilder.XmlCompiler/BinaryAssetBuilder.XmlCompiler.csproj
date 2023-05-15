@@ -16,7 +16,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <OutputPath>..\..\Debug</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;WIN32</DefineConstants>
+    <DefineConstants>$(DefineConstants);KANESWRATH</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

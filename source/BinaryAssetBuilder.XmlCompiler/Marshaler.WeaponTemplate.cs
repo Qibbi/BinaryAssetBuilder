@@ -43,24 +43,21 @@ public static partial class Marshaler
         Marshal(node, *objT, state);
     }
 
-    public static unsafe void Marshal(Node node, ScatterRadiusType* objT, Tracker state)
+    public static unsafe void Marshal(Node node, WeaponEffectNugget* objT, Tracker state)
     {
         if (node is null)
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(ScatterRadiusType.Radius), "0.0"), &objT->Radius, state);
-        Marshal(node.GetChildNode(nameof(ScatterRadiusType.Filter), null), &objT->Filter, state);
-    }
-
-    public static unsafe void Marshal(Node node, VeteranProjectile* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(VeteranProjectile.VeterancyLevel), null), &objT->VeterancyLevel, state);
-        Marshal(node.GetAttributeValue(nameof(VeteranProjectile.ProjectileTemplate), null), &objT->ProjectileTemplate, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.PartitionFilterTestType), nameof(PartitionManagerDistTestType.EXTENTS_3D)), &objT->PartitionFilterTestType, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.ForbiddenTargetObjectStatus), null), &objT->ForbiddenTargetObjectStatus, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.ForbiddenTargetModelCondition), null), &objT->ForbiddenTargetModelCondition, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.RequiredObjectStatus), null), &objT->RequiredObjectStatus, state);
+#endif
+        Marshal(node.GetChildNode(nameof(WeaponEffectNugget.SpecialObjectFilter), null), &objT->SpecialObjectFilter, state);
+        Marshal(node.GetChildNodes(nameof(WeaponEffectNugget.RequiredUpgrade)), &objT->RequiredUpgrade, state);
+        Marshal(node.GetChildNodes(nameof(WeaponEffectNugget.ForbiddenUpgrade)), &objT->ForbiddenUpgrade, state);
     }
 
     public static unsafe void Marshal(Node node, ScalarInfo* objT, Tracker state)
@@ -72,208 +69,6 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(ScalarInfo.Scalar), "100%"), &objT->Scalar, state);
         Marshal(node.GetChildNode(nameof(ScalarInfo.Filter), null), &objT->Filter, state);
         Marshal(node.GetChildNodes(nameof(ScalarInfo.RequiredUpgrade)), &objT->RequiredUpgrade, state);
-    }
-
-    public static unsafe void Marshal(Node node, WeaponEffectNugget* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.PartitionFilterTestType), nameof(PartitionManagerDistTestType.EXTENTS_3D)), &objT->PartitionFilterTestType, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.ForbiddenTargetObjectStatus), null), &objT->ForbiddenTargetObjectStatus, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponEffectNugget.ForbiddenTargetModelCondition), null), &objT->ForbiddenTargetModelCondition, state);
-        Marshal(node.GetChildNode(nameof(WeaponEffectNugget.SpecialObjectFilter), null), &objT->SpecialObjectFilter, state);
-        Marshal(node.GetChildNodes(nameof(WeaponEffectNugget.RequiredUpgrade)), &objT->RequiredUpgrade, state);
-        Marshal(node.GetChildNodes(nameof(WeaponEffectNugget.ForbiddenUpgrade)), &objT->ForbiddenUpgrade, state);
-    }
-
-    public static unsafe void Marshal(Node node, ContainedObjectAttackNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, SlavesAttackNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, ReportWeaponFiredStatNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, ActivateLinearDamageNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(ActivateLinearDamageNuggetType.Lifetime), "1.0s"), &objT->Lifetime, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, ScatterProjectileNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(ScatterProjectileNuggetType.ScatterMin), "0"), &objT->ScatterMin, state);
-        Marshal(node.GetAttributeValue(nameof(ScatterProjectileNuggetType.ScatterMax), "0"), &objT->ScatterMax, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, SpendStolenTiberiumNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(SpendStolenTiberiumNuggetType.AmountToSpend), "1"), &objT->AmountToSpend, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, SuppressionNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(SuppressionNuggetType.Radius), "0"), &objT->Radius, state);
-        Marshal(node.GetAttributeValue(nameof(SuppressionNuggetType.Suppression), "0"), &objT->Suppression, state);
-        Marshal(node.GetAttributeValue(nameof(SuppressionNuggetType.DurationSeconds), "0s"), &objT->DurationSeconds, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, WeaponOCLNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(WeaponOCLNuggetType.WeaponOCL), null), &objT->WeaponOCL, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, SpecialPowerNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(SpecialPowerNuggetType.SpecialPowerTemplate), null), &objT->SpecialPowerTemplate, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, ActivateStreamNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(ActivateStreamNuggetType.Lifetime), "1s"), &objT->Lifetime, state);
-        Marshal(node.GetAttributeValue(nameof(ActivateStreamNuggetType.StreamId), "0"), &objT->StreamId, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, LuaEventNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.EventName), null), &objT->EventName, state);
-        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.Radius), "0"), &objT->Radius, state);
-        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.SendToEnemies), "false"), &objT->SendToEnemies, state);
-        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.SendToAllies), "false"), &objT->SendToAllies, state);
-        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.SendToNeutral), "false"), &objT->SendToNeutral, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, DamageFieldNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(DamageFieldNuggetType.WeaponTemplate), null), &objT->WeaponTemplate, state);
-        Marshal(node.GetAttributeValue(nameof(DamageFieldNuggetType.DurationSeconds), "0s"), &objT->DurationSeconds, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, InformationWarfareNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.InfoWarType), nameof(InfoWarEffect.NONE)), &objT->InfoWarType, state);
-        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.RadarJamRadius), "0"), &objT->RadarJamRadius, state);
-        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.RadarJamDuration), "0s"), &objT->RadarJamDuration, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, MetaImpactNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveAmount), "0"), &objT->ShockWaveAmount, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveRadius), "0"), &objT->ShockWaveRadius, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveArc), "360d"), &objT->ShockWaveArc, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveArcInverted), "false"), &objT->ShockWaveArcInverted, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveTaperOff), "0"), &objT->ShockWaveTaperOff, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveSpeed), "0"), &objT->ShockWaveSpeed, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveZMult), "1"), &objT->ShockWaveZMult, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.CyclonicFactor), "0"), &objT->CyclonicFactor, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockwaveDelaySeconds), "0s"), &objT->ShockwaveDelaySeconds, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.Suppression), "0"), &objT->Suppression, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.InvertShockWave), "false"), &objT->InvertShockWave, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.FlipDirection), "false"), &objT->FlipDirection, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.OnlyWhenJustDied), "false"), &objT->OnlyWhenJustDied, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveClearRadius), "false"), &objT->ShockWaveClearRadius, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.HeroResist), "0"), &objT->HeroResist, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveClearWaveMult), "2"), &objT->ShockWaveClearWaveMult, state);
-        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveClearFlingHeight), "100"), &objT->ShockWaveClearFlingHeight, state);
-        Marshal(node.GetChildNode(nameof(MetaImpactNuggetType.KillObjectFilter), null), &objT->KillObjectFilter, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, ActivateLaserNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(ActivateLaserNuggetType.Lifetime), "1s"), &objT->Lifetime, state);
-        Marshal(node.GetAttributeValue(nameof(ActivateLaserNuggetType.LaserId), "0"), &objT->LaserId, state);
-        Marshal(node.GetAttributeValue(nameof(ActivateLaserNuggetType.HitGroundFX), null), &objT->HitGroundFX, state);
-        Marshal(node, (WeaponEffectNugget*)objT, state);
-    }
-
-    public static unsafe void Marshal(Node node, SeedTiberiumNuggetType* objT, Tracker state)
-    {
-        if (node is null)
-        {
-            return;
-        }
-        Marshal(node.GetAttributeValue(nameof(SeedTiberiumNuggetType.FieldAmount), "0"), &objT->FieldAmount, state);
-        Marshal(node.GetAttributeValue(nameof(SeedTiberiumNuggetType.SpawnedInFieldBonus), "0"), &objT->SpawnedInFieldBonus, state);
-        Marshal(node, (WeaponOCLNuggetType*)objT, state);
     }
 
     public static unsafe void Marshal(Node node, ParalyzeNuggetType* objT, Tracker state)
@@ -291,33 +86,34 @@ public static partial class Marshaler
         Marshal(node, (WeaponEffectNugget*)objT, state);
     }
 
-    public static unsafe void Marshal(Node node, AttributeModifierNuggetType* objT, Tracker state)
+    public static unsafe void Marshal(Node node, InformationWarfareNuggetType* objT, Tracker state)
     {
         if (node is null)
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AttributeModifierName), null), &objT->AttributeModifierName, state);
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AttributeModifierOwnerName), null), &objT->AttributeModifierOwnerName, state);
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.DamageFXType), null), &objT->DamageFXType, state);
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.Radius), "0.0"), &objT->Radius, state);
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.DamageArc), "360d"), &objT->DamageArc, state);
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AntiCategories), null), &objT->AntiCategories, state);
-        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AntiFX), null), &objT->AntiFX, state);
+        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.InfoWarType), nameof(InfoWarEffect.NONE)), &objT->InfoWarType, state);
+        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.RadarJamRadius), "0"), &objT->RadarJamRadius, state);
+        Marshal(node.GetAttributeValue(nameof(InformationWarfareNuggetType.RadarJamDuration), "0s"), &objT->RadarJamDuration, state);
         Marshal(node, (WeaponEffectNugget*)objT, state);
     }
 
-    public static unsafe void Marshal(Node node, ProjectileNuggetType* objT, Tracker state)
+    public static unsafe void Marshal(Node node, SpendStolenTiberiumNuggetType* objT, Tracker state)
     {
         if (node is null)
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WarheadTemplate), null), &objT->WarheadTemplate, state);
-        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.ProjectileTemplate), null), &objT->ProjectileTemplate, state);
-        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WeaponLaunchBoneSlotOverride), nameof(WeaponSlotType.NO_WEAPON)), &objT->WeaponLaunchBoneSlotOverride, state);
-        Marshal(node.GetChildNode(nameof(ProjectileNuggetType.AttackOffset), null), &objT->AttackOffset, state);
-        Marshal(node.GetChildNodes(nameof(ProjectileNuggetType.VeterancyProjectiles)), &objT->VeterancyProjectiles, state);
+        Marshal(node.GetAttributeValue(nameof(SpendStolenTiberiumNuggetType.AmountToSpend), "1"), &objT->AmountToSpend, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, ReportWeaponFiredStatNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
         Marshal(node, (WeaponEffectNugget*)objT, state);
     }
 
@@ -354,18 +150,32 @@ public static partial class Marshaler
         Marshal(node, (WeaponEffectNugget*)objT, state);
     }
 
-    public static unsafe void Marshal(Node node, LineDamageNuggetType* objT, Tracker state)
+#if KANESWRATH
+    public static unsafe void Marshal(Node node, MetaGameOperationNuggetType* objT, Tracker state)
     {
         if (node is null)
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.OffsetAngle), "0d"), &objT->OffsetAngle, state);
-        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.LineWidth), "0"), &objT->LineWidth, state);
-        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.LineLengthLeadIn), "0"), &objT->LineLengthLeadIn, state);
-        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.LineLengthLeadOut), "0"), &objT->LineLengthLeadOut, state);
+        Marshal(node.GetAttributeValue(nameof(MetaGameOperationNuggetType.OperationToFire), nameof(MetagameOperationsEnums.INVALID)), &objT->OperationToFire, state);
+        Marshal(node.GetAttributeValue(nameof(MetaGameOperationNuggetType.SpecialPowerTemplate), null), &objT->SpecialPowerTemplate, state);
         Marshal(node, (DamageNuggetType*)objT, state);
     }
+
+    public static unsafe void Marshal(Node node, DOTNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(DOTNuggetType.DamageInterval), null), &objT->DamageInterval, state);
+        Marshal(node.GetAttributeValue(nameof(DOTNuggetType.DamageDuration), null), &objT->DamageDuration, state);
+        Marshal(node.GetAttributeValue(nameof(DOTNuggetType.DamageDecay), "0"), &objT->DamageDecay, state);
+        Marshal(node.GetAttributeValue(nameof(DOTNuggetType.UseMetaGameTurns), "false"), &objT->UseMetaGameTurns, state);
+        Marshal(node.GetAttributeValue(nameof(DOTNuggetType.AppliedStatus), null), &objT->AppliedStatus, state);
+        Marshal(node, (DamageNuggetType*)objT, state);
+    }
+#endif
 
     public static unsafe void Marshal(Node node, DamageAndSpawnNuggetType* objT, Tracker state)
     {
@@ -376,6 +186,19 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(DamageAndSpawnNuggetType.SpawnProbability), "1.0"), &objT->SpawnProbability, state);
         Marshal(node.GetAttributeValue(nameof(DamageAndSpawnNuggetType.SpawnedModelConditionFlags), null), &objT->SpawnedModelConditionFlags, state);
         Marshal(node.GetChildNode(nameof(DamageAndSpawnNuggetType.SpawnTemplate), null), &objT->SpawnTemplate, state);
+        Marshal(node, (DamageNuggetType*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, FireLogicNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.FireEffect), null), &objT->FireEffect, state);
+        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.MinMaxBurnRate), null), &objT->MinMaxBurnRate, state);
+        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.MinDecay), null), &objT->MinDecay, state);
+        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.MaxResistance), null), &objT->MaxResistance, state);
         Marshal(node, (DamageNuggetType*)objT, state);
     }
 
@@ -405,6 +228,158 @@ public static partial class Marshaler
         Marshal(node, (DamageNuggetType*)objT, state);
     }
 
+    public static unsafe void Marshal(Node node, DamageFieldNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(DamageFieldNuggetType.WeaponTemplate), null), &objT->WeaponTemplate, state);
+        Marshal(node.GetAttributeValue(nameof(DamageFieldNuggetType.DurationSeconds), "0s"), &objT->DurationSeconds, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, VeteranProjectile* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(VeteranProjectile.VeterancyLevel), null), &objT->VeterancyLevel, state);
+        Marshal(node.GetAttributeValue(nameof(VeteranProjectile.ProjectileTemplate), null), &objT->ProjectileTemplate, state);
+    }
+
+    public static unsafe void Marshal(Node node, ProjectileNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WarheadTemplate), null), &objT->WarheadTemplate, state);
+        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.ProjectileTemplate), null), &objT->ProjectileTemplate, state);
+        Marshal(node.GetAttributeValue(nameof(ProjectileNuggetType.WeaponLaunchBoneSlotOverride), nameof(WeaponSlotType.NO_WEAPON)), &objT->WeaponLaunchBoneSlotOverride, state);
+        Marshal(node.GetChildNode(nameof(ProjectileNuggetType.AttackOffset), null), &objT->AttackOffset, state);
+        Marshal(node.GetChildNodes(nameof(ProjectileNuggetType.VeterancyProjectiles)), &objT->VeterancyProjectiles, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, SuppressionNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(SuppressionNuggetType.Radius), "0"), &objT->Radius, state);
+        Marshal(node.GetAttributeValue(nameof(SuppressionNuggetType.Suppression), "0"), &objT->Suppression, state);
+        Marshal(node.GetAttributeValue(nameof(SuppressionNuggetType.DurationSeconds), "0s"), &objT->DurationSeconds, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, WeaponOCLNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(WeaponOCLNuggetType.WeaponOCL), null), &objT->WeaponOCL, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, ActivateLaserNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ActivateLaserNuggetType.Lifetime), "1s"), &objT->Lifetime, state);
+        Marshal(node.GetAttributeValue(nameof(ActivateLaserNuggetType.LaserId), "0"), &objT->LaserId, state);
+        Marshal(node.GetAttributeValue(nameof(ActivateLaserNuggetType.HitGroundFX), null), &objT->HitGroundFX, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, ActivateStreamNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ActivateStreamNuggetType.Lifetime), "1s"), &objT->Lifetime, state);
+        Marshal(node.GetAttributeValue(nameof(ActivateStreamNuggetType.StreamId), "0"), &objT->StreamId, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, ActivateLinearDamageNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ActivateLinearDamageNuggetType.Lifetime), "1.0s"), &objT->Lifetime, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, SlavesAttackNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, MetaImpactNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveAmount), "0"), &objT->ShockWaveAmount, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveRadius), "0"), &objT->ShockWaveRadius, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveArc), "360d"), &objT->ShockWaveArc, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveArcInverted), "false"), &objT->ShockWaveArcInverted, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveTaperOff), "0"), &objT->ShockWaveTaperOff, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveSpeed), "0"), &objT->ShockWaveSpeed, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveZMult), "1"), &objT->ShockWaveZMult, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.CyclonicFactor), "0"), &objT->CyclonicFactor, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockwaveDelaySeconds), "0s"), &objT->ShockwaveDelaySeconds, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.Suppression), "0"), &objT->Suppression, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.InvertShockWave), "false"), &objT->InvertShockWave, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.FlipDirection), "false"), &objT->FlipDirection, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.OnlyWhenJustDied), "false"), &objT->OnlyWhenJustDied, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveClearRadius), "false"), &objT->ShockWaveClearRadius, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.HeroResist), "0"), &objT->HeroResist, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveClearWaveMult), "2"), &objT->ShockWaveClearWaveMult, state);
+        Marshal(node.GetAttributeValue(nameof(MetaImpactNuggetType.ShockWaveClearFlingHeight), "100"), &objT->ShockWaveClearFlingHeight, state);
+        Marshal(node.GetChildNode(nameof(MetaImpactNuggetType.KillObjectFilter), null), &objT->KillObjectFilter, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, SpecialPowerNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(SpecialPowerNuggetType.SpecialPowerTemplate), null), &objT->SpecialPowerTemplate, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, AttributeModifierNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AttributeModifierName), null), &objT->AttributeModifierName, state);
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AttributeModifierOwnerName), null), &objT->AttributeModifierOwnerName, state);
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.DamageFXType), null), &objT->DamageFXType, state);
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.Radius), "0.0"), &objT->Radius, state);
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.DamageArc), "360d"), &objT->DamageArc, state);
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AntiCategories), null), &objT->AntiCategories, state);
+        Marshal(node.GetAttributeValue(nameof(AttributeModifierNuggetType.AntiFX), null), &objT->AntiFX, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
     public static unsafe void Marshal(Node node, DamageContainedNuggetType* objT, Tracker state)
     {
         if (node is null)
@@ -417,17 +392,86 @@ public static partial class Marshaler
         Marshal(node, (DamageNuggetType*)objT, state);
     }
 
-    public static unsafe void Marshal(Node node, FireLogicNuggetType* objT, Tracker state)
+    public static unsafe void Marshal(Node node, LuaEventNuggetType* objT, Tracker state)
     {
         if (node is null)
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.FireEffect), null), &objT->FireEffect, state);
-        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.MinMaxBurnRate), null), &objT->MinMaxBurnRate, state);
-        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.MinDecay), null), &objT->MinDecay, state);
-        Marshal(node.GetAttributeValue(nameof(FireLogicNuggetType.MaxResistance), null), &objT->MaxResistance, state);
+        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.EventName), null), &objT->EventName, state);
+        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.Radius), "0"), &objT->Radius, state);
+        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.SendToEnemies), "false"), &objT->SendToEnemies, state);
+        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.SendToAllies), "false"), &objT->SendToAllies, state);
+        Marshal(node.GetAttributeValue(nameof(LuaEventNuggetType.SendToNeutral), "false"), &objT->SendToNeutral, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, LineDamageNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.OffsetAngle), "0d"), &objT->OffsetAngle, state);
+        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.LineWidth), "0"), &objT->LineWidth, state);
+        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.LineLengthLeadIn), "0"), &objT->LineLengthLeadIn, state);
+        Marshal(node.GetAttributeValue(nameof(LineDamageNuggetType.LineLengthLeadOut), "0"), &objT->LineLengthLeadOut, state);
         Marshal(node, (DamageNuggetType*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, SeedTiberiumNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(SeedTiberiumNuggetType.FieldAmount), "0"), &objT->FieldAmount, state);
+        Marshal(node.GetAttributeValue(nameof(SeedTiberiumNuggetType.SpawnedInFieldBonus), "0"), &objT->SpawnedInFieldBonus, state);
+        Marshal(node, (WeaponOCLNuggetType*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, ScatterProjectileNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ScatterProjectileNuggetType.ScatterMin), "0"), &objT->ScatterMin, state);
+        Marshal(node.GetAttributeValue(nameof(ScatterProjectileNuggetType.ScatterMax), "0"), &objT->ScatterMax, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+    public static unsafe void Marshal(Node node, ScatterRadiusType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(ScatterRadiusType.Radius), "0.0"), &objT->Radius, state);
+        Marshal(node.GetChildNode(nameof(ScatterRadiusType.Filter), null), &objT->Filter, state);
+    }
+
+    public static unsafe void Marshal(Node node, ContainedObjectAttackNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node, (WeaponEffectNugget*)objT, state);
+    }
+
+#if KANESWRATH
+    public static unsafe void Marshal(Node node, CrushTiberiumNuggetType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(CrushTiberiumNuggetType.DamageFXType), null), &objT->DamageFXType, state);
+        Marshal(node.GetAttributeValue(nameof(CrushTiberiumNuggetType.Radius), "0.0"), &objT->Radius, state);
+        Marshal(node.GetAttributeValue(nameof(CrushTiberiumNuggetType.DamageArc), "360d"), &objT->DamageArc, state);
+        Marshal(node.GetAttributeValue(nameof(CrushTiberiumNuggetType.ProductionModifer), "100"), &objT->ProductionModifer, state);
+        Marshal(node, (WeaponEffectNugget*)objT, state);
     }
 
     public static unsafe void Marshal(Node node, WeaponEffectNugget** objT, Tracker state)
@@ -440,84 +484,95 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {
-            case 0x031AA01Au:
-                MarshalPolymorphicType<FireLogicNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x0A19EADBu:
-                MarshalPolymorphicType<ParalyzeNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x24575E0Bu:
-                MarshalPolymorphicType<ContainedObjectAttackNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x3A4D3175u:
-                MarshalPolymorphicType<InformationWarfareNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x5BE957A9u:
-                MarshalPolymorphicType<SpecialPowerNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x63D90F36u:
-                MarshalPolymorphicType<ReportWeaponFiredStatNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x68BA2049:
-                MarshalPolymorphicType<SeedTiberiumNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x77DB65EBu:
-                MarshalPolymorphicType<LuaEventNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x7814DAF0u:
-                MarshalPolymorphicType<FireOnObjectsNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x80BA8A54u:
-                MarshalPolymorphicType<ActivateStreamNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x87C7BDCCu:
-                MarshalPolymorphicType<ProjectileNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0x929B5398u:
-                MarshalPolymorphicType<DamageContainedNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xAF4289FBu:
-                MarshalPolymorphicType<MetaImpactNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xB976DC1Fu:
-                MarshalPolymorphicType<SlavesAttackNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xBD462B19u:
-                MarshalPolymorphicType<DamageFieldNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
             case 0xC0F53E99u:
                 MarshalPolymorphicType<DamageNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
             case 0xC2AB8308u:
                 MarshalPolymorphicType<DamageAndSpawnNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
-            case 0xC6067C3Fu:
-                MarshalPolymorphicType<WeaponOCLNuggetType, WeaponEffectNugget>(node, objT, state);
+            case 0xBD462B19u:
+                MarshalPolymorphicType<DamageFieldNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
-            case 0xDA74D739u:
-                MarshalPolymorphicType<TintObjectsNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xDC3BAC7Fu:
-                MarshalPolymorphicType<ActivateStreamNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xE3C2D15Bu:
-                MarshalPolymorphicType<AttributeModifierNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xE96034A2u:
-                MarshalPolymorphicType<ActivateLaserNuggetType, WeaponEffectNugget>(node, objT, state);
-                break;
-            case 0xEFAF6340u:
-                MarshalPolymorphicType<LineDamageNuggetType, WeaponEffectNugget>(node, objT, state);
+            case 0x87C7BDCCu:
+                MarshalPolymorphicType<ProjectileNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
             case 0xF4A6ADA7u:
                 MarshalPolymorphicType<SuppressionNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
-            case 0xF64222BEu:
-                MarshalPolymorphicType<ScatterProjectileNuggetType, WeaponEffectNugget>(node, objT, state);
+            case 0xC6067C3Fu:
+                MarshalPolymorphicType<WeaponOCLNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xE96034A2u:
+                MarshalPolymorphicType<ActivateLaserNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x80BA8A54u:
+                MarshalPolymorphicType<ActivateStreamNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xDC3BAC7Fu:
+                MarshalPolymorphicType<ActivateLinearDamageNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xB976DC1Fu:
+                MarshalPolymorphicType<SlavesAttackNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xAF4289FBu:
+                MarshalPolymorphicType<MetaImpactNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x5BE957A9u:
+                MarshalPolymorphicType<SpecialPowerNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xE3C2D15Bu:
+                MarshalPolymorphicType<AttributeModifierNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x929B5398u:
+                MarshalPolymorphicType<DamageContainedNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x77DB65EBu:
+                MarshalPolymorphicType<LuaEventNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xEFAF6340u:
+                MarshalPolymorphicType<LineDamageNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x68BA2049:
+                MarshalPolymorphicType<SeedTiberiumNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x031AA01Au:
+                MarshalPolymorphicType<FireLogicNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x0A19EADBu:
+                MarshalPolymorphicType<ParalyzeNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x3A4D3175u:
+                MarshalPolymorphicType<InformationWarfareNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
             case 0xFF7B0869u:
                 MarshalPolymorphicType<SpendStolenTiberiumNuggetType, WeaponEffectNugget>(node, objT, state);
                 break;
+            case 0x63D90F36u:
+                MarshalPolymorphicType<ReportWeaponFiredStatNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xF64222BEu:
+                MarshalPolymorphicType<ScatterProjectileNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x7814DAF0u:
+                MarshalPolymorphicType<FireOnObjectsNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xDA74D739u:
+                MarshalPolymorphicType<TintObjectsNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x24575E0Bu:
+                MarshalPolymorphicType<ContainedObjectAttackNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+#if KANESWRATH
+            case 0x04055958u:
+                MarshalPolymorphicType<MetaGameOperationNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0xEFBB5226u:
+                MarshalPolymorphicType<DOTNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+            case 0x1569E1FAu:
+                MarshalPolymorphicType<CrushTiberiumNuggetType, WeaponEffectNugget>(node, objT, state);
+                break;
+#endif
             default:
                 MarshalUnknownPolymorphicType(node, objT, state);
                 break;
@@ -563,6 +618,10 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FireSoundPerClip), null), &objT->FireSoundPerClip, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FiringLoopSound), null), &objT->FiringLoopSound, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FiringLoopSoundContinuesDuringReload), "true"), &objT->FiringLoopSoundContinuesDuringReload, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FiringLoopSoundPlaysOnlyForAttackPosition), "false"), &objT->FiringLoopSoundPlaysOnlyForAttackPosition, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FiringAndAimingLoopSound), null), &objT->FiringAndAimingLoopSound, state);
+#endif
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FireFX), null), &objT->FireFX, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FireVeteranFX), null), &objT->FireVeteranFX, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.FireFlankFX), null), &objT->FireFlankFX, state);
@@ -583,7 +642,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.LeechRangeWeapon), "false"), &objT->LeechRangeWeapon, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.HitStoredTarget), "false"), &objT->HitStoredTarget, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.CapableOfFollowingWaypoints), "false"), &objT->CapableOfFollowingWaypoints, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ShowAmmoPips), "false"), &objT->ShowAmmoPips, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ShowsAmmoPips), "false"), &objT->ShowsAmmoPips, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.AllowAttackGarrisonedBldgs), "false"), &objT->AllowAttackGarrisonedBldgs, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.PlayFXWhenStealthed), "false"), &objT->PlayFXWhenStealthed, state);
         Marshal(node.GetAttributeValue(nameof(WeaponTemplate.ContinueAttackRange), "0"), &objT->ContinueAttackRange, state);
