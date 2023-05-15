@@ -2,7 +2,7 @@
   "profiles": {
     "BinaryAssetBuilder": {
       "commandName": "Project",
-      "commandLineArgs": "test.xml -csc:false -ls -mr"
+      "commandLineArgs": "GDIIonCannonControl.xml -csc:false -ls -mr"
     }
   }
 }
