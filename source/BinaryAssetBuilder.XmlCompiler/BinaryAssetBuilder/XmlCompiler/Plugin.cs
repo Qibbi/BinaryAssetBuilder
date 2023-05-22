@@ -109,6 +109,13 @@ public class Plugin : IAssetBuilderPlugin
 #elif KANESWRATH
             0x90AEAB74u,
 #endif
+            false),
+            (typeof(LocomotorTemplate),
+#if TIBERIUMWARS
+            0xBD8F61A4u,
+#elif KANESWRATH
+            0xDC4EEAC2u,
+#endif
             false)
         })
         {

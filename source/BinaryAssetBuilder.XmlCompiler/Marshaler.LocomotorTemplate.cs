@@ -95,7 +95,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.BackingUpStopWhenTurning), "false"), &objT->BackingUpStopWhenTurning, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.BackingUpDistanceMin), "0.0"), &objT->BackingUpDistanceMin, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.BackingUpDistanceMax), "0.0"), &objT->BackingUpDistanceMax, state);
-        Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.BackingUpAngle), "0.0"), &objT->BackingUpAngle, state);
+        Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.BackingUpAngle), "0.5"), &objT->BackingUpAngle, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.RiverModifier), "100%"), &objT->RiverModifier, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.ScalesWalls), "false"), &objT->ScalesWalls, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.TurnWhileMoving), "true"), &objT->TurnWhileMoving, state);
@@ -109,6 +109,11 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.AttackPathTrailDistanceMinScale), "1.0"), &objT->AttackPathTrailDistanceMinScale, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.AttackPathTrailDistanceMaxScale), "1.0"), &objT->AttackPathTrailDistanceMaxScale, state);
         Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.AbsoluteMinHeightWorldSpace), "-1000.0"), &objT->AbsoluteMinHeightWorldSpace, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.WiggleAmplitude), "0.0"), &objT->WiggleAmplitude, state);
+        Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.WiggleFrequency), "0.0"), &objT->WiggleFrequency, state);
+        Marshal(node.GetAttributeValue(nameof(LocomotorTemplate.WiggleOffset), "0.0"), &objT->WiggleOffset, state);
+#endif
         Marshal(node, (BaseInheritableAsset*)objT, state);
     }
 }
