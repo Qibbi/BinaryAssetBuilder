@@ -11,7 +11,7 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.CommandButtonName), null), &objT->CommandButtonName, state);
         Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.SecondaryCommandButtonName), null), &objT->SecondaryCommandButtonName, state);
-        Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.SpecialPowerAIType), "SPECIAL_POWER_BASIC_SELF_BUFF"), &objT->SpecialPowerAIType, state);
+        Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.SpecialPowerAIType), nameof(AISpecialPowerInstanceType.SPECIAL_POWER_BASIC_SELF_BUFF)), &objT->SpecialPowerAIType, state);
         Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.SpecialPowerRadius), "-1.0"), &objT->SpecialPowerRadius, state);
         Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.ReinforceDistance), "0.0"), &objT->ReinforceDistance, state);
         Marshal(node.GetAttributeValue(nameof(AISpecialPowerUpdateModuleData.RandomizeTargetLocation), "false"), &objT->RandomizeTargetLocation, state);

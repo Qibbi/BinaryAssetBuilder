@@ -32,8 +32,8 @@ BinaryAssetBuilder implementation for Kane's Wrath in .Net
 * [ ] AIBudgetStateDefinition                                   0xA10F9630
 * [ ] AITargetingHeuristic                                      0xB7A2C222
 * [ ] GameMap                                                   0x3EC9C79B
-* [ ] AttributeModifier                                         0xD24E7201
-* [ ] ArmorTemplate                                             0x9CDD1086
+* [x] AttributeModifier
+* [x] ArmorTemplate
 * [ ] MissionTemplate                                           0x0D283295
 * [ ] TheaterOfWarTemplate                                      0xE60C9724
 * [ ] CampaignTemplate                                          0xAC60B530

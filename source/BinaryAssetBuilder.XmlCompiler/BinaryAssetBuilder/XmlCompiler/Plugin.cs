@@ -116,7 +116,32 @@ public class Plugin : IAssetBuilderPlugin
 #elif KANESWRATH
             0xDC4EEAC2u,
 #endif
-            false)
+            false),
+            (typeof(GameObject),
+#if TIBERIUMWARS
+            0x132408DBu,
+#elif KANESWRATH
+            0x50612DE9u,
+#endif
+            false),
+
+
+
+
+            (typeof(AttributeModifier),
+#if TIBERIUMWARS
+            0xD24E7201u,
+#elif KANESWRATH
+            0x8C925761u,
+#endif
+            false),
+            (typeof(ArmorTemplate),
+#if TIBERIUMWARS
+            0x9CDD1086u,
+#elif KANESWRATH
+            0x6D59C409u,
+#endif
+            false),
         })
         {
             CreateTypeInfo(type, num, hash, hasCustomData);

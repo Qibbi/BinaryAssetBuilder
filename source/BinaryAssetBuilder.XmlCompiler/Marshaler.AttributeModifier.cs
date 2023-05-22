@@ -22,6 +22,9 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(AttributeModifier.Category), null), &objT->Category, state);
         Marshal(node.GetAttributeValue(nameof(AttributeModifier.Duration), "0s"), &objT->Duration, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(AttributeModifier.MetaDuration), "0"), &objT->MetaDuration, state);
+#endif
         Marshal(node.GetAttributeValue(nameof(AttributeModifier.ReplaceInCategroyIfLongest), "false"), &objT->ReplaceInCategroyIfLongest, state);
         Marshal(node.GetAttributeValue(nameof(AttributeModifier.IgnoreIfAnticategoryActive), "false"), &objT->IgnoreIfAnticategoryActive, state);
         Marshal(node.GetAttributeValue(nameof(AttributeModifier.StartFX), null), &objT->StartFX, state);

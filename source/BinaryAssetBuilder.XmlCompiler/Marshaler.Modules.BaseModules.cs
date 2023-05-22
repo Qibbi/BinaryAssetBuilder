@@ -171,7 +171,7 @@ public static partial class Marshaler
             return;
         }
         Marshal(node.GetAttributeValue(nameof(BoneAttachPoint.WeaponSlotID), "1"), &objT->WeaponSlotID, state);
-        Marshal(node.GetAttributeValue(nameof(BoneAttachPoint.WeaponSlotType), "PRIMARY_WEAPON"), &objT->WeaponSlotType, state);
+        Marshal(node.GetAttributeValue(nameof(BoneAttachPoint.WeaponSlotType), nameof(WeaponSlotType.PRIMARY_WEAPON)), &objT->WeaponSlotType, state);
         Marshal(node.GetAttributeValue(nameof(BoneAttachPoint.BoneName), null), &objT->BoneName, state);
     }
 
@@ -241,7 +241,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(WeatherTexture.Weather), "NORMAL"), &objT->Weather, state);
+        Marshal(node.GetAttributeValue(nameof(WeatherTexture.Weather), nameof(WeatherType.NORMAL)), &objT->Weather, state);
         Marshal(node.GetAttributeValue(nameof(WeatherTexture.Texture), ""), &objT->Texture, state);
     }
 
@@ -251,16 +251,16 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenConditions), "PREATTACK_A FIRING_A FIRING_OR_PREATTACK_A RELOADING_A USING_WEAPON_A PREATTACK_B FIRING_B FIRING_OR_PREATTACK_B RELOADING_B USING_WEAPON_B PREATTACK_C FIRING_C FIRING_OR_PREATTACK_C RELOADING_C USING_WEAPON_C"), &objT->ForbiddenConditions, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenConditions), $"{nameof(ModelConditionFlagType.PREATTACK_A)} {nameof(ModelConditionFlagType.FIRING_A)} {nameof(ModelConditionFlagType.FIRING_OR_PREATTACK_A)} {nameof(ModelConditionFlagType.RELOADING_A)} {nameof(ModelConditionFlagType.USING_WEAPON_A)} {nameof(ModelConditionFlagType.PREATTACK_B)} {nameof(ModelConditionFlagType.FIRING_B)} {nameof(ModelConditionFlagType.FIRING_OR_PREATTACK_B)} {nameof(ModelConditionFlagType.RELOADING_B)} {nameof(ModelConditionFlagType.USING_WEAPON_B)} {nameof(ModelConditionFlagType.PREATTACK_C)} {nameof(ModelConditionFlagType.FIRING_C)} {nameof(ModelConditionFlagType.FIRING_OR_PREATTACK_C)} {nameof(ModelConditionFlagType.RELOADING_C)} {nameof(ModelConditionFlagType.USING_WEAPON_C)}"), &objT->ForbiddenConditions, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenConditionExceptions), ""), &objT->ForbiddenConditionExceptions, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenWeaponSets), null), &objT->ForbiddenWeaponSets, state);
-        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenStatus), "IS_FIRING_WEAPON IS_AIMING_WEAPON SPECIAL_ABILITY_PACKING_UNPACKING_OR_USING USING_ABILITY"), &objT->ForbiddenStatus, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.ForbiddenStatus), $"{nameof(ObjectStatusType.IS_FIRING_WEAPON)} {nameof(ObjectStatusType.IS_AIMING_WEAPON)} {nameof(ObjectStatusType.SPECIAL_ABILITY_PACKING_UNPACKING_OR_USING)} {nameof(ObjectStatusType.USING_ABILITY)}"), &objT->ForbiddenStatus, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.CamouflageLevel), null), &objT->CamouflageLevel, state);
-        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.InvisibilityType), "STEALTH"), &objT->InvisibilityType, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.InvisibilityType), nameof(InvisibilityType.STEALTH)), &objT->InvisibilityType, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.Options), null), &objT->Options, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.EnteringStealthFX), null), &objT->EnteringStealthFX, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.LeavingStealthFX), null), &objT->LeavingStealthFX, state);
-        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.HintDetectableStates), "IS_ATTACKING"), &objT->HintDetectableStates, state);
+        Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.HintDetectableStates), nameof(ObjectStatusType.IS_ATTACKING)), &objT->HintDetectableStates, state);
         Marshal(node.GetAttributeValue(nameof(InvisibilityNuggetType.NoStealthForAttackWindow), "0s"), &objT->NoStealthForAttackWindow, state);
         Marshal(node.GetChildNodes(nameof(InvisibilityNuggetType.IgnoreTreeCheckUpgrade)), &objT->IgnoreTreeCheckUpgrade, state);
     }
