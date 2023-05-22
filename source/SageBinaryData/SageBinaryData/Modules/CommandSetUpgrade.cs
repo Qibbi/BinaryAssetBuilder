@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CommandSetUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CommandSetUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public TypedAssetId<LogicCommandSet> CommandSet;
-    }
+    public UpgradeModuleData Base;
+    public TypedAssetId<LogicCommandSet> CommandSet;
 }

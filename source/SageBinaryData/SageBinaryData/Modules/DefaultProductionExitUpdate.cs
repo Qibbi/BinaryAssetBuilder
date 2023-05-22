@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct DefaultProductionExitUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DefaultProductionExitUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public unsafe Coord3D* UnitCreatePoint;
-        public unsafe Coord3D* NaturalRallyPoint;
-    }
+    public UpdateModuleData Base;
+    public unsafe Coord3D* UnitCreatePoint;
+    public unsafe Coord3D* NaturalRallyPoint;
 }

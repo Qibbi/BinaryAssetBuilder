@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RebuildHoleBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RebuildHoleBehaviorModuleData
-    {
-        public UpdateModuleData Base;
-        public Time WorkerRespawnDelay;
-        public Percentage HoleHealthRegenPercentPerSecond;
-        public TypedAssetId<GameObject> WorkerTemplate;
-    }
+    public UpdateModuleData Base;
+    public Time WorkerRespawnDelay;
+    public Percentage HoleHealthRegenPercentPerSecond;
+    public TypedAssetId<GameObject> WorkerTemplate;
 }

@@ -229,7 +229,11 @@ public struct DeathBitFlags
 [StructLayout(LayoutKind.Sequential)]
 public struct DamageBitFlags
 {
+#if TIBERIUMWARS
     public const int Count = 34;
+#elif KANESWRATH
+    public const int Count = 37;
+#endif
     public const int BitsInSpan = 32;
     public const int NumSpans = (Count + (BitsInSpan - 1)) / BitsInSpan;
 

@@ -1,14 +1,13 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RebuildHoleExposeDieModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RebuildHoleExposeDieModuleData
-    {
-        public DieModuleData Base;
-        public TypedAssetId<GameObject> HoleId;
-        public float HoleMaxHealth;
-        public Time FadeInSeconds;
-        public SageBool TransferAttackers;
-    }
+    public DieModuleData Base;
+    public TypedAssetId<GameObject> HoleId;
+    public float HoleMaxHealth;
+    public Time FadeInSeconds;
+    public SageBool TransferAttackers;
 }

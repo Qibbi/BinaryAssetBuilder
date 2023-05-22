@@ -30,8 +30,8 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.WeldingFXBone), null), &objT->WeldingFXBone, state);
         Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.StayOnSameLayerAsMaster), "false"), &objT->StayOnSameLayerAsMaster, state);
         Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.DieOnMastersDeath), "false"), &objT->DieOnMastersDeath, state);
-        Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.DieOnMastersDeathDamageType), "UNRESISTABLE"), &objT->DieOnMastersDeathDamageType, state);
-        Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.DieOnMastersDeathType), "NORMAL"), &objT->DieOnMastersDeathType, state);
+        Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.DieOnMastersDeathDamageType), nameof(DamageType.UNRESISTABLE)), &objT->DieOnMastersDeathDamageType, state);
+        Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.DieOnMastersDeathType), nameof(DeathType.NORMAL)), &objT->DieOnMastersDeathType, state);
         Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.FadeOutRange), "0"), &objT->FadeOutRange, state);
         Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.FadeTime), "0"), &objT->FadeTime, state);
         Marshal(node.GetAttributeValue(nameof(SlavedUpdateModuleData.MarkUnselectable), "false"), &objT->MarkUnselectable, state);

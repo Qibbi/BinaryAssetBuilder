@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct DestroyDieModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DestroyDieModuleData
-    {
-        public DieModuleData Base;
-    }
+    public DieModuleData Base;
 }

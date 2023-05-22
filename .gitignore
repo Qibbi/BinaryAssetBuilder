@@ -1,6 +1,8 @@
 # Remove files I cannot share
 # schemas/xsd/
 
+*.winmerge
+
 # Remove test files
 test*.xml
 test*.manifest
