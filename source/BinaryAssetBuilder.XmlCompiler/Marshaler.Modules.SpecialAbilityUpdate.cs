@@ -52,8 +52,8 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.RequireAndSpendTiberiumOnCaster), "0"), &objT->RequireAndSpendTiberiumOnCaster, state);
         Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.GoIdleInStartPreparation), "true"), &objT->GoIdleInStartPreparation, state);
         Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.FaceTarget), "true"), &objT->FaceTarget, state);
-        Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.DisabledTypesToProcess), "HELD"), &objT->DisabledTypesToProcess, state);
-        Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.DisabledTypesToContinueSoundsFor), "HELD"), &objT->DisabledTypesToContinueSoundsFor, state);
+        Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.DisabledTypesToProcess), nameof(DisabledType.HELD)), &objT->DisabledTypesToProcess, state);
+        Marshal(node.GetAttributeValue(nameof(SpecialAbilityUpdateModuleData.DisabledTypesToContinueSoundsFor), nameof(DisabledType.HELD)), &objT->DisabledTypesToContinueSoundsFor, state);
         Marshal(node.GetChildNode(nameof(SpecialAbilityUpdateModuleData.CustomAnimAndDuration), null), &objT->CustomAnimAndDuration, state);
         Marshal(node.GetChildNode(nameof(SpecialAbilityUpdateModuleData.GrabPassengerAnimAndDuration), null), &objT->GrabPassengerAnimAndDuration, state);
         Marshal(node, (UpdateModuleData*)objT, state);

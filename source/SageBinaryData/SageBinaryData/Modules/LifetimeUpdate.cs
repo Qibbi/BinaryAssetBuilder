@@ -1,16 +1,15 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct LifetimeUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct LifetimeUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public Time MinLifetime;
-        public Time MaxLifetime;
-        public DeathType DeathType;
-        public SageBool WaitForWakeUp;
-        public SageBool ScoreKill;
-        public SageBool IgnoreProjectileState;
-    }
+    public UpdateModuleData Base;
+    public Time MinLifetime;
+    public Time MaxLifetime;
+    public DeathType DeathType;
+    public SageBool WaitForWakeUp;
+    public SageBool ScoreKill;
+    public SageBool IgnoreProjectileState;
 }

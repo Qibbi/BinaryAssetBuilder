@@ -1,15 +1,14 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct GiveUpgradeUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct GiveUpgradeUpdateModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public AssetReference<FXList> GiveUpgradeEffect;
-        public AssetReference<FXList> SpawnOutFX;
-        public float FadeOutSpeed;
-        public SageBool DeliverUpgrade;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public AssetReference<FXList> GiveUpgradeEffect;
+    public AssetReference<FXList> SpawnOutFX;
+    public float FadeOutSpeed;
+    public SageBool DeliverUpgrade;
 }

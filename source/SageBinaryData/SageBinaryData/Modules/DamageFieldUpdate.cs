@@ -1,14 +1,13 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct DamageFieldUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DamageFieldUpdateModuleData
-    {
-        public FireWeaponUpdateModuleData Base;
-        public int Radius;
-        public AssetReference<UpgradeTemplate> RequiredUpgrade;
-        public unsafe ObjectFilter* ObjectFilter;
-    }
+    public FireWeaponUpdateModuleData Base;
+    public int Radius;
+    public AssetReference<UpgradeTemplate> RequiredUpgrade;
+    public unsafe ObjectFilter* ObjectFilter;
 }

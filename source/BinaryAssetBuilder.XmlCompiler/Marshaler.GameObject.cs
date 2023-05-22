@@ -89,6 +89,59 @@ public static partial class Marshaler
             case 0xB28C3D52u:
                 MarshalPolymorphicType<FireWeaponUpdateModuleData, BehaviorModuleData>(node, objT, state);
                 break;
+            case 0xF5D17C70u:
+                MarshalPolymorphicType<StructureToppleUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x06DE2D62u:
+                MarshalPolymorphicType<ToppleUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x97482233u:
+                MarshalPolymorphicType<OilSpillUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xF3B802D5u:
+                MarshalPolymorphicType<DamageFieldUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x6BE00745u:
+                MarshalPolymorphicType<FlammableUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x4D834921u:
+                MarshalPolymorphicType<AutoDepositUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xB07119E4u:
+                MarshalPolymorphicType<FXListBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xFF84FBDEu:
+                MarshalPolymorphicType<GeometryUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xF3967C53u:
+                MarshalPolymorphicType<GettingBuiltBehaviorModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x2DE34173u:
+                MarshalPolymorphicType<GiveUpgradeUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x04B8C430u:
+                MarshalPolymorphicType<GrantUpgradeCreateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x7517FE52u:
+                MarshalPolymorphicType<HeightDieUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x91840787u:
+                MarshalPolymorphicType<MissileUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0xE7CF961Cu:
+                MarshalPolymorphicType<JumpJetSpecialPowerModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x977D25A1u:
+                MarshalPolymorphicType<LevelUpUpgradeModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+            case 0x6C283C72u:
+                MarshalPolymorphicType<LifetimeUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+#if KANESWRATH
+            case 0x4899B6CDu:
+                MarshalPolymorphicType<MetaGameLifetimeUpdateModuleData, BehaviorModuleData>(node, objT, state);
+                break;
+#endif
 
             default:
                 Tracer.GetTracer("Marshaler", "Marshalling").TraceWarning("Marshalling unknown type {0} from {1}.", typeId, nameof(PolymorphicList<BehaviorModuleData>));

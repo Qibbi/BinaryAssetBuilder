@@ -1,15 +1,14 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct OilSpillUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct OilSpillUpdateModuleData
-    {
-        public FireWeaponUpdateModuleData Base;
-        public TypedAssetId<GameObject> BreadCrumb;
-        public AssetReference<WeaponTemplate> IgnitionWeaponName;
-        public float IgnitionWeaponSpacing;
-        public AssetReference<FXList> OilSpillFX;
-    }
+    public FireWeaponUpdateModuleData Base;
+    public TypedAssetId<GameObject> BreadCrumb;
+    public AssetReference<WeaponTemplate> IgnitionWeaponName;
+    public float IgnitionWeaponSpacing;
+    public AssetReference<FXList> OilSpillFX;
 }

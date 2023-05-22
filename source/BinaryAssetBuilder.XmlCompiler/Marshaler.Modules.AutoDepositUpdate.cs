@@ -16,7 +16,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(AutoDepositUpdateModuleData.UpgradeBonusScalar), "1.0"), &objT->UpgradeBonusScalar, state);
         Marshal(node.GetAttributeValue(nameof(AutoDepositUpdateModuleData.GiveNoXP), "false"), &objT->GiveNoXP, state);
         Marshal(node.GetAttributeValue(nameof(AutoDepositUpdateModuleData.OnlyWhenGarrisoned), "false"), &objT->OnlyWhenGarrisoned, state);
-        Marshal(node.GetAttributeValue(nameof(AutoDepositUpdateModuleData.Flags), "NONE"), &objT->Flags, state);
+        Marshal(node.GetAttributeValue(nameof(AutoDepositUpdateModuleData.Flags), nameof(AutoDepositFlagsType.NONE)), &objT->Flags, state);
         Marshal(node.GetChildNode(nameof(AutoDepositUpdateModuleData.ObjectFilter), null), &objT->ObjectFilter, state);
         Marshal(node, (UpdateModuleData*)objT, state);
     }

@@ -15,7 +15,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(FXListBehaviorEvent.MaxThreshold), "0"), &objT->MaxThreshold, state);
         Marshal(node.GetAttributeValue(nameof(FXListBehaviorEvent.OrientToObject), "true"), &objT->OrientToObject, state);
         Marshal(node.GetAttributeValue(nameof(FXListBehaviorEvent.ForceUseDoFXObj), "false"), &objT->ForceUseDoFXObj, state);
-        Marshal(node.GetAttributeValue(nameof(FXListBehaviorEvent.Direction), "Default"), &objT->Direction, state);
+        Marshal(node.GetAttributeValue(nameof(FXListBehaviorEvent.Direction), nameof(FXListBehaviorDirection.Default)), &objT->Direction, state);
     }
 
     public static unsafe void Marshal(Node node, FXListBehaviorModuleData* objT, Tracker state)

@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct LevelUpUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct LevelUpUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public int LevelsToGain;
-        public int LevelCap;
-        public SageBool DoFlash;
-    }
+    public UpgradeModuleData Base;
+    public int LevelsToGain;
+    public int LevelCap;
+    public SageBool DoFlash;
 }
