@@ -35,6 +35,9 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.MaxQueueEntries), "99"), &objT->MaxQueueEntries, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.NumDoorAnimations), "0"), &objT->NumDoorAnimations, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.DoorOpeningTime), "0s"), &objT->DoorOpeningTime, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.DoorOpeningTimeMetaUnit), "0s"), &objT->DoorOpeningTimeMetaUnit, state);
+#endif
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.DoorWaitOpenTime), "0s"), &objT->DoorWaitOpenTime, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.DoorCloseTime), "0s"), &objT->DoorCloseTime, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.ConstructionCompleteDuration), "0"), &objT->ConstructionCompleteDuration, state);
@@ -47,7 +50,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.BonusForType), null), &objT->BonusForType, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.SpeedBonusAudioLoop), null), &objT->SpeedBonusAudioLoop, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.SecondaryQueue), "false"), &objT->SecondaryQueue, state);
-        Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.Type), "INVALID"), &objT->Type, state);
+        Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.Type), nameof(ProductionQueueType.INVALID)), &objT->Type, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.IgnorePreReqs), "false"), &objT->IgnorePreReqs, state);
         Marshal(node.GetAttributeValue(nameof(ProductionUpdateModuleData.ProductionTimeDelayScalar), "0s"), &objT->ProductionTimeDelayScalar, state);
         Marshal(node.GetChildNodes(nameof(ProductionUpdateModuleData.QuantityModifier)), &objT->QuantityModifier, state);

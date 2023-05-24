@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct LocomotorSetModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct LocomotorSetModuleData
-    {
-        public UpgradeModuleData Base;
-        public SageBool KillLocomotorUpgrade;
-    }
+    public UpgradeModuleData Base;
+    public SageBool KillLocomotorUpgrade;
 }

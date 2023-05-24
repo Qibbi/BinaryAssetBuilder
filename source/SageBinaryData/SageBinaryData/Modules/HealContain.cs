@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct HealContainModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct HealContainModuleData
-    {
-        public HordeGarrisonContainModuleData Base;
-        public Time TimeForFullHeal;
-    }
+    public HordeGarrisonContainModuleData Base;
+    public Time TimeForFullHeal;
 }

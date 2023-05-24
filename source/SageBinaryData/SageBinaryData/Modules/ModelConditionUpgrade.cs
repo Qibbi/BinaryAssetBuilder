@@ -1,14 +1,13 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ModelConditionUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ModelConditionUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public ModelConditionBitFlags AddConditionFlags;
-        public ModelConditionBitFlags RemoveConditionFlags;
-        public ModelConditionFlagType AddTempConditionFlag;
-        public Time TempConditionTime;
-    }
+    public UpgradeModuleData Base;
+    public ModelConditionBitFlags AddConditionFlags;
+    public ModelConditionBitFlags RemoveConditionFlags;
+    public ModelConditionFlagType AddTempConditionFlag;
+    public Time TempConditionTime;
 }

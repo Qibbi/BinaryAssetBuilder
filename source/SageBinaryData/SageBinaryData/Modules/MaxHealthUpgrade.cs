@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct MaxHealthUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct MaxHealthUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public float AddMaxHealth;
-        public MaxHealthChangeType ChangeType;
-    }
+    public UpgradeModuleData Base;
+    public float AddMaxHealth;
+    public MaxHealthChangeType ChangeType;
 }

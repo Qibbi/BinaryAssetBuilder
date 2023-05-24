@@ -2,12 +2,11 @@
 using System.Runtime.InteropServices;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RandomModelConditionBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RandomModelConditionBehaviorModuleData
-    {
-        public CreateModuleData Base;
-        public List<AnsiString> Conditions;
-    }
+    public CreateModuleData Base;
+    public List<AnsiString> Conditions;
 }

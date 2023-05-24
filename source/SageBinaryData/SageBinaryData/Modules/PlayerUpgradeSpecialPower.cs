@@ -1,12 +1,11 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct PlayerUpgradeSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct PlayerUpgradeSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public List<AssetReference<UpgradeTemplate>> Upgrade;
-    }
+    public SpecialPowerModuleData Base;
+    public List<AssetReference<UpgradeTemplate>> Upgrade;
 }

@@ -24,6 +24,26 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(MemberTemplateStatusData.ObjectStatus), null), &objT->ObjectStatus, state);
     }
 
+    public static unsafe void Marshal(Node node, OpenContainUpgradeOverrideData* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(OpenContainUpgradeOverrideData.UpgradeTriggeredBy), null), &objT->UpgradeTriggeredBy, state);
+        Marshal(node.GetAttributeValue(nameof(OpenContainUpgradeOverrideData.ObjectStatusOfContained), null), &objT->ObjectStatusOfContained, state);
+    }
+
+    private static unsafe void Marshal(Node node, OpenContainUpgradeOverrideData** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(OpenContainUpgradeOverrideData), 1u);
+        Marshal(node, *objT, state);
+    }
+
     public static unsafe void Marshal(Node node, OpenContainModuleData* objT, Tracker state)
     {
         if (node is null)
@@ -51,12 +71,19 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(OpenContainModuleData.ObjectStatusOfContained), null), &objT->ObjectStatusOfContained, state);
         Marshal(node.GetAttributeValue(nameof(OpenContainModuleData.ModifierRequiredTime), "100"), &objT->ModifierRequiredTime, state);
         Marshal(node.GetAttributeValue(nameof(OpenContainModuleData.KillIfEmptyTime), "0s"), &objT->KillIfEmptyTime, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(OpenContainModuleData.ModelConditionsWhenNotEmpty), ""), &objT->ModelConditionsWhenNotEmpty, state);
+#endif
         Marshal(node.GetChildNode(nameof(OpenContainModuleData.PassengerFilter), null), &objT->PassengerFilter, state);
         Marshal(node.GetChildNode(nameof(OpenContainModuleData.ManualPickUpFilter), null), &objT->ManualPickUpFilter, state);
         Marshal(node.GetChildNode(nameof(OpenContainModuleData.DieMuxData), null), &objT->DieMuxData, state);
         Marshal(node.GetChildNodes(nameof(OpenContainModuleData.PassengerData)), &objT->PassengerData, state);
         Marshal(node.GetChildNodes(nameof(OpenContainModuleData.ModifierToGiveOnExit)), &objT->ModifierToGiveOnExit, state);
         Marshal(node.GetChildNodes(nameof(OpenContainModuleData.MemberTemplateStatusInfo)), &objT->MemberTemplateStatusInfo, state);
+#if KANESWRATH
+        Marshal(node.GetChildNodes(nameof(OpenContainModuleData.UpgradeContainerOnContain)), &objT->UpgradeContainerOnContain, state);
+        Marshal(node.GetChildNode(nameof(OpenContainModuleData.OpenContainUpgradeOverride), null), &objT->OpenContainUpgradeOverride, state);
+#endif
         Marshal(node, (UpdateModuleData*)objT, state);
     }
 }

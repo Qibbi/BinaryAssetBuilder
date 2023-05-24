@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ModelConditionSpecialAbilityUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ModelConditionSpecialAbilityUpdateModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public int WhichSpecialPower;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public int WhichSpecialPower;
 }

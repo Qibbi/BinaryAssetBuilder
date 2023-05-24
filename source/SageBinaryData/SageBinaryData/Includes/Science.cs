@@ -2,6 +2,9 @@
 {
     public enum ScienceType
     {
-        INVALID
+        INVALID,
+#if TIBERIUMWARS
+        SCIENCE_SALVAGE
+#endif
     }
 }
