@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RadarJamSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RadarJamSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public float JamRadius;
-        public Time JamDuration;
-    }
+    public SpecialPowerModuleData Base;
+    public float JamRadius;
+    public Time JamDuration;
 }

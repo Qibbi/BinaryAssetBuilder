@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ProductionUpdateInfoModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ProductionUpdateInfoModuleData
-    {
-        public BehaviorModuleData Base;
-    }
+    public BehaviorModuleData Base;
 }

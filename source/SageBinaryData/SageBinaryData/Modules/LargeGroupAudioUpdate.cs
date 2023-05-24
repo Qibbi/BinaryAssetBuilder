@@ -1,15 +1,14 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct LargeGroupAudioUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct LargeGroupAudioUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public uint FramesBetweenUpdatesMin;
-        public uint FramesBetweenUpdatesVariation;
-        public uint UnitWeight;
-        public List<StringHash> Key;
-    }
+    public UpdateModuleData Base;
+    public Duration FramesBetweenUpdatesMin;
+    public Duration FramesBetweenUpdatesVariation;
+    public List<StringHash> Key;
+    public ushort UnitWeight;
 }

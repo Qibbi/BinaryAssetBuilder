@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct HealCrateCollideModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct HealCrateCollideModuleData
-    {
-        public CrateCollideModuleData Base;
-        public float Range;
-        public unsafe ObjectFilter* ObjectFilter;
-    }
+    public CrateCollideModuleData Base;
+    public float Range;
+    public unsafe ObjectFilter* ObjectFilter;
 }

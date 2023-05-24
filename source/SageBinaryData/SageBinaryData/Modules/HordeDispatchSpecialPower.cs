@@ -6,5 +6,8 @@ namespace SageBinaryData
     public struct HordeDispatchSpecialPowerModuleData
     {
         public SpecialPowerModuleData Base;
+#if KANESWRATH
+        public uint MaxMembersToDispatchTo;
+#endif
     }
 }

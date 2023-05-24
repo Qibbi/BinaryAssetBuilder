@@ -24,8 +24,8 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(WeaponSlot_Hardpoint.ID), null), &objT->ID, state);
         Marshal(node.GetAttributeValue(nameof(WeaponSlot_Hardpoint.AllowInterleavedFiring), "false"), &objT->AllowInterleavedFiring, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponSlot_Hardpoint.InterleavedStyle), "INTERLEAVE_RANDOM"), &objT->InterleavedStyle, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponSlot_Hardpoint.WeaponChoiceCriteria), "PREFER_MOST_DAMAGE"), &objT->WeaponChoiceCriteria, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponSlot_Hardpoint.InterleavedStyle), nameof(WeaponSlotInterleavedStyleType.INTERLEAVE_RANDOM)), &objT->InterleavedStyle, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponSlot_Hardpoint.WeaponChoiceCriteria), nameof(WeaponChoiceCriteria.PREFER_MOST_DAMAGE)), &objT->WeaponChoiceCriteria, state);
         Marshal(node.GetChildNodes(nameof(WeaponSlot_Hardpoint.Weapon)), &objT->Weapon, state);
     }
 

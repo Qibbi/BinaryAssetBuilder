@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct AssignSlavesTargetObjectSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct AssignSlavesTargetObjectSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-    }
+    public SpecialPowerModuleData Base;
 }

@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct UncombineSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UncombineSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-    }
+    public SpecialPowerModuleData Base;
 }

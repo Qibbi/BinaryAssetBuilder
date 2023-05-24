@@ -1,16 +1,15 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct TiberiumThiefSpecialAbilityUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct TiberiumThiefSpecialAbilityUpdateModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public int TiberiumStolenPerUpdate;
-        public Time DelayBetweenThefts;
-        public int TiberiumCapacity;
-        public ObjectStatusBitFlags ObjectStatusWhenNotEmpty;
-        public ModelConditionBitFlags ModelConditionWhenNotEmpty;
-        public SageBool PlayWeaponPreFireFX;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public int TiberiumStolenPerUpdate;
+    public Time DelayBetweenThefts;
+    public int TiberiumCapacity;
+    public ObjectStatusBitFlags ObjectStatusWhenNotEmpty;
+    public ModelConditionBitFlags ModelConditionWhenNotEmpty;
+    public SageBool PlayWeaponPreFireFX;
 }

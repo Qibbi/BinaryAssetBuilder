@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ShroudCrateCollideModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ShroudCrateCollideModuleData
-    {
-        public CrateCollideModuleData Base;
-    }
+    public CrateCollideModuleData Base;
 }

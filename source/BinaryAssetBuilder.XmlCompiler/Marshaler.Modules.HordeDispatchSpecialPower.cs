@@ -9,6 +9,9 @@ public static partial class Marshaler
         {
             return;
         }
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(HordeDispatchSpecialPowerModuleData.MaxMembersToDispatchTo), "99"), &objT->MaxMembersToDispatchTo, state);
+#endif
         Marshal(node, (SpecialPowerModuleData*)objT, state);
     }
 }

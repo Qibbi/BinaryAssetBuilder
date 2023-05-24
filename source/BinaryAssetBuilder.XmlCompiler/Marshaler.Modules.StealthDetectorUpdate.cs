@@ -24,6 +24,9 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(StealthDetectorUpdateModuleData.CanDetectWhileGarrisoned), "false"), &objT->CanDetectWhileGarrisoned, state);
         Marshal(node.GetAttributeValue(nameof(StealthDetectorUpdateModuleData.CanDetectWhileContained), "false"), &objT->CanDetectWhileContained, state);
         Marshal(node.GetAttributeValue(nameof(StealthDetectorUpdateModuleData.RequiredUpgrade), null), &objT->RequiredUpgrade, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(StealthDetectorUpdateModuleData.UseMetaAOI), "false"), &objT->UseMetaAOI, state);
+#endif
         Marshal(node, (UpgradeModuleData*)objT, state);
     }
 }

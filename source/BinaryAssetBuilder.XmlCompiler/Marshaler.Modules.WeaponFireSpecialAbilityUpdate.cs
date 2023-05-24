@@ -17,7 +17,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(WeaponFireSpecialAbilityUpdateModuleData.PlayWeaponPreFireFX), "false"), &objT->PlayWeaponPreFireFX, state);
         Marshal(node.GetAttributeValue(nameof(WeaponFireSpecialAbilityUpdateModuleData.OffsetTargetLocationFromObject), "false"), &objT->OffsetTargetLocationFromObject, state);
         Marshal(node.GetAttributeValue(nameof(WeaponFireSpecialAbilityUpdateModuleData.WeaponSlotID), "1"), &objT->WeaponSlotID, state);
-        Marshal(node.GetAttributeValue(nameof(WeaponFireSpecialAbilityUpdateModuleData.WeaponSlotType), "PRIMARY_WEAPON"), &objT->WeaponSlotType, state);
+        Marshal(node.GetAttributeValue(nameof(WeaponFireSpecialAbilityUpdateModuleData.WeaponSlotType), nameof(WeaponSlotType.PRIMARY_WEAPON)), &objT->WeaponSlotType, state);
         Marshal(node.GetAttributeValue(nameof(WeaponFireSpecialAbilityUpdateModuleData.DestealthClosestObjectMatchingFilter), "false"), &objT->DestealthClosestObjectMatchingFilter, state);
         Marshal(node, (SpecialAbilityUpdateModuleData*)objT, state);
     }

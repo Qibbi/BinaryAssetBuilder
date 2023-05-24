@@ -2,13 +2,12 @@
 using System.Runtime.InteropServices;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RadarSpySpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RadarSpySpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public List<AnsiString> TargetFilter;
-        public Time SpyDuration;
-    }
+    public SpecialPowerModuleData Base;
+    public List<AnsiString> TargetFilter;
+    public Time SpyDuration;
 }

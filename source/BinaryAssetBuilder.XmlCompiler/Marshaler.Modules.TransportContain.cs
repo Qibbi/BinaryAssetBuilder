@@ -12,6 +12,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(InitialPayload.Name), null), &objT->Name, state);
         Marshal(node.GetAttributeValue(nameof(InitialPayload.Count), null), &objT->Count, state);
     }
+
     public static unsafe void Marshal(Node node, UpgradeCreation* objT, Tracker state)
     {
         if (node is null)
@@ -22,6 +23,29 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(UpgradeCreation.Template), null), &objT->Template, state);
         Marshal(node.GetAttributeValue(nameof(UpgradeCreation.Num), null), &objT->Num, state);
     }
+
+#if KANESWRATH
+    public static unsafe void Marshal(Node node, TransportContainUpgradeOverrideData* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(TransportContainUpgradeOverrideData.UpgradeTriggeredBy), null), &objT->UpgradeTriggeredBy, state);
+        Marshal(node.GetAttributeValue(nameof(TransportContainUpgradeOverrideData.AdditionalSlots), "0"), &objT->AdditionalSlots, state);
+    }
+
+    public static unsafe void Marshal(Node node, TransportContainUpgradeOverrideData** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(TransportContainUpgradeOverrideData), 1u);
+        Marshal(node, *objT, state);
+    }
+#endif
+
     public static unsafe void Marshal(Node node, TransportContainModuleData* objT, Tracker state)
     {
         if (node is null)
@@ -60,6 +84,7 @@ public static partial class Marshaler
         Marshal(node.GetChildNode(nameof(TransportContainModuleData.ThrowOutPassengersVelocity), null), &objT->ThrowOutPassengersVelocity, state);
         Marshal(node.GetChildNodes(nameof(TransportContainModuleData.UpgradeCreationTrigger)), &objT->UpgradeCreationTrigger, state);
         Marshal(node.GetChildNode(nameof(TransportContainModuleData.FadeFilter), null), &objT->FadeFilter, state);
+        Marshal(node.GetChildNode(nameof(TransportContainModuleData.TransportContainUpgradeOverride), null), &objT->TransportContainUpgradeOverride, state);
         Marshal(node, (OpenContainModuleData*)objT, state);
     }
 }

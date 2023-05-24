@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RadarHackSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RadarHackSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public uint NumFalseReturns;
-        public float Radius;
-        public Time HackDuration;
-    }
+    public SpecialPowerModuleData Base;
+    public uint NumFalseReturns;
+    public float Radius;
+    public Time HackDuration;
 }

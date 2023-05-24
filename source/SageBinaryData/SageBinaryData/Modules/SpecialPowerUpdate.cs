@@ -1,14 +1,13 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SpecialPowerUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SpecialPowerUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public AssetReference<SpecialPowerTemplate> SpecialPowerTemplate;
-        public unsafe AssetReference<BaseAudioEventInfo, AudioEventInfo>* InitiateSound;
-        public SageBool StartsPaused;
-    }
+    public UpdateModuleData Base;
+    public AssetReference<SpecialPowerTemplate> SpecialPowerTemplate;
+    public unsafe SoundOrEvaEvent* InitiateSound;
+    public SageBool StartsPaused;
 }

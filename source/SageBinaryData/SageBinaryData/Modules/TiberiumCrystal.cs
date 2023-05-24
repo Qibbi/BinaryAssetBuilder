@@ -1,16 +1,15 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct TiberiumCrystalBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct TiberiumCrystalBehaviorModuleData
-    {
-        public UpdateModuleData Base;
-        public uint NumBoxes;
-        public uint ValuePerBox;
-        public uint GrowthStages;
-        public Time TimeBetweenGrowthStages;
-        public Time GrowthTimePerStage;
-        public Color RadarColor;
-    }
+    public UpdateModuleData Base;
+    public uint NumBoxes;
+    public uint ValuePerBox;
+    public uint GrowthStages;
+    public Time TimeBetweenGrowthStages;
+    public Time GrowthTimePerStage;
+    public Color RadarColor;
 }

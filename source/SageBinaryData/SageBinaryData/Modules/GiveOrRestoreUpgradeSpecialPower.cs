@@ -2,14 +2,13 @@
 using System.Runtime.InteropServices;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct GiveOrRestoreUpgradeSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct GiveOrRestoreUpgradeSpecialPowerModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public AnsiString CommandButton;
-        public AssetReference<UpgradeTemplate> UpgradeToGive;
-        public WeaponSetBitFlags WeaponFlags;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public AnsiString CommandButton;
+    public AssetReference<UpgradeTemplate> UpgradeToGive;
+    public WeaponSetBitFlags WeaponFlags;
 }

@@ -1,13 +1,12 @@
 ﻿using Relo;
 using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct UnpauseSpecialPowerUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UnpauseSpecialPowerUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public AssetReference<SpecialPowerTemplate> SpecialPowerTemplate;
-        public SageBool ObeyRechageOnTrigger;
-    }
+    public UpgradeModuleData Base;
+    public AssetReference<SpecialPowerTemplate> SpecialPowerTemplate;
+    public SageBool ObeyRechageOnTrigger;
 }

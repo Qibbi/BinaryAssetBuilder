@@ -57,6 +57,40 @@ public static partial class Marshaler
         Marshal(node.GetChildNode(nameof(BannerCarrierPosType.Pos), null), &objT->Pos, state);
     }
 
+#if KANESWRATH
+    public static unsafe void Marshal(Node node, OnDeathBehaviorType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(OnDeathBehaviorType.RequiredStatus), null), &objT->RequiredStatus, state);
+        Marshal(node.GetChildNodes(nameof(OnDeathBehaviorType.OCL)), &objT->OCL, state);
+    }
+
+    public static unsafe void Marshal(Node node, WiggleBehaviorType* objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        Marshal(node.GetAttributeValue(nameof(WiggleBehaviorType.WiggleAmplitude), "0.0"), &objT->WiggleAmplitude, state);
+        Marshal(node.GetAttributeValue(nameof(WiggleBehaviorType.WiggleFrequency), "0.0"), &objT->WiggleFrequency, state);
+        Marshal(node.GetAttributeValue(nameof(WiggleBehaviorType.WiggleIdleAmplitude), "0.0"), &objT->WiggleIdleAmplitude, state);
+        Marshal(node.GetAttributeValue(nameof(WiggleBehaviorType.WiggleIdleFrequency), "0.0"), &objT->WiggleIdleFrequency, state);
+    }
+
+    public static unsafe void Marshal(Node node, WiggleBehaviorType** objT, Tracker state)
+    {
+        if (node is null)
+        {
+            return;
+        }
+        using Tracker.Context context = state.Push((void**)objT, (uint)sizeof(WiggleBehaviorType), 1u);
+        Marshal(node, *objT, state);
+    }
+#endif
+
     public static unsafe void Marshal(Node node, HordeContainModuleData* objT, Tracker state)
     {
         if (node is null)
@@ -85,6 +119,11 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(HordeContainModuleData.SpawnBannerCarrierImmediately), "false"), &objT->SpawnBannerCarrierImmediately, state);
         Marshal(node.GetAttributeValue(nameof(HordeContainModuleData.BannerCarrierByUpgradeOnly), "false"), &objT->BannerCarrierByUpgradeOnly, state);
         Marshal(node.GetAttributeValue(nameof(HordeContainModuleData.ForbiddenCoverStatus), null), &objT->ForbiddenCoverStatus, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(HordeContainModuleData.DestroyHordeOnBannerDeath), "false"), &objT->DestroyHordeOnBannerDeath, state);
+        Marshal(node.GetAttributeValue(nameof(HordeContainModuleData.ExitBannerCarrierWithHorde), "false"), &objT->ExitBannerCarrierWithHorde, state);
+        Marshal(node.GetAttributeValue(nameof(HordeContainModuleData.FollowTheLeader), "false"), &objT->FollowTheLeader, state);
+#endif
         Marshal(node.GetChildNode(nameof(HordeContainModuleData.MeleeBehavior), null), &objT->MeleeBehavior, state);
         Marshal(node.GetChildNode(nameof(HordeContainModuleData.RandomOffset), null), &objT->RandomOffset, state);
         Marshal(node.GetChildNodes(nameof(HordeContainModuleData.RankInfo)), &objT->RankInfo, state);
@@ -95,6 +134,10 @@ public static partial class Marshaler
         Marshal(node.GetChildNodes(nameof(HordeContainModuleData.BannerCarriersAllowed)), &objT->BannerCarriersAllowed, state);
         Marshal(node.GetChildNodes(nameof(HordeContainModuleData.LeadersAllowed)), &objT->LeadersAllowed, state);
         Marshal(node.GetChildNodes(nameof(HordeContainModuleData.AttributeModifier)), &objT->AttributeModifier, state);
+#if KANESWRATH
+        Marshal(node.GetChildNodes(nameof(HordeContainModuleData.OnDeathBehavior)), &objT->OnDeathBehavior, state);
+        Marshal(node.GetChildNode(nameof(HordeContainModuleData.WiggleBehavior), null), &objT->WiggleBehavior, state);
+#endif
         Marshal(node, (TransportContainModuleData*)objT, state);
     }
 }

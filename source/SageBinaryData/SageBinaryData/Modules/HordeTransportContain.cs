@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct HordeTransportContainModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct HordeTransportContainModuleData
-    {
-        public TransportContainModuleData Base;
-        public SageBool FlyOffMapOnEmpty;
-    }
+    public TransportContainModuleData Base;
+    public SageBool FlyOffMapOnEmpty;
 }

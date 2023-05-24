@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CombineSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CombineSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public unsafe ObjectFilter* CombineWithObjectFilter;
-    }
+    public SpecialPowerModuleData Base;
+    public unsafe ObjectFilter* CombineWithObjectFilter;
 }

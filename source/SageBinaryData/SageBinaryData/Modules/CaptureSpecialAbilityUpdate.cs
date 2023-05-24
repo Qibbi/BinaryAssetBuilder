@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CaptureSpecialAbilityUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CaptureSpecialAbilityUpdateModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-    }
+    public SpecialAbilityUpdateModuleData Base;
 }

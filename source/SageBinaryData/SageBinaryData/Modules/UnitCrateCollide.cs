@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct UnitCrateCollideModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UnitCrateCollideModuleData
-    {
-        public CrateCollideModuleData Base;
-        public uint UnitCount;
-        public TypedAssetId<GameObject> UnitType;
-    }
+    public CrateCollideModuleData Base;
+    public uint UnitCount;
+    public TypedAssetId<GameObject> UnitType;
 }
