@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SupplyCenterCreateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SupplyCenterCreateModuleData
-    {
-        public CreateModuleData Base;
-    }
+    public CreateModuleData Base;
 }

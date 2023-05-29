@@ -1,16 +1,17 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using BinaryAssetBuilder.Core.Hashing;
-using BinaryAssetBuilder.Core.IO;
-using BinaryAssetBuilder.Core.Xml;
-using BinaryAssetBuilder.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
+using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.Hashing;
+using BinaryAssetBuilder.Core.IO;
+using BinaryAssetBuilder.Core.Xml;
+using BinaryAssetBuilder.Utility;
 
 namespace BinaryAssetBuilder.Core.SageXml
 {
@@ -40,7 +41,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             FromScratch
         }
 
-        private class XmlNodeWithMetaData
+        private sealed class XmlNodeWithMetaData
         {
             public XmlNode Node;
             public int LineNumber;
@@ -57,14 +58,12 @@ namespace BinaryAssetBuilder.Core.SageXml
             }
         }
 
-        private class DependencyComparer : IComparer<InstanceDeclaration>
+        private sealed class DependencyComparer : IComparer<InstanceDeclaration>
         {
             public int Compare(InstanceDeclaration x, InstanceDeclaration y)
             {
-                if (x is null || y is null)
-                {
-                    throw new ArgumentNullException();
-                }
+                ArgumentNullException.ThrowIfNull(x);
+                ArgumentNullException.ThrowIfNull(y);
                 if (x.AllDependentInstances.Count != y.AllDependentInstances.Count)
                 {
                     return x.AllDependentInstances.Count.CompareTo(y.AllDependentInstances.Count);
@@ -82,11 +81,11 @@ namespace BinaryAssetBuilder.Core.SageXml
                     }
                     return -1;
                 }
-                return xContainsY ? 1 : string.Compare(x.Handle.TypeName, y.Handle.TypeName);
+                return xContainsY ? 1 : string.Compare(x.Handle.TypeName, y.Handle.TypeName, StringComparison.Ordinal);
             }
         }
 
-        private class TypeDepCompare : IComparer<InstanceDeclaration>
+        private sealed class TypeDepCompare : IComparer<InstanceDeclaration>
         {
             private readonly IDictionary<uint, int> _typeDependencies;
 
@@ -102,12 +101,12 @@ namespace BinaryAssetBuilder.Core.SageXml
                 {
                     return result;
                 }
-                result = string.Compare(x.Handle.TypeName, y.Handle.TypeName);
-                return result == 0 ? string.Compare(x.Handle.InstanceName, y.Handle.InstanceName) : result;
+                result = string.Compare(x.Handle.TypeName, y.Handle.TypeName, StringComparison.Ordinal);
+                return result == 0 ? string.Compare(x.Handle.InstanceName, y.Handle.InstanceName, StringComparison.OrdinalIgnoreCase) : result;
             }
         }
 
-        private class LastState : ISerializable
+        private sealed class LastState : ISerializable
         {
             public uint DocumentHash;
             public uint DependentFileHash;
@@ -167,9 +166,9 @@ namespace BinaryAssetBuilder.Core.SageXml
             public void ReadXml(Node node)
             {
                 string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
-                DocumentHash = Convert.ToUInt32(values[0]);
-                DependentFileHash = Convert.ToUInt32(values[1]);
-                IncludePathHash = Convert.ToUInt32(values[2]);
+                DocumentHash = Convert.ToUInt32(values[0], CultureInfo.InvariantCulture);
+                DependentFileHash = Convert.ToUInt32(values[1], CultureInfo.InvariantCulture);
+                IncludePathHash = Convert.ToUInt32(values[2], CultureInfo.InvariantCulture);
                 ReadOldStrings(node);
                 Marshaler.Marshal(node.GetChildNodes("DependentFile"), ref DependentFiles);
                 Marshaler.Marshal(node.GetChildNodes("StreamHint"), ref StreamHints);
@@ -245,7 +244,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             }
         }
 
-        private class CurrentState
+        private sealed class CurrentState
         {
             public uint DocumentHash;
             public string SourcePath;
@@ -519,7 +518,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                             index = a;
                             flag = true;
                         }
-                        if (string.Compare(instance.Handle.InstanceName, x.Handle.InstanceName) > 0)
+                        if (string.Compare(instance.Handle.InstanceName, x.Handle.InstanceName, StringComparison.Ordinal) > 0)
                         {
                             index = a + 1;
                         }
@@ -564,7 +563,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                 {
                     if (TryGetFileHashItem(dependentFile, out FileHashItem hashItem))
                     {
-                        writer.Write(HashProvider.GetTextHash(hashItem.Path.ToLower()));
+                        writer.Write(HashProvider.GetTextHash(hashItem.Path.ToLowerInvariant()));
                         writer.Write(hashItem.Hash);
                     }
                 }
@@ -582,7 +581,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                 {
                     if (TryGetFileHashItem(item.LogicalPath, out FileHashItem hashItem))
                     {
-                        _current.IncludePathHash = FastHash.GetHashCode(_current.IncludePathHash, hashItem.Path.ToLower());
+                        _current.IncludePathHash = FastHash.GetHashCode(_current.IncludePathHash, hashItem.Path.ToLowerInvariant());
                     }
                 }
             }
@@ -617,8 +616,8 @@ namespace BinaryAssetBuilder.Core.SageXml
             InclusionItems.Clear();
             foreach (XPathNavigator xPathNavigator in _current.XmlDocument.CreateNavigator().Evaluate("/ea:AssetDeclaration/ea:Includes/child::*", _current.NamespaceManager) as XPathNodeIterator)
             {
-                string lowerSource = xPathNavigator.GetAttribute("source", string.Empty).Trim().ToLower();
-                string lowerPath = FileNameResolver.ResolvePath(SourceDirectory, lowerSource).ToLower();
+                string lowerSource = xPathNavigator.GetAttribute("source", string.Empty).Trim().ToLowerInvariant();
+                string lowerPath = FileNameResolver.ResolvePath(SourceDirectory, lowerSource).ToLowerInvariant();
                 InclusionItem item = new InclusionItem(lowerSource, lowerPath, Enum.Parse<InclusionType>(xPathNavigator.GetAttribute("type", string.Empty), true));
                 _current.InclusionItems.Add(item);
                 if (item.Type == InclusionType.Instance)
@@ -847,7 +846,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             DateTime now = DateTime.Now;
             IAssetBuilderPlugin plugin = _current.DocumentProcessor.Plugins.GetPlugin(asset.Instance.Handle.TypeId);
             asset.Buffer = plugin.ProcessInstance(asset.Instance);
-            _current.DocumentProcessor.AddCompileTime(asset.Instance.Handle, DateTime.Now - now);
+            DocumentProcessor.AddCompileTime(asset.Instance.Handle, DateTime.Now - now);
         }
 
         private XmlElement ReconstructAssetDeclaration(InstanceDeclaration instance)
@@ -968,9 +967,9 @@ namespace BinaryAssetBuilder.Core.SageXml
 
         private void HandleFileReferenceType(XPathNavigator navigator, ref InstanceDeclaration instance)
         {
-            string path = navigator.Value.Trim().ToLower();
+            string path = navigator.Value.Trim().ToLowerInvariant();
             TryGetFileHashItem(path, out FileHashItem hashItem);
-            string referencePath = hashItem.Path.ToLower();
+            string referencePath = hashItem.Path.ToLowerInvariant();
             _current.DependentFiles.Add(path);
             navigator.SetValue(referencePath);
             instance.ReferencedFiles.Add(path);
@@ -1007,7 +1006,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             foreach (InstanceDeclaration instance in _current.SelfInstances)
             {
                 ExtendedTypeInformation extendedTypeInformation = _current.DocumentProcessor.Plugins.GetExtendedTypeInformation(instance.Handle.TypeId);
-                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, DocumentProcessor.Version.ToString());
+                uint textHash = HashProvider.GetTextHash(extendedTypeInformation.ProcessingHash, DocumentProcessor.Version.ToString(CultureInfo.InvariantCulture));
                 instance.Handle.TypeHash = extendedTypeInformation.TypeHash;
                 XmlNode node = instance.XmlNode;
                 instance.Handle.InstanceHash = HashProvider.GetXmlHash(textHash, ref node);
@@ -1046,7 +1045,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                     }
                     if (navigator.SchemaInfo?.SchemaType?.Name is not null)
                     {
-                        navigator.CreateAttribute(string.Empty, "TypeId", string.Empty, HashProvider.GetCaseSensitiveSymbolHash(navigator.SchemaInfo.SchemaType.Name).ToString());
+                        navigator.CreateAttribute(string.Empty, "TypeId", string.Empty, HashProvider.GetCaseSensitiveSymbolHash(navigator.SchemaInfo.SchemaType.Name).ToString(CultureInfo.InvariantCulture));
                     }
                 }
                 foreach (string referencedFile in instance.ReferencedFiles)
@@ -1084,7 +1083,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                             {
                                 sb.Append(", ");
                             }
-                            sb.AppendFormat("'{0}'", handle.Name);
+                            sb.AppendFormat(CultureInfo.InvariantCulture, "'{0}'", handle.Name);
                             ++count;
                         }
                     }
@@ -1149,7 +1148,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                         {
                             throw new BinaryAssetBuilderException(ErrorCode.UnknownReference, "Unknown referenced asset: {0}", referencedInstance);
                         }
-                        if (_current.DocumentProcessor.MissingReferences.TryAdd(referencedInstance))
+                        if (DocumentProcessor.MissingReferences.TryAdd(referencedInstance))
                         {
                             _tracer.TraceWarning("Unknown asset '{0}' referenced from '{1}' in 'file://{2}'", referencedInstance.Name, instance.Handle.Name, instance.Document.SourcePath);
                         }
@@ -1246,7 +1245,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             {
                 foreach (InclusionItem inclusionItem in _current.InclusionItems)
                 {
-                    inclusionItem.PhysicalPath = FileNameResolver.ResolvePath(SourceDirectory, inclusionItem.LogicalPath).ToLower();
+                    inclusionItem.PhysicalPath = FileNameResolver.ResolvePath(SourceDirectory, inclusionItem.LogicalPath).ToLowerInvariant();
                 }
             }
             _current.StreamHints.Clear();
@@ -1314,7 +1313,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             _current.NodeSourceInfoSet = new LinkedList<XmlNodeWithMetaData>();
             try
             {
-                bool isXml = _current.LogicalSourcePath.EndsWith(".xml");
+                bool isXml = _current.LogicalSourcePath.EndsWith(".xml", StringComparison.OrdinalIgnoreCase);
                 if (isXml)
                 {
                     _current.XmlDocument.NodeInserted += NodeInsertedHandler;
@@ -1341,7 +1340,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             {
                 foreach (PathMapItem item in xmlResolver.Paths)
                 {
-                    _current.DependentFiles.Add(item.SourceUri.ToLower());
+                    _current.DependentFiles.Add(item.SourceUri.ToLowerInvariant());
                 }
             }
             _current.NamespaceManager = new XmlNamespaceManager(reader.NameTable);

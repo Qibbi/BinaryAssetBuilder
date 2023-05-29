@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct StealthUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct StealthUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-    }
+    public UpgradeModuleData Base;
 }

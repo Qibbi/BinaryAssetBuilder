@@ -11,6 +11,9 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(StatusBitsUpgradeModuleData.StatusToSet), null), &objT->StatusToSet, state);
         Marshal(node.GetAttributeValue(nameof(StatusBitsUpgradeModuleData.StatusToClear), null), &objT->StatusToClear, state);
+#if KANESWRATH
+        Marshal(node.GetAttributeValue(nameof(StatusBitsUpgradeModuleData.ApplyToContained), "false"), &objT->ApplyToContained, state);
+#endif
         Marshal(node, (UpgradeModuleData*)objT, state);
     }
 }

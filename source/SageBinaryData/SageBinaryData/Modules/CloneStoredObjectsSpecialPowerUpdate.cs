@@ -1,17 +1,16 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CloneStoredObjectsSpecialPowerUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CloneStoredObjectsSpecialPowerUpdateModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public float MinDestinationRadius;
-        public float MaxDestinationRadius;
-        public AssetReference<AttributeModifier> TriggerAttributeModifierOnClones;
-        public AssetReference<FXList> TriggerFX;
-        public AssetReference<FXList> TargetFX;
-        public Time ClonedObjectLifetime;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public float MinDestinationRadius;
+    public float MaxDestinationRadius;
+    public AssetReference<AttributeModifier> TriggerAttributeModifierOnClones;
+    public AssetReference<FXList> TriggerFX;
+    public AssetReference<FXList> TargetFX;
+    public Time ClonedObjectLifetime;
 }

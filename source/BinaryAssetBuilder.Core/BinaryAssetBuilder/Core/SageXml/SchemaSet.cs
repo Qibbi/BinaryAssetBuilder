@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -9,11 +10,11 @@ namespace BinaryAssetBuilder.Core.SageXml
 {
     public class SchemaSet
     {
-        private class SchemaHashTable : SortedDictionary<XmlSchema, uint>
+        private sealed class SchemaHashTable : SortedDictionary<XmlSchema, uint>
         {
         }
 
-        private class DependencyList
+        private sealed class DependencyList
         {
             public string TypeName;
             public readonly List<uint> Children = new List<uint>();
@@ -53,7 +54,7 @@ namespace BinaryAssetBuilder.Core.SageXml
         {
             schemaFile = Path.IsPathRooted(schemaFile) ? Path.GetFullPath(schemaFile) : Path.GetFullPath(Path.Combine(baseDirectory, schemaFile));
             _currentSchema = schemaFile;
-            string lower = schemaFile.ToLower();
+            string lower = schemaFile.ToLowerInvariant();
             if (_schemaPaths.ContainsKey(lower))
             {
                 return;
@@ -67,9 +68,10 @@ namespace BinaryAssetBuilder.Core.SageXml
             {
                 schema = streamReader.ReadToEnd();
             }
-            using StringReader stringReader = new StringReader(schema);
-            XmlSchema xmlSchema = XmlSchema.Read(stringReader, null);
-            foreach (XmlSchemaInclude include in xmlSchema.Includes)
+            using StringReader stringReader = new(schema);
+            XmlReader reader = XmlReader.Create(stringReader);
+            XmlSchema xmlSchema = XmlSchema.Read(reader, null);
+            foreach (XmlSchemaInclude include in xmlSchema.Includes.Cast<XmlSchemaInclude>())
             {
                 ReadSchema(Path.GetDirectoryName(schemaFile), include.SchemaLocation);
             }
@@ -399,7 +401,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             }
             if (_schemaPaths is not null)
             {
-                string lower = Settings.Current.SchemaPath.ToLower();
+                string lower = Settings.Current.SchemaPath.ToLowerInvariant();
                 if (_schemaPaths.TryGetValue(lower, out DateTime dateTime))
                 {
                     if (!File.Exists(lower) || File.GetLastWriteTime(lower) != dateTime)

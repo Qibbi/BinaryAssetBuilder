@@ -1,4 +1,6 @@
-﻿namespace Relo
+﻿using System;
+
+namespace Relo
 {
     public class Chunk
     {
@@ -8,9 +10,9 @@
 
         public Chunk()
         {
-            InstanceBuffer = new byte[0];
-            RelocationBuffer = new byte[0];
-            ImportsBuffer = new byte[0];
+            InstanceBuffer = Array.Empty<byte>();
+            RelocationBuffer = Array.Empty<byte>();
+            ImportsBuffer = Array.Empty<byte>();
         }
 
         internal bool Allocate(uint instanceBufferSize, uint relocationBufferSize, uint importsBufferSize)

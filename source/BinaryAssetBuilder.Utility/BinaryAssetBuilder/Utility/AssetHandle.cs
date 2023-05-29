@@ -1,6 +1,6 @@
 ﻿namespace BinaryAssetBuilder.Utility
 {
-    internal class AssetHandle
+    internal sealed class AssetHandle
     {
         private readonly uint _instanceId;
         private readonly uint _typeId;

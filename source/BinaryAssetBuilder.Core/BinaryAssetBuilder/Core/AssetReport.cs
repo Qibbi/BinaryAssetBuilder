@@ -1,8 +1,9 @@
-﻿using BinaryAssetBuilder.Core.Hashing;
-using BinaryAssetBuilder.Core.SageXml;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Xml;
+using BinaryAssetBuilder.Core.Hashing;
+using BinaryAssetBuilder.Core.SageXml;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -11,8 +12,8 @@ namespace BinaryAssetBuilder.Core
         public const string FileName = "AssetReport.xml";
         public const string TypeName = "AssetReportTable";
 
-        private static XmlWriter _assetRecordWriter = null;
-        private static SortedDictionary<string, bool> _recordedAssets = null;
+        private static XmlWriter _assetRecordWriter;
+        private static SortedDictionary<string, bool> _recordedAssets;
 
         public static string FileNameFullyQualified;
 
@@ -25,15 +26,15 @@ namespace BinaryAssetBuilder.Core
             }
             _recordedAssets.Add(key, true);
             _assetRecordWriter.WriteStartElement(nameof(AssetReport), SchemaSet.XmlNamespace);
-            _assetRecordWriter.WriteAttributeString("Id", id.ToLower());
+            _assetRecordWriter.WriteAttributeString("Id", id.ToLowerInvariant());
             _assetRecordWriter.WriteAttributeString("Type", type);
-            _assetRecordWriter.WriteAttributeString("AssetSize", size.ToString());
+            _assetRecordWriter.WriteAttributeString("AssetSize", size.ToString(CultureInfo.InvariantCulture));
             if (references is not null)
             {
                 foreach (InstanceHandle reference in references)
                 {
                     _assetRecordWriter.WriteStartElement("Reference");
-                    _assetRecordWriter.WriteAttributeString("Id", reference.InstanceName.ToLower());
+                    _assetRecordWriter.WriteAttributeString("Id", reference.InstanceName.ToLowerInvariant());
                     _assetRecordWriter.WriteAttributeString("Type", reference.TypeName);
                     _assetRecordWriter.WriteEndElement();
                 }
@@ -63,7 +64,7 @@ namespace BinaryAssetBuilder.Core
 
         public static string MakeAssetReportId(string typeId, string instanceId)
         {
-            return $"{typeId}.{instanceId}.assetreport".ToLower();
+            return $"{typeId}.{instanceId}.assetreport".ToLowerInvariant();
         }
 
         public static void RecordAsset(InstanceDeclaration instance, BinaryAsset asset)

@@ -1,6 +1,7 @@
-﻿using BinaryAssetBuilder.Core.Xml;
-using System;
+﻿using System;
+using System.Globalization;
 using System.Xml;
+using BinaryAssetBuilder.Core.Xml;
 
 namespace BinaryAssetBuilder.Core.SageXml
 {
@@ -17,7 +18,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
             Name = values[0];
             EvaluatedValue = values[1];
-            IsOverride = Convert.ToBoolean(values[3]);
+            IsOverride = Convert.ToBoolean(values[3], CultureInfo.InvariantCulture);
         }
 
         public void WriteXml(XmlWriter writer)

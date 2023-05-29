@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RadarUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RadarUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public float RadarExtendTime;
-    }
+    public UpdateModuleData Base;
+    public float RadarExtendTime;
 }

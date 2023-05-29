@@ -1,22 +1,23 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using BinaryAssetBuilder.Core.IO;
-using BinaryAssetBuilder.Core.Xml;
-using BinaryAssetBuilder.Metrics;
-using BinaryAssetBuilder.Project;
-using BinaryAssetBuilder.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
+using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.IO;
+using BinaryAssetBuilder.Core.Xml;
+using BinaryAssetBuilder.Metrics;
+using BinaryAssetBuilder.Project;
+using BinaryAssetBuilder.Utility;
 
 namespace BinaryAssetBuilder.Core.SageXml
 {
     public class DocumentProcessor
     {
-        private class TypeCompileData
+        private sealed class TypeCompileData
         {
             public readonly string TypeName;
             public TimeSpan TotalProcessingTime = new TimeSpan(0L);
@@ -48,18 +49,18 @@ namespace BinaryAssetBuilder.Core.SageXml
 #endif
 
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(DocumentProcessor), "Provides XML processing functionality");
-        private static readonly InstanceHandleSet _missingReferences = new InstanceHandleSet();
-        private static TimeSpan _totalProcInstancesTime = new TimeSpan(0L);
-        private static TimeSpan _totalPrepareOutputTime = new TimeSpan(0L);
-        private static TimeSpan _totalPrepareSourceTime = new TimeSpan(0L);
-        private static TimeSpan _totalPostProcTime = new TimeSpan(0L);
-        private static TimeSpan _totalValidateTime = new TimeSpan(0L);
-        private static SortedDictionary<uint, TypeCompileData> _typeProcessingTime = new SortedDictionary<uint, TypeCompileData>();
-        private static readonly Stack<string> _currentDocumentStack = new Stack<string>();
-        private static readonly Stack<string> _currentStreamStack = new Stack<string>();
+        private static readonly InstanceHandleSet _missingReferences = new();
+        private static TimeSpan _totalProcInstancesTime = new(0L);
+        private static TimeSpan _totalPrepareOutputTime = new(0L);
+        private static TimeSpan _totalPrepareSourceTime = new(0L);
+        private static TimeSpan _totalPostProcTime = new(0L);
+        private static TimeSpan _totalValidateTime = new(0L);
+        private static SortedDictionary<uint, TypeCompileData> _typeProcessingTime = new();
+        private static readonly Stack<string> _currentDocumentStack = new();
+        private static readonly Stack<string> _currentStreamStack = new();
 
-        private readonly List<string> _documentStack = new List<string>();
-        private readonly InstanceHandleSet _requiredInheritFromSources = new InstanceHandleSet();
+        private readonly List<string> _documentStack = new();
+        private readonly InstanceHandleSet _requiredInheritFromSources = new();
         private readonly PluginRegistry _pluginRegistry;
         private readonly VerifierPluginRegistry _verifierPluginRegistry;
         private int _instancesProcessedCount;
@@ -75,7 +76,7 @@ namespace BinaryAssetBuilder.Core.SageXml
         public static string CurrentDocument => _currentDocumentStack.Peek();
 
         public ISessionCache Cache { get; set; }
-        public InstanceHandleSet MissingReferences => _missingReferences;
+        public static InstanceHandleSet MissingReferences => _missingReferences;
         public InstanceHandleSet ChangedInheritFromReferences => _requiredInheritFromSources;
         public SchemaSet SchemaSet { get; set; }
         public PluginRegistry Plugins => _pluginRegistry;
@@ -144,9 +145,9 @@ namespace BinaryAssetBuilder.Core.SageXml
                 StringBuilder sb = new StringBuilder("Illegal circular document inclusion detected. Inclusion chain as follows:");
                 foreach (string item in _documentStack)
                 {
-                    sb.AppendFormat("\n    {0}", item);
+                    sb.AppendFormat(CultureInfo.InvariantCulture, "\n    {0}", item);
                 }
-                sb.AppendFormat("\n    {0}", sourcePath);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "\n    {0}", sourcePath);
                 throw new BinaryAssetBuilderException(ErrorCode.CircularDependency, sb.ToString());
             }
             result.Open(this, fileItem, logicalPath, configuration);
@@ -190,7 +191,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                 {
                     foreach (StreamReference reference in options.StreamReferences)
                     {
-                        if (inclusionItem.LogicalPath.EndsWith(reference.Name))
+                        if (inclusionItem.LogicalPath.EndsWith(reference.Name, StringComparison.OrdinalIgnoreCase))
                         {
                             currentConfiguration = reference.Configuration;
                             streamReference = reference;
@@ -204,7 +205,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                         bool streamFound = false;
                         foreach (BuildConfiguration buildConfiguration in Settings.Current.BuildConfigurations)
                         {
-                            if (string.IsNullOrEmpty(currentConfiguration) || buildConfiguration.Name.ToLower().Equals(currentConfiguration.ToLower()))
+                            if (string.IsNullOrEmpty(currentConfiguration) || buildConfiguration.Name.Equals(currentConfiguration, StringComparison.OrdinalIgnoreCase))
                             {
                                 string sourcePathFromRoot;
                                 if (string.IsNullOrEmpty(streamReference.Manifest))
@@ -235,7 +236,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                     }
                     else if (!inputFileFound || currentDocument is null || currentDocument.State != DocumentState.Complete)
                     {
-                        if (_compilingProject && _projectDefaultConfigurations.TryGetValue(inclusionItem.PhysicalPath.ToLower(), out string str))
+                        if (_compilingProject && _projectDefaultConfigurations.TryGetValue(inclusionItem.PhysicalPath.ToLowerInvariant(), out string str))
                         {
                             inputFileFound = Cache.TryGetFile(inclusionItem.PhysicalPath, currentConfiguration, Settings.Current.TargetPlatform, out FileHashItem _);
                             _tracer.TraceInfo("Stream {0} references stream {1} which does not have a '{2}' configuration, using default configuration '{3}'",
@@ -502,8 +503,9 @@ namespace BinaryAssetBuilder.Core.SageXml
             _compilingProject = true;
             _projectDefaultConfigurations = new Dictionary<string, string>();
             Settings current = Settings.Current;
-            XmlSchema schema = XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream("BinaryAssetBuilderProject.xsd"), null);
-            BinaryAssetBuilderProject babproj = new BinaryAssetBuilderProject();
+            XmlReader reader = XmlReader.Create(Assembly.GetExecutingAssembly().GetManifestResourceStream("BinaryAssetBuilderProject.xsd"));
+            XmlSchema schema = XmlSchema.Read(reader, null);
+            BinaryAssetBuilderProject babproj = new();
             using (Stream stream = File.Open(projectPath, FileMode.Open))
             {
                 XmlReaderSettings settings = new XmlReaderSettings();
@@ -524,7 +526,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                 SortedDictionary<string, bool> dictionary = new SortedDictionary<string, bool>();
                 foreach (BinaryStream stream in babproj.Streams)
                 {
-                    string lower = Path.GetFullPath(!Path.IsPathRooted(stream.Source) ? Path.Combine(Path.GetDirectoryName(projectPath), stream.Source) : stream.Source).ToLower();
+                    string lower = Path.GetFullPath(!Path.IsPathRooted(stream.Source) ? Path.Combine(Path.GetDirectoryName(projectPath), stream.Source) : stream.Source).ToLowerInvariant();
                     if (dictionary.TryGetValue(lower, out bool flag) && flag)
                     {
                         _tracer.TraceError("{0} was specified twice in {1}, skipping duplicates", lower, projectPath);
@@ -600,7 +602,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                 success = false;
                 try
                 {
-                    if (Path.GetExtension(fileName).ToLower().Equals(".babproj", StringComparison.CurrentCultureIgnoreCase))
+                    if (Path.GetExtension(fileName).Equals(".babproj", StringComparison.OrdinalIgnoreCase))
                     {
                         ProcessProjectDocument(fileName, generateOutput);
                     }
@@ -656,7 +658,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             return result;
         }
 
-        public void AddCompileTime(InstanceHandle handle, TimeSpan instanceCompileTime)
+        public static void AddCompileTime(InstanceHandle handle, TimeSpan instanceCompileTime)
         {
             if (!_typeProcessingTime.TryGetValue(handle.TypeId, out TypeCompileData typeData))
             {
@@ -672,7 +674,7 @@ namespace BinaryAssetBuilder.Core.SageXml
             typeData.TotalProcessingTime += instanceCompileTime;
         }
 
-        public void OutputTypeCompileTimes()
+        public static void OutputTypeCompileTimes()
         {
             TimeSpan totalProcessingTime = new TimeSpan(0L);
             foreach (KeyValuePair<uint, TypeCompileData> kvp in _typeProcessingTime)

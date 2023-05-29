@@ -1,10 +1,10 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using System;
+﻿using System;
 using System.IO;
+using BinaryAssetBuilder.Core.Diagnostics;
 
 namespace BinaryAssetBuilder.Core.IO
 {
-    public class AutoCleanUpTempFiles : IDisposable
+    public sealed class AutoCleanUpTempFiles : IDisposable
     {
         private readonly string _baseTempFileName;
 

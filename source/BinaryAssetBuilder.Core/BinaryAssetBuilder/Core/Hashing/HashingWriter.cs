@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BinaryAssetBuilder.Core.Hashing
 {
-    internal class HashingWriter : TextWriter
+    internal sealed class HashingWriter : TextWriter
     {
         private const int _hashingSize = 512;
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.IO;
 
 namespace BinaryAssetBuilder.Metrics
 {
@@ -11,7 +11,7 @@ namespace BinaryAssetBuilder.Metrics
 
         public MetricApplicationData()
         {
-            ApplicationName = Process.GetCurrentProcess().MainModule.FileName;
+            ApplicationName = Path.GetFileName(Environment.ProcessPath);
             UserName = Environment.UserName;
             MachineName = Environment.MachineName;
         }

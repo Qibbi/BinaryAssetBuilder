@@ -1,12 +1,11 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct UpgradeDieModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UpgradeDieModuleData
-    {
-        public DieModuleData Base;
-        public AssetReference<UpgradeTemplate> UpgradeId;
-    }
+    public DieModuleData Base;
+    public AssetReference<UpgradeTemplate> UpgradeId;
 }

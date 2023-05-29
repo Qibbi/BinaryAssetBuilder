@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct StorePurchasedUpgradeBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct StorePurchasedUpgradeBehaviorModuleData
-    {
-        public BehaviorModuleData Base;
-        public uint MaxPlayerUpgrades;
-    }
+    public BehaviorModuleData Base;
+    public uint MaxPlayerUpgrades;
 }

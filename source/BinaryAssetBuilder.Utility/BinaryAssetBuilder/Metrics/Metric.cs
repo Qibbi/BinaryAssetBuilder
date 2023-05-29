@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace BinaryAssetBuilder.Metrics
@@ -38,7 +39,7 @@ namespace BinaryAssetBuilder.Metrics
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("[{0:G}] {1}: ", _timestamp, _descriptor.Description);
+            sb.AppendFormat(CultureInfo.InvariantCulture, "[{0:G}] {1}: ", _timestamp, _descriptor.Description);
             object obj = _dataList[0];
             switch (_descriptor.Type)
             {
@@ -51,7 +52,7 @@ namespace BinaryAssetBuilder.Metrics
                     {
                         if (num < 1024.0)
                         {
-                            sb.AppendFormat("{0:n} {1}", num, str);
+                            sb.AppendFormat(CultureInfo.InvariantCulture, "{0:n} {1}", num, str);
                             break;
                         }
                         num /= 1024.0;
@@ -63,10 +64,10 @@ namespace BinaryAssetBuilder.Metrics
             }
             if (_dataList.Length > 1)
             {
-                sb.AppendFormat(" [ {0}", _dataList[1]);
+                sb.AppendFormat(CultureInfo.InvariantCulture, " [ {0}", _dataList[1]);
                 for (int idx = 2; idx < _dataList.Length; ++idx)
                 {
-                    sb.AppendFormat(", {0}", _dataList[idx]);
+                    sb.AppendFormat(CultureInfo.InvariantCulture, ", {0}", _dataList[idx]);
                 }
                 sb.Append(" ]");
             }

@@ -1,13 +1,13 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using BinaryAssetBuilder.Core.SageXml;
-using BinaryAssetBuilder.Utility;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
+using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.SageXml;
+using BinaryAssetBuilder.Utility;
 
 namespace BinaryAssetBuilder.Core
 {
-    public class BinaryAsset
+    public sealed class BinaryAsset : IDisposable
     {
         private enum Availability
         {
@@ -276,7 +276,7 @@ namespace BinaryAssetBuilder.Core
                             bytesRead = sourceAssetStream.Read(_copyBuffer, 0, _copyBuffer.Length);
                             if (bytesRead < 16)
                             {
-                                throw new Exception();
+                                throw new BinaryAssetBuilderException(ErrorCode.InternalError, string.Empty);
                             }
                             if (_assetHeader is null)
                             {
@@ -287,7 +287,7 @@ namespace BinaryAssetBuilder.Core
                                  || _assetHeader.InstanceHash != Instance.Handle.InstanceHash
                                  || _assetHeader.TypeHash != Instance.Handle.TypeHash)
                                 {
-                                    throw new Exception();
+                                    throw new BinaryAssetBuilderException(ErrorCode.InternalError, string.Empty);
                                 }
                             }
                             destAssetStream.Write(_copyBuffer, 0, bytesRead);
@@ -621,6 +621,15 @@ namespace BinaryAssetBuilder.Core
                     return result;
                 default:
                     throw new BinaryAssetBuilderException(ErrorCode.DependencyCacheFailure, "Attempted to commit non-existing asset {0}", Instance);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_assetHeader is not null && _basePatchStreamAvailability == Availability.Present)
+            {
+                _assetHeader.Dispose();
+                _assetHeader = null;
             }
         }
     }

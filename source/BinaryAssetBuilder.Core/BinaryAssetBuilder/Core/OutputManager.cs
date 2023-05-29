@@ -1,13 +1,14 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using BinaryAssetBuilder.Core.Diagnostics;
 using BinaryAssetBuilder.Core.SageXml;
 using BinaryAssetBuilder.Utility;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace BinaryAssetBuilder.Core
 {
-    public class OutputManager
+    public sealed class OutputManager : IDisposable
     {
         private const int _linkedBufferSize = 0x10000;
 
@@ -15,7 +16,7 @@ namespace BinaryAssetBuilder.Core
         private static readonly InstanceHandle _breakHandle = new InstanceHandle(0x21E727DAu, 0xAE184C44u);
         private static readonly byte[] _linkedBuffer = new byte[_linkedBufferSize];
 
-        private readonly SortedDictionary<string, OutputAsset> _oldOutputInstances = new SortedDictionary<string, OutputAsset>();
+        private readonly SortedDictionary<string, OutputAsset> _oldOutputInstances = new();
         private int _assetFileCount;
         private int _customDataFileCount;
         private readonly string _assetDirectory;
@@ -56,7 +57,7 @@ namespace BinaryAssetBuilder.Core
             TargetPlatformCacheRoot = Settings.Current.BuildCache ? Path.Combine(Settings.Current.BuildCacheDirectory, _targetPlatform.ToString()) : null;
             _manifestFile = OutputDirectory + ".manifest";
             _oldManifestFile = OutputDirectory + ".old.manifest";
-            int indexOfPostfix = OutputDirectory.LastIndexOf(Settings.Current.CustomPostfix);
+            int indexOfPostfix = OutputDirectory.LastIndexOf(Settings.Current.CustomPostfix, StringComparison.OrdinalIgnoreCase);
             if (indexOfPostfix < OutputDirectory.Length)
             {
                 _versionFile = OutputDirectory.Remove(indexOfPostfix);
@@ -324,8 +325,8 @@ namespace BinaryAssetBuilder.Core
                     {
                         throw new BinaryAssetBuilderException(ErrorCode.UnknownReference, "Reference file paths must be relative in {0}.", inclusionItem.PhysicalPath);
                     }
-                    str.ToLower();
-                    str.Replace('/', '\\');
+                    str = str.ToLowerInvariant();
+                    str = str.Replace('/', '\\');
                     referencedManifestBuffer.AddReference(str, false);
                 }
             }
@@ -455,7 +456,7 @@ namespace BinaryAssetBuilder.Core
         public void CleanOutput()
         {
             bool intermediateIsOutput = Path.GetFullPath(IntermediateOutputDirectory) == Path.GetFullPath(OutputDirectory);
-            DirectoryInfo outputDirectory = new DirectoryInfo(OutputDirectory);
+            DirectoryInfo outputDirectory = new(OutputDirectory);
             if (outputDirectory.Exists)
             {
                 foreach (FileSystemInfo file in outputDirectory.GetFiles())
@@ -465,7 +466,7 @@ namespace BinaryAssetBuilder.Core
             }
             if (!intermediateIsOutput)
             {
-                DirectoryInfo intermediateDirectory = new DirectoryInfo(IntermediateOutputDirectory);
+                DirectoryInfo intermediateDirectory = new(IntermediateOutputDirectory);
                 if (intermediateDirectory.Exists)
                 {
                     foreach (FileSystemInfo file in intermediateDirectory.GetFiles())
@@ -484,8 +485,8 @@ namespace BinaryAssetBuilder.Core
                 }
             }
             assetFileCount += _oldOutputInstances.Count;
-            string str = _oldOutputInstances.Count.ToString();
-            DirectoryInfo assetDirectory = new DirectoryInfo(_assetDirectory);
+            string str = _oldOutputInstances.Count.ToString(CultureInfo.InvariantCulture);
+            DirectoryInfo assetDirectory = new(_assetDirectory);
             if (assetDirectory.Exists)
             {
                 FileInfo[] files = assetDirectory.GetFiles();
@@ -509,7 +510,7 @@ namespace BinaryAssetBuilder.Core
                     _tracer.TraceInfo("Slow asset clean-up (expected: {0}, actual: {1}, old: {2}, current: {3})", assetFileCount, files.Length, str, _assetFileCount);
                     foreach (FileInfo fileInfo in files)
                     {
-                        string lower = Path.GetFileNameWithoutExtension(fileInfo.Name).ToLower();
+                        string lower = Path.GetFileNameWithoutExtension(fileInfo.Name).ToLowerInvariant();
                         if (fileInfo.Extension != ".asset")
                         {
                             fileInfo.Delete();
@@ -557,12 +558,18 @@ namespace BinaryAssetBuilder.Core
                 _tracer.TraceInfo("Slow custom data clean-up (expected: {0}, actual: {1}, old asset count: {2})", customDataFileCount, filesCData.Length, str, _assetFileCount);
                 foreach (FileInfo fileInfo in filesCData)
                 {
-                    if (!Assets.ContainsKey(Path.GetFileNameWithoutExtension(fileInfo.Name).ToLower()) || fileInfo.Extension != ".cdata")
+                    if (!Assets.ContainsKey(Path.GetFileNameWithoutExtension(fileInfo.Name).ToLowerInvariant()) || fileInfo.Extension != ".cdata")
                     {
                         fileInfo.Delete();
                     }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _header.Dispose();
+            _header = null;
         }
     }
 }

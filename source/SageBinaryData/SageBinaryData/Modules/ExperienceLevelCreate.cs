@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ExperienceLevelCreateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ExperienceLevelCreateModuleData
-    {
-        public CreateModuleData Base;
-        public int Level;
-        public SageBool MPOnly;
-    }
+    public CreateModuleData Base;
+    public int Level;
+    public SageBool MPOnly;
 }

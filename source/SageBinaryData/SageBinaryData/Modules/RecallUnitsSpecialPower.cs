@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RecallUnitsSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RecallUnitsSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public SageBool PlayReturnVoiceFromRecalledUnit;
-    }
+    public SpecialPowerModuleData Base;
+    public SageBool PlayReturnVoiceFromRecalledUnit;
 }

@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct DelayedUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DelayedUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public uint DelayTime;
-    }
+    public UpgradeModuleData Base;
+    public uint DelayTime;
 }

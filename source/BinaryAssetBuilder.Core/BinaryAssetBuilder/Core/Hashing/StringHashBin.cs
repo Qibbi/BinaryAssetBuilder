@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 
 namespace BinaryAssetBuilder.Core.Hashing
 {
-    internal class StringHashBin
+    internal sealed class StringHashBin
     {
         private const string _stringTableEntryName = "StringAndHash";
 
@@ -23,7 +24,7 @@ namespace BinaryAssetBuilder.Core.Hashing
         {
             if (_stringTable.TryGetValue(hashCode, out string b))
             {
-                if (!string.Equals(text, b, StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(text, b, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.HashCollision,
                                                           "Hash collision detected: '{0}' and '{1}' share the same hash value 0x{2:x}. If you believe this collision to be an error, please delete the string hash files from the session cache and rebuild.",
@@ -43,7 +44,7 @@ namespace BinaryAssetBuilder.Core.Hashing
             foreach (KeyValuePair<uint, string> stringAndHash in _stringTable)
             {
                 writer.WriteStartElement(_stringTableEntryName);
-                writer.WriteAttributeString("Hash", stringAndHash.Key.ToString());
+                writer.WriteAttributeString("Hash", stringAndHash.Key.ToString(CultureInfo.InvariantCulture));
                 writer.WriteAttributeString("Text", stringAndHash.Value);
                 writer.WriteEndElement();
             }
@@ -60,10 +61,10 @@ namespace BinaryAssetBuilder.Core.Hashing
         {
             foreach (XmlNode childNode in table.ChildNodes)
             {
-                if (childNode.NodeType == XmlNodeType.Element && childNode.Name.Equals(_stringTableEntryName))
+                if (childNode.NodeType == XmlNodeType.Element && childNode.Name.Equals(_stringTableEntryName, StringComparison.Ordinal))
                 {
                     XmlElement element = (XmlElement)childNode;
-                    RecordStringHash(Convert.ToUInt32(element.Attributes["Hash"].Value), element.Attributes["Text"].Value);
+                    RecordStringHash(Convert.ToUInt32(element.Attributes["Hash"].Value, CultureInfo.InvariantCulture), element.Attributes["Text"].Value);
                 }
             }
         }

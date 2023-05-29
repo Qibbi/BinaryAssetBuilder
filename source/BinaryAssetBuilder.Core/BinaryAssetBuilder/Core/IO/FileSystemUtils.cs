@@ -19,17 +19,17 @@ namespace BinaryAssetBuilder.Core.IO
             if (fileW == new IntPtr(-1))
             {
                 int lastError = Native.Kernel32.GetLastError();
-                throw new Exception($"Could not open handle to {str}, error: {GetErrorString(lastError)}");
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, $"Could not open handle to {str}, error: {GetErrorString(lastError)}");
             }
             if (!Native.Kernel32.FlushFileBuffers(fileW))
             {
                 int lastError = Native.Kernel32.GetLastError();
-                throw new Exception($"Could not flush {str}, error: {GetErrorString(lastError)}");
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, $"Could not flush {str}, error: {GetErrorString(lastError)}");
             }
             if (!Native.Kernel32.CloseHandle(fileW))
             {
                 int lastError = Native.Kernel32.GetLastError();
-                throw new Exception($"Could not close {str}, error: {GetErrorString(lastError)}");
+                throw new BinaryAssetBuilderException(ErrorCode.InternalError, $"Could not close {str}, error: {GetErrorString(lastError)}");
             }
         }
     }

@@ -1,13 +1,13 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
+﻿using System.Reflection;
+using BinaryAssetBuilder.Core.Diagnostics;
 using BinaryAssetBuilder.Core.SageXml;
-using System.Reflection;
 
 namespace BinaryAssetBuilder.Core
 {
     public class ExpressionEvaluatorWrapper
     {
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(ExpressionEvaluatorWrapper), "Provides expression evaluation functionality");
-        private static Assembly _library = null;
+        private static Assembly _library;
 
         public static void LoadAssembly()
         {

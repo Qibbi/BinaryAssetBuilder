@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RadarBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RadarBehaviorModuleData
-    {
-        public CreateModuleData Base;
-    }
+    public CreateModuleData Base;
 }

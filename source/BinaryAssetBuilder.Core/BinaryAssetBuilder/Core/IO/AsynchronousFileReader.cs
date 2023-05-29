@@ -4,7 +4,7 @@ using System.IO;
 
 namespace BinaryAssetBuilder.Core.IO
 {
-    public class AsynchronousFileReader
+    public sealed class AsynchronousFileReader : IDisposable
     {
         private const int QueueSize = 1;
 
@@ -64,6 +64,14 @@ namespace BinaryAssetBuilder.Core.IO
             }
             _currentChunk.BytesRead = 0;
             _jobQueue.Enqueue(_stream.BeginRead(_currentChunk.Data, 0, _currentChunk.Data.Length, null, _currentChunk));
+            _currentChunk = null;
+        }
+
+        public void Dispose()
+        {
+            _stream?.Dispose();
+            _stream = null;
+            _currentChunk?.Dispose();
             _currentChunk = null;
         }
     }

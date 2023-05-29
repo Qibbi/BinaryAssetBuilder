@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CaptureBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CaptureBehaviorModuleData
-    {
-        public BehaviorModuleData Base;
-        public uint GrantMoney;
-        public TypedAssetId<GameObject> SlavedCaptureObject;
-        public SageBool GrantMoneyOneTime;
-    }
+    public BehaviorModuleData Base;
+    public uint GrantMoney;
+    public TypedAssetId<GameObject> SlavedCaptureObject;
+    public SageBool GrantMoneyOneTime;
 }

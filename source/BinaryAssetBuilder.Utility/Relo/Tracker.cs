@@ -5,9 +5,9 @@ using System.Threading;
 
 namespace Relo
 {
-    public class Tracker : IDisposable
+    public sealed class Tracker : IDisposable
     {
-        internal class Bookmark
+        internal sealed class Bookmark
         {
             public uint Index;
             public uint From;
@@ -19,7 +19,7 @@ namespace Relo
             }
         }
 
-        internal class Block
+        internal sealed class Block
         {
             public IntPtr Data;
             public uint Size;
@@ -32,7 +32,7 @@ namespace Relo
             }
         }
 
-        public class Context : IDisposable
+        public sealed class Context : IDisposable
         {
             private Tracker _parent;
 

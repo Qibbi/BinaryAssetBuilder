@@ -1,6 +1,7 @@
-﻿using BinaryAssetBuilder.Core.Xml;
-using System;
+﻿using System;
+using System.Globalization;
 using System.Xml;
+using BinaryAssetBuilder.Core.Xml;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -26,9 +27,9 @@ namespace BinaryAssetBuilder.Core
         public void ReadXml(Node node)
         {
             string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
-            InstanceFileSize = Convert.ToInt32(values[0]);
-            RelocationFileSize = Convert.ToInt32(values[1]);
-            ImportsFileSize = Convert.ToInt32(values[2]);
+            InstanceFileSize = Convert.ToInt32(values[0], CultureInfo.InvariantCulture);
+            RelocationFileSize = Convert.ToInt32(values[1], CultureInfo.InvariantCulture);
+            ImportsFileSize = Convert.ToInt32(values[2], CultureInfo.InvariantCulture);
             Handle = new InstanceHandle();
             Handle.ReadXml(node.GetChildNode(nameof(Handle), null));
         }

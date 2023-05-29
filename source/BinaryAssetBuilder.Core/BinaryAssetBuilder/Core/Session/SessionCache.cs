@@ -1,24 +1,25 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using BinaryAssetBuilder.Core.SageXml;
-using BinaryAssetBuilder.Core.Xml;
-using BinaryAssetBuilder.Metrics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
+using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.SageXml;
+using BinaryAssetBuilder.Core.Xml;
+using BinaryAssetBuilder.Metrics;
 
 namespace BinaryAssetBuilder.Core.Session
 {
     public class SessionCache : ISessionCache
     {
-        private class FileConfig
+        private sealed class FileConfig
         {
             public List<FileItem> All = new List<FileItem>();
             public FileItem LastCached;
         }
 
-        private class CurrentState
+        private sealed class CurrentState
         {
             public IDictionary<string, FileConfig> FileConfigs;
             public IDictionary<string, FileItem> Files;
@@ -41,7 +42,7 @@ namespace BinaryAssetBuilder.Core.Session
                 AssetCompilersVersion = last.AssetCompilersVersion;
                 foreach (FileItem file in last.Files)
                 {
-                    string lower = file.HashItem.Path.ToLower();
+                    string lower = file.HashItem.Path.ToLowerInvariant();
                     if (!FileConfigs.TryGetValue(lower, out FileConfig fileConfig))
                     {
                         fileConfig = new FileConfig();
@@ -58,7 +59,7 @@ namespace BinaryAssetBuilder.Core.Session
             }
         }
 
-        private class LastState : ISerializable
+        private sealed class LastState : ISerializable
         {
             private FileItem[] _files;
             private uint _assetCompilersVersion;
@@ -96,10 +97,10 @@ namespace BinaryAssetBuilder.Core.Session
             public void ReadXml(Node node)
             {
                 string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
-                Created = Convert.ToDateTime(values[0]);
-                Version = Convert.ToUInt32(values[1]);
-                DocumentProcessorVersion = Convert.ToUInt32(values[2]);
-                _assetCompilersVersion = Convert.ToUInt32(values[3]);
+                Created = Convert.ToDateTime(values[0], CultureInfo.InvariantCulture);
+                Version = Convert.ToUInt32(values[1], CultureInfo.InvariantCulture);
+                DocumentProcessorVersion = Convert.ToUInt32(values[2], CultureInfo.InvariantCulture);
+                _assetCompilersVersion = Convert.ToUInt32(values[3], CultureInfo.InvariantCulture);
                 Marshaler.Marshal(node.GetChildNodes(nameof(FileItem)), ref _files);
             }
 
@@ -207,8 +208,8 @@ namespace BinaryAssetBuilder.Core.Session
         }
         private bool TryGetFileItem(string path, string configuration, TargetPlatform platform, out FileItem documentItem, bool autoCreateDocument)
         {
-            path = path.ToLower();
-            configuration = configuration?.ToLower();
+            path = path.ToLowerInvariant();
+            configuration = configuration?.ToLowerInvariant();
             string key = path + GetPostfix(configuration, platform);
             if (!_current.Files.TryGetValue(key, out documentItem))
             {
@@ -318,7 +319,7 @@ namespace BinaryAssetBuilder.Core.Session
             }
         }
 
-        public virtual void SaveCache(bool saveCompressed)
+        public virtual void SaveCache(bool compressed)
         {
             MakeCacheable();
             string directoryName = Path.GetDirectoryName(CacheFileName);
@@ -327,14 +328,14 @@ namespace BinaryAssetBuilder.Core.Session
                 Directory.CreateDirectory(directoryName);
             }
             string cacheFileName = CacheFileName;
-            if (saveCompressed)
+            if (compressed)
             {
                 cacheFileName += ".deflate";
             }
             using (Stream stream = new FileStream(cacheFileName + ".tmp", FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 Stream w = stream;
-                if (saveCompressed)
+                if (compressed)
                 {
                     w = new DeflateStream(stream, CompressionMode.Compress);
                 }
@@ -348,25 +349,25 @@ namespace BinaryAssetBuilder.Core.Session
             File.Move(cacheFileName + ".tmp", cacheFileName);
         }
 
-        public virtual bool TryGetFile(string path, string configuration, TargetPlatform targetPlatform, out FileHashItem hashItem)
+        public virtual bool TryGetFile(string path, string configuration, TargetPlatform platform, out FileHashItem hashItem)
         {
-            TryGetFileItem(path, configuration, targetPlatform, out FileItem documentItem, false);
+            TryGetFileItem(path, configuration, platform, out FileItem documentItem, false);
             hashItem = documentItem.HashItem;
             return hashItem.Exists;
         }
 
-        public virtual bool TryGetDocument(string path, string configuration, TargetPlatform targetPlatform, bool autoCreateDocument, out AssetDeclarationDocument document)
+        public virtual bool TryGetDocument(string path, string configuration, TargetPlatform platform, bool autoCreateDocument, out AssetDeclarationDocument document)
         {
-            TryGetFileItem(path, configuration, targetPlatform, out FileItem documentItem, autoCreateDocument);
+            TryGetFileItem(path, configuration, platform, out FileItem documentItem, autoCreateDocument);
             document = documentItem.Document;
             return documentItem.HashItem.Exists;
         }
 
-        public virtual void SaveDocumentToCache(string path, string configuration, TargetPlatform targetPlatform, AssetDeclarationDocument document)
+        public virtual void SaveDocumentToCache(string path, string configuration, TargetPlatform platform, AssetDeclarationDocument document)
         {
-            path = path.ToLower();
-            configuration = configuration?.ToLower();
-            if (!_current.Files.TryGetValue(path + GetPostfix(configuration, targetPlatform), out FileItem fileItem))
+            path = path.ToLowerInvariant();
+            configuration = configuration?.ToLowerInvariant();
+            if (!_current.Files.TryGetValue(path + GetPostfix(configuration, platform), out FileItem fileItem))
             {
                 return;
             }

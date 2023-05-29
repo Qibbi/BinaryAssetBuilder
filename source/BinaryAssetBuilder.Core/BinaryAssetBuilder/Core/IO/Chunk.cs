@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BinaryAssetBuilder.Core.IO
 {
-    public class Chunk : IDisposable
+    public sealed class Chunk : IDisposable
     {
         private const int _bufferSize = 0x100000;
 

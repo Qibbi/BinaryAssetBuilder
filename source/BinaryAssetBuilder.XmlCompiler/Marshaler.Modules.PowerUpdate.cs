@@ -12,7 +12,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(PowerUpdateModuleData.UpdatePeriod), "1s"), &objT->UpdatePeriod, state);
         Marshal(node.GetAttributeValue(nameof(PowerUpdateModuleData.ReloadTime), "0s"), &objT->ReloadTime, state);
         Marshal(node.GetAttributeValue(nameof(PowerUpdateModuleData.Duration), "0s"), &objT->Duration, state);
-        Marshal(node.GetAttributeValue(nameof(PowerUpdateModuleData.Type), "INVALID"), &objT->Type, state);
+        Marshal(node.GetAttributeValue(nameof(PowerUpdateModuleData.Type), nameof(PowerUpdateType.INVALID)), &objT->Type, state);
         Marshal(node, (UpdateModuleData*)objT, state);
     }
 }

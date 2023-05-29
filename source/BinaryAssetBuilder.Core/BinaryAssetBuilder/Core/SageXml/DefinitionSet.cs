@@ -8,7 +8,7 @@ namespace BinaryAssetBuilder.Core.SageXml
         {
             foreach (Definition definition in definitions.Values)
             {
-                if (TryGetValue(definition.Name, out Definition other) && !definition.Document.SourcePath.Equals(other.Document.SourcePath))
+                if (TryGetValue(definition.Name, out Definition other) && !definition.Document.SourcePath.Equals(other.Document.SourcePath, System.StringComparison.OrdinalIgnoreCase))
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.DuplicateDefine,
                                                           "Defintion {0} defined in {1} is already defined in {2}",

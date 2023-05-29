@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace BinaryAssetBuilder.Core.Diagnostics
 
     public class Tracer
     {
-        private class InternalScopedTrace : IDisposable
+        private sealed class InternalScopedTrace : IDisposable
         {
             private readonly Tracer _tracer;
             private readonly string _text;
@@ -115,7 +116,7 @@ namespace BinaryAssetBuilder.Core.Diagnostics
 
         private void Output(TraceEventType type, string format, params object[] args)
         {
-            OnWrite(_name, type, new StringBuilder(new string(' ', IndentLevel * 4)).AppendFormat(format, args).ToString());
+            OnWrite(_name, type, new StringBuilder(new string(' ', IndentLevel * 4)).AppendFormat(CultureInfo.InvariantCulture, format, args).ToString());
         }
 
         public IDisposable TraceMethod()
@@ -125,7 +126,7 @@ namespace BinaryAssetBuilder.Core.Diagnostics
 
         public IDisposable TraceMethod(string format, params object[] args)
         {
-            return (_traceMask & TraceKind.Method) == TraceKind.None ? null : new InternalScopedTrace(this, GetCallingMethodInfo(string.Format(format, args)));
+            return (_traceMask & TraceKind.Method) == TraceKind.None ? null : new InternalScopedTrace(this, GetCallingMethodInfo(string.Format(CultureInfo.InvariantCulture, format, args)));
         }
 
         public void Message(string format, params object[] args)

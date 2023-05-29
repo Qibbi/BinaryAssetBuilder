@@ -11,7 +11,7 @@ public static partial class Marshaler
         }
         Marshal(node.GetAttributeValue(nameof(SpecialPowerModuleInfo.ModuleId), null), &objT->ModuleId, state);
         Marshal(node.GetAttributeValue(nameof(SpecialPowerModuleInfo.TriggerAtTargetPosition), "true"), &objT->TriggerAtTargetPosition, state);
-        Marshal(node.GetAttributeValue(nameof(SpecialPowerModuleInfo.TriggerType), "TARGET_POSITION"), &objT->TriggerType, state);
+        Marshal(node.GetAttributeValue(nameof(SpecialPowerModuleInfo.TriggerType), nameof(TriggerType.TARGET_POSITION)), &objT->TriggerType, state);
     }
 
     public static unsafe void Marshal(Node node, ActivateModuleSpecialPowerModuleData* objT, Tracker state)

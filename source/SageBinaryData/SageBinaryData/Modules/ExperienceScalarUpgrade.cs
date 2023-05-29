@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ExperienceScalarUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ExperienceScalarUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public float AddXPScalar;
-    }
+    public UpgradeModuleData Base;
+    public float AddXPScalar;
 }

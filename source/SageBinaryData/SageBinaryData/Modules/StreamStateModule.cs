@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct StreamStateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct StreamStateModuleData
-    {
-        public UpdateModuleData Base;
-        public int StreamId;
-    }
+    public UpdateModuleData Base;
+    public int StreamId;
 }

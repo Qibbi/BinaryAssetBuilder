@@ -1,18 +1,18 @@
-﻿using BinaryAssetBuilder.Core;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Threading;
+using BinaryAssetBuilder.Core;
 using BinaryAssetBuilder.Core.Diagnostics;
 using BinaryAssetBuilder.Core.Hashing;
 using BinaryAssetBuilder.Core.IO;
 using BinaryAssetBuilder.Core.SageXml;
 using BinaryAssetBuilder.Metrics;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.Loader;
-using System.Threading;
 
 namespace BinaryAssetBuilder
 {
-    internal class BinaryAssetBuilder
+    internal sealed class BinaryAssetBuilder : IDisposable
     {
         private static Tracer _tracer = Tracer.GetTracer(nameof(BinaryAssetBuilder), nameof(BinaryAssetBuilder));
 
@@ -42,8 +42,8 @@ namespace BinaryAssetBuilder
             MetricManager.GetDescriptor("BAB.BuildSuccessful", MetricType.Success, "Build completed successfully")
         };
 
-        private Mutex _mutex = new Mutex();
-        private Mutex _sessionCacheSaveMutex = new Mutex();
+        private readonly Mutex _mutex = new();
+        private readonly Mutex _sessionCacheSaveMutex = new();
         private PluginRegistry _pluginRegistry;
         private VerifierPluginRegistry _verifierPluginRegistry;
         private ISessionCache _cache;
@@ -167,7 +167,7 @@ namespace BinaryAssetBuilder
                     MetricManager.Submit("BAB.SessionSerialization", _cacheSerializationTime);
                 }
                 _tracer.Message("BinaryAssetBuilder complete");
-                documentProcessor.OutputTypeCompileTimes();
+                DocumentProcessor.OutputTypeCompileTimes();
             }
             catch (Exception ex)
             {
@@ -221,6 +221,12 @@ namespace BinaryAssetBuilder
                 throw new BinaryAssetBuilderException(ErrorCode.InvalidArgument, "Data root not set.");
             }
             DoBuildData();
+        }
+
+        public void Dispose()
+        {
+            _mutex.Dispose();
+            _sessionCacheSaveMutex.Dispose();
         }
     }
 }

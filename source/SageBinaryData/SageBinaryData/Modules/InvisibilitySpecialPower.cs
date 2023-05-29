@@ -1,14 +1,13 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct InvisibilitySpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct InvisibilitySpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-        public float BroadcastRadius;
-        public uint DurationFrames;
-        public unsafe InvisibilityNuggetType* InvisibilityNugget;
-        public ObjectFilter ObjectFilter;
-    }
+    public SpecialPowerModuleData Base;
+    public float BroadcastRadius;
+    public Duration DurationFrames;
+    public unsafe InvisibilityNuggetType* InvisibilityNugget;
+    public ObjectFilter ObjectFilter;
 }

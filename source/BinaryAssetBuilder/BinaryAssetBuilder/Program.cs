@@ -1,21 +1,21 @@
-﻿using BinaryAssetBuilder.Core.CommandLine;
-using BinaryAssetBuilder.Core.IO;
-using BinaryAssetBuilder.Core.Session;
-using BinaryAssetBuilder.Core.Xml;
-using BinaryAssetBuilder.Metrics;
-using BinaryAssetBuilder.Remote;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using BinaryAssetBuilder.Core.CommandLine;
+using BinaryAssetBuilder.Core.IO;
+using BinaryAssetBuilder.Core.Session;
+using BinaryAssetBuilder.Core.Xml;
+using BinaryAssetBuilder.Metrics;
+using BinaryAssetBuilder.Remote;
 
 namespace BinaryAssetBuilder
 {
     internal static class Program
     {
-        public class ResidentInstance : IDisposable
+        public sealed class ResidentInstance : IDisposable
         {
             private static ServerState _state;
             private static SessionCache _theSessionCache;
@@ -58,7 +58,7 @@ namespace BinaryAssetBuilder
                 string cfg = "BinaryAssetBuilder.cfg";
                 if (!File.Exists(cfg))
                 {
-                    throw new ApplicationException("BinaryAssetBuilder configuration not found.");
+                    throw new BinaryAssetBuilderException(ErrorCode.FileNotFound, "BinaryAssetBuilder configuration not found.");
                 }
                 BinaryAssetBuilderDocument babConfig = new BinaryAssetBuilderDocument(cfg);
                 Settings current = new Settings();
@@ -80,10 +80,10 @@ namespace BinaryAssetBuilder
                     return false;
                 }
                 SettingsLoader.PostProcessSettings(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 foreach (string str in args)
                 {
-                    sb.AppendFormat("{0} ", str);
+                    sb.AppendFormat(CultureInfo.InvariantCulture, "{0} ", str);
                 }
                 Console.WriteLine("Command Line: {0}", sb.ToString());
                 return true;

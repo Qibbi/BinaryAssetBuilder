@@ -13,11 +13,11 @@ namespace BinaryAssetBuilder.Core
         {
         }
 
-        private static readonly Nop _theNop = new Nop();
+        private static readonly Nop _theNop;
 
         private readonly Dictionary<T, Nop> _dictionary;
 
-        public static Set<T> Empty => new Set<T>(0);
+        public static Set<T> Empty => new(0);
 
         public int Count => _dictionary.Count;
         public bool IsReadOnly => false;
@@ -60,7 +60,7 @@ namespace BinaryAssetBuilder.Core
 
         public Set<U> ConvertAll<U>(Converter<T, U> converter)
         {
-            Set<U> result = new Set<U>(Count);
+            Set<U> result = new(Count);
             foreach (T input in this)
             {
                 result.Add(converter(input));

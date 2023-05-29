@@ -18,7 +18,11 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(InvisibilityUpdateModuleData.NamedVoiceNameToUseAsVoiceEnterStateMoveToStealthyArea), null), &objT->NamedVoiceNameToUseAsVoiceEnterStateMoveToStealthyArea, state);
         Marshal(node.GetChildNode(nameof(InvisibilityUpdateModuleData.InvisibilityNugget), null), &objT->InvisibilityNugget, state);
         Marshal(node.GetChildNode(nameof(InvisibilityUpdateModuleData.BroadcastObjectFilter), null), &objT->BroadcastObjectFilter, state);
+#if TIBERIUMWARS
         Marshal(node.GetChildNode(nameof(InvisibilityUpdateModuleData.RequiresUpgrade), null), &objT->RequiresUpgrade, state);
+#elif KANESWRATH
+        Marshal(node.GetChildNodes(nameof(InvisibilityUpdateModuleData.RequiresUpgrade)), &objT->RequiresUpgrade, state);
+#endif
         Marshal(node, (UpdateModuleData*)objT, state);
     }
 }

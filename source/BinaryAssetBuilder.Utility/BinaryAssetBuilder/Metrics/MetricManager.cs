@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace BinaryAssetBuilder.Metrics
 {
@@ -31,13 +32,13 @@ namespace BinaryAssetBuilder.Metrics
             object sample = samples[0];
             object obj = descriptor.Type switch
             {
-                MetricType.Duration => sample.GetType() != typeof(TimeSpan) ? Convert.ToDouble(sample) : ((TimeSpan)sample).TotalSeconds,
-                MetricType.Size => Convert.ToInt64(sample),
-                MetricType.Count => Convert.ToInt32(sample),
-                MetricType.Ratio => Convert.ToSingle(sample),
-                MetricType.Name => Convert.ToString(sample),
-                MetricType.Enabled => Convert.ToBoolean(sample),
-                MetricType.Success => Convert.ToBoolean(sample),
+                MetricType.Duration => sample.GetType() != typeof(TimeSpan) ? Convert.ToDouble(sample, CultureInfo.InvariantCulture) : ((TimeSpan)sample).TotalSeconds,
+                MetricType.Size => Convert.ToInt64(sample, CultureInfo.InvariantCulture),
+                MetricType.Count => Convert.ToInt32(sample, CultureInfo.InvariantCulture),
+                MetricType.Ratio => Convert.ToSingle(sample, CultureInfo.InvariantCulture),
+                MetricType.Name => Convert.ToString(sample, CultureInfo.InvariantCulture),
+                MetricType.Enabled => Convert.ToBoolean(sample, CultureInfo.InvariantCulture),
+                MetricType.Success => Convert.ToBoolean(sample, CultureInfo.InvariantCulture),
                 _ => sample,
             };
             samples[0] = obj;
@@ -49,7 +50,7 @@ namespace BinaryAssetBuilder.Metrics
 
         public static MetricDescriptor GetDescriptor(string name, MetricType type, string description)
         {
-            string lower = name.ToLower();
+            string lower = name.ToLowerInvariant();
             if (!_descriptorMap.TryGetValue(lower, out MetricDescriptor result))
             {
                 result = new MetricDescriptor(name, type, description);
@@ -74,7 +75,7 @@ namespace BinaryAssetBuilder.Metrics
 
         public static void Submit(string descriptorName, params object[] dataList)
         {
-            if (!_descriptorMap.TryGetValue(descriptorName.ToLower(), out MetricDescriptor descriptor))
+            if (!_descriptorMap.TryGetValue(descriptorName.ToLowerInvariant(), out MetricDescriptor descriptor))
             {
                 return;
             }
@@ -83,7 +84,7 @@ namespace BinaryAssetBuilder.Metrics
 
         public static void Submit(MetricDescriptor descriptor, params object[] dataList)
         {
-            if (!_descriptorMap.ContainsKey(descriptor.Name.ToLower()))
+            if (!_descriptorMap.ContainsKey(descriptor.Name.ToLowerInvariant()))
             {
                 return;
             }

@@ -1,12 +1,11 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BinaryAssetBuilder.Core.Diagnostics;
 
 namespace BinaryAssetBuilder.Core
 {
     public class PluginRegistry
     {
-        private class NullPlugin : IAssetBuilderPlugin
+        private sealed class NullPlugin : IAssetBuilderPlugin
         {
             public uint AllTypesHash => 0u;
 
@@ -70,7 +69,7 @@ namespace BinaryAssetBuilder.Core
                     plugin.Initialize(platform);
                     if (plugin.Plugin is not IAssetBuilderPlugin babPlugin)
                     {
-                        throw new ApplicationException($"'{plugin.QualifiedName}' does not implement {nameof(IAssetBuilderPlugin)}");
+                        throw new BinaryAssetBuilderException(ErrorCode.InternalError, $"'{plugin.QualifiedName}' does not implement {nameof(IAssetBuilderPlugin)}");
                     }
                     if (plugin.HandledTypes.Count > 0)
                     {

@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct StoreObjectsSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct StoreObjectsSpecialPowerModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public float Radius;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public float Radius;
 }

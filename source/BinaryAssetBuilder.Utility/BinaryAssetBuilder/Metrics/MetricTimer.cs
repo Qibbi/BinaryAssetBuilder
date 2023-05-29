@@ -2,7 +2,7 @@
 
 namespace BinaryAssetBuilder.Metrics
 {
-    public class MetricTimer : IDisposable
+    public sealed class MetricTimer : IDisposable
     {
         private readonly DateTime _startTime = DateTime.Now;
         private readonly string _userData;

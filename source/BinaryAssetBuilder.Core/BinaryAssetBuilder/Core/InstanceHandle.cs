@@ -1,9 +1,10 @@
-﻿using BinaryAssetBuilder.Core.Hashing;
-using BinaryAssetBuilder.Core.Xml;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Xml;
+using BinaryAssetBuilder.Core.Hashing;
+using BinaryAssetBuilder.Core.Xml;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -158,10 +159,10 @@ namespace BinaryAssetBuilder.Core
         public void ReadXml(Node node)
         {
             string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
-            TypeId = Convert.ToUInt32(values[0]);
-            TypeHash = Convert.ToUInt32(values[1]);
-            InstanceId = Convert.ToUInt32(values[2]);
-            InstanceHash = Convert.ToUInt32(values[3]);
+            TypeId = Convert.ToUInt32(values[0], CultureInfo.InvariantCulture);
+            TypeHash = Convert.ToUInt32(values[1], CultureInfo.InvariantCulture);
+            InstanceId = Convert.ToUInt32(values[2], CultureInfo.InvariantCulture);
+            InstanceHash = Convert.ToUInt32(values[3], CultureInfo.InvariantCulture);
             TypeName = values[4];
             InstanceName = values[5];
         }

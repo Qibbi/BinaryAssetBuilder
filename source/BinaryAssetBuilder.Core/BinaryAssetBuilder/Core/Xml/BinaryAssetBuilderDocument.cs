@@ -1,9 +1,9 @@
-﻿using BinaryAssetBuilder.Core.Hashing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+using BinaryAssetBuilder.Core.Hashing;
 
 namespace BinaryAssetBuilder.Core.Xml
 {
@@ -12,7 +12,7 @@ namespace BinaryAssetBuilder.Core.Xml
         public const string XmlRootName = "BinaryAssetBuilder";
         public const string XmlNamespace = "uri:binaryassetbuilder.bab";
 
-        private readonly Dictionary<uint, List<XmlNode>> _nodes = new Dictionary<uint, List<XmlNode>>();
+        private readonly Dictionary<uint, List<XmlNode>> _nodes = new();
         private XmlDocument _document;
         private XmlNamespaceManager _namespaceManager;
 
@@ -48,7 +48,7 @@ namespace BinaryAssetBuilder.Core.Xml
             writer.Flush();
         }
 
-        public static void Writexml(string path, string name, Action<XmlWriter> writeCallback, string id = null)
+        public static void WriteXml(string path, string name, Action<XmlWriter> writeCallback, string id = null)
         {
             using Stream stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
             WriteXml(stream, name, writeCallback, id);

@@ -1,7 +1,7 @@
-﻿using BinaryAssetBuilder.Core;
-using BinaryAssetBuilder.Core.IO;
-using System;
+﻿using System;
 using System.IO;
+using BinaryAssetBuilder.Core;
+using BinaryAssetBuilder.Core.IO;
 
 namespace BinaryAssetBuilder
 {
@@ -30,7 +30,7 @@ namespace BinaryAssetBuilder
                 BuildConfiguration result = null;
                 foreach (BuildConfiguration buildConfiguration in settings.BuildConfigurations)
                 {
-                    if (buildConfiguration.Name.Equals(configName, StringComparison.InvariantCultureIgnoreCase))
+                    if (buildConfiguration.Name.Equals(configName, StringComparison.OrdinalIgnoreCase))
                     {
                         result = buildConfiguration;
                         break;

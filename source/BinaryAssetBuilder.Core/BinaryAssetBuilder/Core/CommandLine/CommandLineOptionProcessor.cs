@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace BinaryAssetBuilder.Core.CommandLine
 {
     public class CommandLineOptionProcessor
     {
-        private class OrderedOptionInfo : IComparable<OrderedOptionInfo>
+        private sealed class OrderedOptionInfo : IComparable<OrderedOptionInfo>
         {
             public PropertyDescriptor Descriptor;
             public OrderedCommandLineOptionAttribute OptionAttribute;
@@ -23,14 +24,14 @@ namespace BinaryAssetBuilder.Core.CommandLine
             }
         }
 
-        private class OptionalOptionInfo : IComparable<OptionalOptionInfo>
+        private sealed class OptionalOptionInfo : IComparable<OptionalOptionInfo>
         {
             public PropertyDescriptor Descriptor;
             public OptionalCommandLineOptionAttribute OptionAttribute;
 
             public int CompareTo(OptionalOptionInfo other)
             {
-                return string.Compare(Descriptor.DisplayName, other.Descriptor.DisplayName);
+                return string.Compare(Descriptor.DisplayName, other.Descriptor.DisplayName, StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -88,7 +89,7 @@ namespace BinaryAssetBuilder.Core.CommandLine
                 }
                 else
                 {
-                    obj = Convert.ChangeType(value.Trim('"'), descriptor.PropertyType);
+                    obj = Convert.ChangeType(value.Trim('"'), descriptor.PropertyType, CultureInfo.InvariantCulture);
                 }
             }
             catch
@@ -162,12 +163,12 @@ namespace BinaryAssetBuilder.Core.CommandLine
                         Descriptor = property
                     };
                     _optionalOptions.Add(optionalOption);
-                    _optionalOptionMap.Add(property.DisplayName.ToLower(), optionalOption);
+                    _optionalOptionMap.Add(property.DisplayName.ToLowerInvariant(), optionalOption);
                     if (!string.IsNullOrEmpty(optionalAttribute.Alias))
                     {
                         foreach (string alias in optionalAttribute.Alias.Split(',', StringSplitOptions.RemoveEmptyEntries))
                         {
-                            _optionalOptionMap.Add(alias.Trim().ToLower(), optionalOption);
+                            _optionalOptionMap.Add(alias.Trim().ToLowerInvariant(), optionalOption);
                         }
                     }
                     _displayNameMaxLength = Math.Max(_displayNameMaxLength, property.DisplayName.Length + 1);
@@ -226,7 +227,7 @@ namespace BinaryAssetBuilder.Core.CommandLine
                     else
                     {
                         string[] optionAndValue = str[1..].Split(':', 2);
-                        if (!_optionalOptionMap.TryGetValue(optionAndValue[0].ToLower(), out OptionalOptionInfo optionalOption))
+                        if (!_optionalOptionMap.TryGetValue(optionAndValue[0].ToLowerInvariant(), out OptionalOptionInfo optionalOption))
                         {
                             hasErrors = true;
                             errors.Add($"Error: Unknown command line option '{optionAndValue[0]}'.");
@@ -270,18 +271,18 @@ namespace BinaryAssetBuilder.Core.CommandLine
             StringBuilder sb = new StringBuilder();
             foreach (OrderedOptionInfo orderedOption in _orderedOptions)
             {
-                sb.AppendFormat("{0} ", orderedOption.Descriptor.DisplayName);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "{0} ", orderedOption.Descriptor.DisplayName);
             }
             foreach (OptionalOptionInfo optionalOption in _optionalOptions)
             {
-                sb.AppendFormat("[/{0}", optionalOption.Descriptor.DisplayName);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "[/{0}", optionalOption.Descriptor.DisplayName);
                 if (!string.IsNullOrEmpty(optionalOption.OptionAttribute.Alias))
                 {
-                    sb.Append("|");
+                    sb.Append('|');
                     sb.Append(string.Join("|", optionalOption.OptionAttribute.Alias.Split(',', StringSplitOptions.RemoveEmptyEntries)));
                 }
                 optionalOption.Descriptor.GetValue(_settingsObject);
-                sb.Append(":");
+                sb.Append(':');
                 if (optionalOption.Descriptor.PropertyType.IsEnum)
                 {
                     sb.Append(string.Join("|", Enum.GetNames(optionalOption.Descriptor.PropertyType)));
@@ -293,7 +294,7 @@ namespace BinaryAssetBuilder.Core.CommandLine
                     {
                         if (!first)
                         {
-                            sb.Append("|");
+                            sb.Append('|');
                         }
                         first = false;
                         sb.Append(validValue);
@@ -303,16 +304,16 @@ namespace BinaryAssetBuilder.Core.CommandLine
                 {
                     if (optionalOption.OptionAttribute.MaxValue is null)
                     {
-                        sb.AppendFormat("{0}..", optionalOption.OptionAttribute.MinValue);
+                        sb.AppendFormat(CultureInfo.InvariantCulture, "{0}..", optionalOption.OptionAttribute.MinValue);
                     }
                     else
                     {
-                        sb.AppendFormat("{0}-{1}", optionalOption.OptionAttribute.MinValue, optionalOption.OptionAttribute.MaxValue);
+                        sb.AppendFormat(CultureInfo.InvariantCulture, "{0}-{1}", optionalOption.OptionAttribute.MinValue, optionalOption.OptionAttribute.MaxValue);
                     }
                 }
                 else if (optionalOption.OptionAttribute.MaxValue is not null)
                 {
-                    sb.AppendFormat("..{0}", optionalOption.OptionAttribute.MaxValue);
+                    sb.AppendFormat(CultureInfo.InvariantCulture, "..{0}", optionalOption.OptionAttribute.MaxValue);
                 }
                 else if (optionalOption.Descriptor.PropertyType == typeof(bool))
                 {
@@ -332,25 +333,25 @@ namespace BinaryAssetBuilder.Core.CommandLine
             StringBuilder sb = new StringBuilder();
             foreach (OrderedOptionInfo orderedOption in _orderedOptions)
             {
-                sb.AppendFormat("  {0}", orderedOption.Descriptor.DisplayName);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "  {0}", orderedOption.Descriptor.DisplayName);
                 sb.Append(' ', _displayNameMaxLength + 5 - orderedOption.Descriptor.DisplayName.Length);
                 sb.Append(orderedOption.Descriptor.Description);
                 object defaultValue = orderedOption.Descriptor.GetValue(_settingsObject);
                 if (defaultValue is not null)
                 {
-                    sb.AppendFormat(" (default: {0})", defaultValue);
+                    sb.AppendFormat(CultureInfo.InvariantCulture, " (default: {0})", defaultValue);
                 }
                 sb.AppendLine();
             }
             foreach (OptionalOptionInfo optionalOption in _optionalOptions)
             {
-                sb.AppendFormat("  /{0}", optionalOption.Descriptor.DisplayName);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "  /{0}", optionalOption.Descriptor.DisplayName);
                 sb.Append(' ', _displayNameMaxLength + 4 - optionalOption.Descriptor.DisplayName.Length);
                 sb.Append(optionalOption.Descriptor.Description);
                 object defaultValue = optionalOption.Descriptor.GetValue(_settingsObject);
                 if (defaultValue is not null)
                 {
-                    sb.AppendFormat(" (default: {0})", defaultValue);
+                    sb.AppendFormat(CultureInfo.InvariantCulture, " (default: {0})", defaultValue);
                 }
                 sb.AppendLine();
             }

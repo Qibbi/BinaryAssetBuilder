@@ -1,15 +1,16 @@
-﻿using BinaryAssetBuilder.Core.SageXml;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Xml;
+using BinaryAssetBuilder.Core.SageXml;
 using BinaryAssetBuilder.Core.Xml;
 using BinaryAssetBuilder.Utility;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace BinaryAssetBuilder.Core
 {
     public class InstanceDeclaration : ISerializable
     {
-        private class LastState : ISerializable
+        private sealed class LastState : ISerializable
         {
             public InstanceHandle Handle;
             public uint ProcessingHash;
@@ -43,11 +44,11 @@ namespace BinaryAssetBuilder.Core
             public void ReadXml(Node node)
             {
                 string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
-                ProcessingHash = Convert.ToUInt32(values[0]);
-                InheritFromXmlHash = Convert.ToUInt32(values[1]);
-                PrevalidationXmlHash = Convert.ToUInt32(values[2]);
-                IsInheritable = Convert.ToBoolean(values[3]);
-                HasCustomData = Convert.ToBoolean(values[4]);
+                ProcessingHash = Convert.ToUInt32(values[0], CultureInfo.InvariantCulture);
+                InheritFromXmlHash = Convert.ToUInt32(values[1], CultureInfo.InvariantCulture);
+                PrevalidationXmlHash = Convert.ToUInt32(values[2], CultureInfo.InvariantCulture);
+                IsInheritable = Convert.ToBoolean(values[3], CultureInfo.InvariantCulture);
+                HasCustomData = Convert.ToBoolean(values[4], CultureInfo.InvariantCulture);
                 Handle = new InstanceHandle();
                 Handle.ReadXml(node.GetChildNode(nameof(Handle), null));
                 Node inheritFromHandle = node.GetChildNode(nameof(InheritFromHandle), null);
@@ -101,7 +102,7 @@ namespace BinaryAssetBuilder.Core
             }
         }
 
-        private class CurrentState
+        private sealed class CurrentState
         {
             public AssetDeclarationDocument Document;
             public InstanceHandle Handle;
@@ -176,7 +177,7 @@ namespace BinaryAssetBuilder.Core
                 XmlAttribute attribute = value.Attributes["inheritFrom"];
                 if (attribute is not null && attribute.Value != string.Empty)
                 {
-                    _current.InheritFromHandle = attribute.Value.Contains(":") ? new InstanceHandle(attribute.Value) : new InstanceHandle(value.Name, attribute.Value);
+                    _current.InheritFromHandle = attribute.Value.Contains(':') ? new InstanceHandle(attribute.Value) : new InstanceHandle(value.Name, attribute.Value);
                 }
                 value.Attributes.Remove(attribute);
             }

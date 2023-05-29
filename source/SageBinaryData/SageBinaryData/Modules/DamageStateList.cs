@@ -1,21 +1,20 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct DamageState
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DamageState
-    {
-        public Percentage MinHealth;
-        public Percentage MaxHealth;
-        public ObjectStatusBitFlags ObjectStatus;
-        public ModelConditionBitFlags ModelConditions;
-    }
+    public Percentage MinHealth;
+    public Percentage MaxHealth;
+    public ObjectStatusBitFlags ObjectStatus;
+    public ModelConditionBitFlags ModelConditions;
+}
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DamageStateListModuleData
-    {
-        public DamageModuleData Base;
-        public List<DamageState> Data;
-    }
+[StructLayout(LayoutKind.Sequential)]
+public struct DamageStateListModuleData
+{
+    public DamageModuleData Base;
+    public List<DamageState> Data;
 }

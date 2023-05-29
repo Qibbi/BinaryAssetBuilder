@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct LaserStateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct LaserStateModuleData
-    {
-        public UpdateModuleData Base;
-        public int LaserId;
-    }
+    public UpdateModuleData Base;
+    public int LaserId;
 }

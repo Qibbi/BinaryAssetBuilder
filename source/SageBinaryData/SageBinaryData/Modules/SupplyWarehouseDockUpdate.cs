@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SupplyWarehouseDockUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SupplyWarehouseDockUpdateModuleData
-    {
-        public DockUpdateModuleData Base;
-        public int StartingBoxes;
-        public SageBool DeleteWhenEmpty;
-    }
+    public DockUpdateModuleData Base;
+    public int StartingBoxes;
+    public SageBool DeleteWhenEmpty;
 }

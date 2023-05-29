@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace BinaryAssetBuilder.Utility
 {
     public abstract class AStructWrapper<T> : IDisposable where T : unmanaged
     {
-        public static unsafe int Size { get; } = sizeof(T);
-
+        private bool _disposed;
         private IntPtr _hData;
 
         protected unsafe T* Data;
@@ -16,10 +16,10 @@ namespace BinaryAssetBuilder.Utility
 
         public unsafe AStructWrapper()
         {
-            _hData = Marshal.AllocHGlobal(Size);
+            _hData = Marshal.AllocHGlobal(Unsafe.SizeOf<T>());
             if (_hData != IntPtr.Zero)
             {
-                Native.MsVcRt.MemSet(_hData, 0, new Native.SizeT(Size));
+                Native.MsVcRt.MemSet(_hData, 0, new Native.SizeT(Unsafe.SizeOf<T>()));
                 Data = (T*)_hData;
             }
         }
@@ -28,7 +28,7 @@ namespace BinaryAssetBuilder.Utility
         {
             fixed (byte* pBuffer = &buffer[0])
             {
-                Native.MsVcRt.MemCpy((IntPtr)Data, (IntPtr)pBuffer, new Native.SizeT(Size));
+                Native.MsVcRt.MemCpy((IntPtr)Data, (IntPtr)pBuffer, new Native.SizeT(Unsafe.SizeOf<T>()));
                 if (isBigEndian)
                 {
                     Swap();
@@ -38,8 +38,8 @@ namespace BinaryAssetBuilder.Utility
 
         public virtual void LoadFromStream(Stream input, bool isBigEndian)
         {
-            byte[] buffer = new byte[Size];
-            input.Read(buffer, 0, Size);
+            byte[] buffer = new byte[Unsafe.SizeOf<T>()];
+            input.Read(buffer, 0, Unsafe.SizeOf<T>());
             LoadFromBuffer(buffer, isBigEndian);
         }
 
@@ -49,23 +49,43 @@ namespace BinaryAssetBuilder.Utility
             {
                 Swap();
             }
-            byte[] buffer = new byte[Size];
-            new UnmanagedMemoryStream((byte*)Data, Size).Read(buffer, 0, Size);
-            output.Write(buffer, 0, Size);
+            byte[] buffer = new byte[Unsafe.SizeOf<T>()];
+            new UnmanagedMemoryStream((byte*)Data, Unsafe.SizeOf<T>()).Read(buffer, 0, Unsafe.SizeOf<T>());
+            output.Write(buffer, 0, Unsafe.SizeOf<T>());
             if (isBigEndian)
             {
                 Swap();
             }
         }
 
-        public virtual unsafe void Dispose()
+        protected virtual unsafe void Dispose(bool disposing)
         {
-            if (_hData != IntPtr.Zero)
+            if (!_disposed)
             {
-                Marshal.FreeHGlobal(_hData);
-                _hData = IntPtr.Zero;
-                Data = null;
+                if (disposing)
+                {
+                    Data = null;
+                }
+
+                if (_hData != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(_hData);
+                    _hData = IntPtr.Zero;
+                }
+
+                _disposed = true;
             }
+        }
+
+        ~AStructWrapper()
+        {
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,18 +1,19 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using System;
+﻿using System;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
+using BinaryAssetBuilder.Core.Diagnostics;
 
 public class BinaryAssetBuilderException : ApplicationException
 {
     public ErrorCode ErrorCode { get; }
 
-    public BinaryAssetBuilderException(ErrorCode errorCode, string message, params object[] args) : base(string.Format(message, args))
+    public BinaryAssetBuilderException(ErrorCode errorCode, string message, params object[] args) : base(string.Format(CultureInfo.InvariantCulture, message, args))
     {
         ErrorCode = errorCode;
     }
 
-    public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode, string message, params object[] args) : base(string.Format(message, args), innerException)
+    public BinaryAssetBuilderException(Exception innerException, ErrorCode errorCode, string message, params object[] args) : base(string.Format(CultureInfo.InvariantCulture, message, args), innerException)
     {
         ErrorCode = errorCode;
     }

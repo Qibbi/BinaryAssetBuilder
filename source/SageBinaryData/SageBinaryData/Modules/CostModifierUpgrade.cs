@@ -1,19 +1,18 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CostModifierUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CostModifierUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public List<Percentage> Percentages;
-        public AnsiString UILabel;
-        public unsafe ObjectFilter* ObjectFilter;
-        public List<TypedAssetId<UpgradeTemplate>> ApplyToUpgrade;
-        public SageBool IsUpgradeDiscountUpgrade;
-        public SageBool StartsActive;
-        public SageBool Slaughter;
-    }
+    public UpgradeModuleData Base;
+    public List<Percentage> Percentages;
+    public AnsiString UILabel;
+    public unsafe ObjectFilter* ObjectFilter;
+    public List<TypedAssetId<UpgradeTemplate>> ApplyToUpgrade;
+    public SageBool IsUpgradeDiscountUpgrade;
+    public SageBool StartsActive;
+    public SageBool Slaughter;
 }

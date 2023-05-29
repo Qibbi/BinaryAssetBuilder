@@ -1,15 +1,16 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using BinaryAssetBuilder.Core.IO;
-using System;
+﻿using System;
+using System.Globalization;
 using System.Reflection;
 using System.Xml;
+using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.IO;
 
 namespace BinaryAssetBuilder.Core
 {
     public class XIncludingReaderWrapper
     {
         private static readonly Tracer _tracer = Tracer.GetTracer(nameof(XIncludingReaderWrapper), "Provides xi:include reading functionality");
-        private static Assembly _library = null;
+        private static Assembly _library;
 
         public static void LoadAssembly()
         {
@@ -33,7 +34,7 @@ namespace BinaryAssetBuilder.Core
                 {
                     Type type = _library.GetType("Mvp.Xml.XInclude.XIncludingReader");
                     object instance = _library.CreateInstance("Mvp.Xml.XInclude.XIncludingReader", false, BindingFlags.CreateInstance, null, new object[] { reader }, null, null);
-                    type.InvokeMember("XmlResolver", BindingFlags.SetProperty, null, instance, new object[] { resolver });
+                    type.InvokeMember("XmlResolver", BindingFlags.SetProperty, null, instance, new object[] { resolver }, CultureInfo.InvariantCulture);
                     return (XmlReader)instance;
                 }
             }

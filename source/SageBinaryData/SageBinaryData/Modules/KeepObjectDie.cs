@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct KeepObjectDieModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct KeepObjectDieModuleData
-    {
-        public DieModuleData Base;
-        public Time CollapsingTime;
-        public SageBool StayOnRadar;
-    }
+    public DieModuleData Base;
+    public Time CollapsingTime;
+    public SageBool StayOnRadar;
 }

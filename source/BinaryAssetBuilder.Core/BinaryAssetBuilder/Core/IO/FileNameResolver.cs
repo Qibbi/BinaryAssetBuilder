@@ -1,5 +1,5 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using System.IO;
+﻿using System.IO;
+using BinaryAssetBuilder.Core.Diagnostics;
 
 namespace BinaryAssetBuilder.Core.IO
 {
@@ -63,7 +63,7 @@ namespace BinaryAssetBuilder.Core.IO
                         throw new BinaryAssetBuilderException(ErrorCode.IllegalPath, "An illegal path {0} is used as a reference to another asset or document.", targetPath);
                     }
                     string str = pathArray[1].Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-                    string lower = pathArray[0].ToLower();
+                    string lower = pathArray[0].ToLowerInvariant();
                     if (lower == "art")
                     {
                         if (string.IsNullOrEmpty(ShPath.RemoveFileSpec(str)))

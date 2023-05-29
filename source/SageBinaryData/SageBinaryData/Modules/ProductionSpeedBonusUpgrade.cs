@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ProductionSpeedBonusUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ProductionSpeedBonusUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public int Frames;
-        public float Bonus;
-        public TypedAssetId<GameObject> Template;
-    }
+    public UpgradeModuleData Base;
+    public int Frames;
+    public float Bonus;
+    public TypedAssetId<GameObject> Template;
 }

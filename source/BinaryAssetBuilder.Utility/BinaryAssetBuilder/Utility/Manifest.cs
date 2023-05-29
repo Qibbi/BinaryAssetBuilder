@@ -1,13 +1,14 @@
-﻿using AssetStream;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml;
+using AssetStream;
 
 namespace BinaryAssetBuilder.Utility
 {
-    public class Manifest : IDisposable
+    public sealed class Manifest : IDisposable
     {
         private unsafe sbyte* _pBuffer;
         private unsafe AssetStream.ManifestHeader* _pHeader;
@@ -313,7 +314,7 @@ namespace BinaryAssetBuilder.Utility
                 {
                     if (reader.Name == "StringAndHash")
                     {
-                        uint hash = Convert.ToUInt32(reader.GetAttribute("Hash"));
+                        uint hash = Convert.ToUInt32(reader.GetAttribute("Hash"), CultureInfo.InvariantCulture);
                         if (!_stringHashes.ContainsKey(hash))
                         {
                             _stringHashes.Add(hash, reader.GetAttribute("Text"));
@@ -343,7 +344,7 @@ namespace BinaryAssetBuilder.Utility
 
         public string StringFromHash(uint hash)
         {
-            return !_stringHashes.TryGetValue(hash, out string result) ? hash.ToString("x8") : result;
+            return !_stringHashes.TryGetValue(hash, out string result) ? hash.ToString("x8", CultureInfo.InvariantCulture) : result;
         }
 
         public void Dispose()

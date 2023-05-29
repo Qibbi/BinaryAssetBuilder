@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SquishCollideModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SquishCollideModuleData
-    {
-        public CollideModuleData Base;
-        public Time CrushAnimTime;
-        public Time CrushKillDelay;
-        public SageBool UseDirectionCheck;
-    }
+    public CollideModuleData Base;
+    public Time CrushAnimTime;
+    public Time CrushKillDelay;
+    public SageBool UseDirectionCheck;
 }

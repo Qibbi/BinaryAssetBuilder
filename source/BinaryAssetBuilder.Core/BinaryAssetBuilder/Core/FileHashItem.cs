@@ -1,9 +1,10 @@
-﻿using BinaryAssetBuilder.Core.Hashing;
-using BinaryAssetBuilder.Core.IO;
-using BinaryAssetBuilder.Core.Xml;
-using System;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Xml;
+using BinaryAssetBuilder.Core.Hashing;
+using BinaryAssetBuilder.Core.IO;
+using BinaryAssetBuilder.Core.Xml;
 
 namespace BinaryAssetBuilder.Core
 {
@@ -109,8 +110,8 @@ namespace BinaryAssetBuilder.Core
         {
             string[] values = node.GetAttributeValue("d", null).GetText().Split(';');
             _path = values[0];
-            _hash = Convert.ToUInt32(values[1]);
-            _lastDate = DateTime.FromBinary(Convert.ToInt64(values[2]));
+            _hash = Convert.ToUInt32(values[1], CultureInfo.InvariantCulture);
+            _lastDate = DateTime.FromBinary(Convert.ToInt64(values[2], CultureInfo.InvariantCulture));
             if (values.Length > 3)
             {
                 _buildConfiguration = values[3];

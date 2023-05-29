@@ -1,12 +1,11 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BinaryAssetBuilder.Core.Diagnostics;
 
 namespace BinaryAssetBuilder.Core
 {
     public class VerifierPluginRegistry
     {
-        private class NullVertifierPlugin : IAssetBuilderVerifierPlugin
+        private sealed class NullVertifierPlugin : IAssetBuilderVerifierPlugin
         {
             public void Initialize(TargetPlatform platform)
             {
@@ -36,7 +35,7 @@ namespace BinaryAssetBuilder.Core
                     plugin.Initialize(platform);
                     if (plugin.Plugin is not IAssetBuilderVerifierPlugin verifierPlugin)
                     {
-                        throw new ApplicationException($"'{plugin.QualifiedName}' does not implement {nameof(IAssetBuilderVerifierPlugin)}");
+                        throw new BinaryAssetBuilderException(ErrorCode.InternalError, $"'{plugin.QualifiedName}' does not implement {nameof(IAssetBuilderVerifierPlugin)}");
                     }
                     if (plugin.HandledTypes.Count > 0)
                     {

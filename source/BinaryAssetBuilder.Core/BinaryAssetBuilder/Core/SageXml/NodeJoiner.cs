@@ -1,7 +1,7 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using System;
+﻿using System;
 using System.Xml;
 using System.Xml.Schema;
+using BinaryAssetBuilder.Core.Diagnostics;
 
 namespace BinaryAssetBuilder.Core.SageXml
 {
@@ -258,7 +258,7 @@ namespace BinaryAssetBuilder.Core.SageXml
                         break;
                     }
                 }
-                if (isEnumeration && (srcAttrib.Value.Contains("+") || srcAttrib.Value.Contains("-")))
+                if (isEnumeration && (srcAttrib.Value.Contains('+') || srcAttrib.Value.Contains('-')))
                 {
                     replacing = false;
                     string str = srcAttrib.Value;

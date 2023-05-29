@@ -1,10 +1,11 @@
-﻿using BinaryAssetBuilder.Core.Diagnostics;
-using BinaryAssetBuilder.Core.SageXml;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
+using BinaryAssetBuilder.Core.Diagnostics;
+using BinaryAssetBuilder.Core.SageXml;
 
 namespace BinaryAssetBuilder.Core.Hashing
 {
@@ -36,13 +37,13 @@ namespace BinaryAssetBuilder.Core.Hashing
             {
                 foreach (XmlNode childNode in xmlDocument.DocumentElement.ChildNodes)
                 {
-                    if (childNode.NodeType == XmlNodeType.Element && childNode.Name.Equals(StringTableAssetName))
+                    if (childNode.NodeType == XmlNodeType.Element && childNode.Name.Equals(StringTableAssetName, StringComparison.Ordinal))
                     {
                         XmlElement table = (XmlElement)childNode;
                         string key = table.Attributes[StringBinEnumAttribute].Value;
                         if (_stringHashBins.TryGetValue(key, out StringHashBin bin))
                         {
-                            if (Convert.ToUInt32(table.Attributes["Version"].Value) == _hashProviderVersion)
+                            if (Convert.ToUInt32(table.Attributes["Version"].Value, CultureInfo.InvariantCulture) == _hashProviderVersion)
                             {
                                 bin.ReadStringHashTable(table);
                             }
@@ -95,7 +96,7 @@ namespace BinaryAssetBuilder.Core.Hashing
         public static void RecordHash(string binName, string str)
         {
             StringHashBin bin = _stringHashBins[binName];
-            bin.RecordStringHash(GetTextHash(bin.IsCaseSensitive ? str : str.ToLower()), str);
+            bin.RecordStringHash(GetTextHash(bin.IsCaseSensitive ? str : str.ToLowerInvariant()), str);
         }
 
         public static void InitializeStringHashes(string outputDir)
@@ -168,7 +169,7 @@ namespace BinaryAssetBuilder.Core.Hashing
 
         public static uint GetCaseInsensitiveSymbolHash(string symbol)
         {
-            return FastHash.GetHashCode(symbol.ToLower());
+            return FastHash.GetHashCode(symbol.ToLowerInvariant());
         }
 
         public static uint GetCaseSensitiveSymbolHash(string symbol)
