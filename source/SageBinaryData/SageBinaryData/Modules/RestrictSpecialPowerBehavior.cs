@@ -1,15 +1,14 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RestrictSpecialPowerBehaviorModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RestrictSpecialPowerBehaviorModuleData
-    {
-        public BehaviorModuleData Base;
-        public SpecialPowerRestrictionType RestrictionType;
-        public TypedAssetId<GameObject> DependentObject;
-        public List<float> DependentObjectRadius;
-        public SageBool ConsiderSpecialPowerRadius;
-    }
+    public BehaviorModuleData Base;
+    public SpecialPowerRestrictionType RestrictionType;
+    public TypedAssetId<GameObject> DependentObject;
+    public List<float> DependentObjectRadius;
+    public SageBool ConsiderSpecialPowerRadius;
 }

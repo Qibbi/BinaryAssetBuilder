@@ -1,13 +1,12 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct HighlightReachableTargetsSpecialAbilityUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct HighlightReachableTargetsSpecialAbilityUpdateModuleData
-    {
-        public SpecialAbilityUpdateModuleData Base;
-        public AssetReference<FXList> HighlightFX;
-        public TypedAssetId<ModuleData> ModuleId;
-    }
+    public SpecialAbilityUpdateModuleData Base;
+    public AssetReference<FXList> HighlightFX;
+    public TypedAssetId<ModuleData> ModuleId;
 }

@@ -1,11 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CreateAndEnterObjectSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CreateAndEnterObjectSpecialPowerModuleData
-    {
-        public OCLSpecialPowerModuleData Base;
-        public unsafe Coord3D* FXOffset;
-    }
+    public OCLSpecialPowerModuleData Base;
+    public unsafe Coord3D* FXOffset;
 }

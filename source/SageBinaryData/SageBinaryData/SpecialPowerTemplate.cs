@@ -1,6 +1,6 @@
-﻿using Relo;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using Relo;
 using AnsiString = Relo.String<sbyte>;
 
 namespace SageBinaryData
@@ -37,7 +37,7 @@ namespace SageBinaryData
     [StructLayout(LayoutKind.Sequential)]
     public struct SpecialPowerTemplateBitFlag
     {
-        public const int Count = 0x00000018;
+        public const int Count = 25;
         public const int BitsInSpan = 32;
         public const int NumSpans = (Count + (BitsInSpan - 1)) / BitsInSpan;
 

@@ -1,4 +1,5 @@
-﻿using Relo;
+﻿#if TIBERIUMWARS
+using Relo;
 using SageBinaryData;
 
 public static partial class Marshaler
@@ -38,3 +39,4 @@ public static partial class Marshaler
         Marshal(node, (UpdateModuleData*)objT, state);
     }
 }
+#endif

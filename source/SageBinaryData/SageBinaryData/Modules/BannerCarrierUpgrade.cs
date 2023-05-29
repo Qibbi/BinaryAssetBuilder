@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct BannerCarrierUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct BannerCarrierUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-    }
+    public UpgradeModuleData Base;
 }

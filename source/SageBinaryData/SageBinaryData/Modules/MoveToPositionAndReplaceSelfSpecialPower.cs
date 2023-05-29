@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct MoveToPositionAndReplaceSelfSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct MoveToPositionAndReplaceSelfSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-    }
+    public SpecialPowerModuleData Base;
 }

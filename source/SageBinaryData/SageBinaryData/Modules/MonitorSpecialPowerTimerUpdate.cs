@@ -1,13 +1,12 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct MonitorSpecialPowerTimerUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct MonitorSpecialPowerTimerUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public AssetReference<SpecialPowerTemplate> SpecialPowerTemplate;
-        public ModelConditionBitFlags ReadyCondition;
-    }
+    public UpdateModuleData Base;
+    public AssetReference<SpecialPowerTemplate> SpecialPowerTemplate;
+    public ModelConditionBitFlags ReadyCondition;
 }

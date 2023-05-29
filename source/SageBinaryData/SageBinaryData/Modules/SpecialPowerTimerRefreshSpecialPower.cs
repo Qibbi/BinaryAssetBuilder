@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SpecialPowerTimerRefreshSpecialPowerModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SpecialPowerTimerRefreshSpecialPowerModuleData
-    {
-        public SpecialPowerModuleData Base;
-    }
+    public SpecialPowerModuleData Base;
 }

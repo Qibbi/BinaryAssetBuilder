@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ObjectHelperModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ObjectHelperModuleData
-    {
-        public UpdateModuleData Base;
-    }
+    public UpdateModuleData Base;
 }

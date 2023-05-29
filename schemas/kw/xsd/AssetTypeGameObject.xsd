@@ -223,6 +223,7 @@
 			<xs:element name="SetLocomotorSpeedUpdate"	type="SetLocomotorSpeedUpdateModuleData"/>
 			<xs:element name="DestroyObjectsUpdate"		  type="DestroyObjectsUpdateModuleData"/>
 			<xs:element name="PlayerPowerManager"       type="PlayerPowerManagerBehaviorModuleData" />
+			<xs:element name="ShareExperience" type="ShareExperienceBehaviorModuleData"/>
       <xs:element name="MetaUpgradeAura"          type="MetaUpgradeAuraBehaviorModuleData" />
       <xs:element name="MetaGameStratButtonInfo"  type="MetaGameStratButtonInfoModuleData" />
       <xs:element name="SpecialDisguiseUpdate" type="SpecialDisguiseUpdateModuleData" />

@@ -1,13 +1,14 @@
-﻿using System.Runtime.InteropServices;
+﻿#if TIBERIUMWARS
+using System.Runtime.InteropServices;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct TooltipUpgradeModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct TooltipUpgradeModuleData
-    {
-        public UpgradeModuleData Base;
-        public AnsiString NewDisplayName;
-        public AnsiString NewDescription;
-    }
+    public UpgradeModuleData Base;
+    public AnsiString NewDisplayName;
+    public AnsiString NewDescription;
 }
+#endif

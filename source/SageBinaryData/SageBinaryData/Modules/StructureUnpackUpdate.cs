@@ -1,13 +1,12 @@
-﻿using Relo;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Relo;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct StructureUnpackUpdateModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct StructureUnpackUpdateModuleData
-    {
-        public UpdateModuleData Base;
-        public Time UnpackTime;
-        public unsafe AssetReference<BaseAudioEventInfo, AudioEventInfo>* UnpackCompleteSound;
-    }
+    public UpdateModuleData Base;
+    public Time UnpackTime;
+    public unsafe AssetReference<BaseAudioEventInfo, AudioEventInfo>* UnpackCompleteSound;
 }

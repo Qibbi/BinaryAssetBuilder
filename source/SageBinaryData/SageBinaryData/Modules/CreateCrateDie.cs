@@ -1,13 +1,14 @@
-﻿using Relo;
+﻿#if TIBERIUMWARS
 using System.Runtime.InteropServices;
+using Relo;
 using AnsiString = Relo.String<sbyte>;
 
-namespace SageBinaryData
+namespace SageBinaryData;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CreateCrateDieModuleData
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CreateCrateDieModuleData
-    {
-        public DieModuleData Base;
-        public List<AnsiString> CrateNameList;
-    }
+    public DieModuleData Base;
+    public List<AnsiString> CrateNameList;
 }
+#endif

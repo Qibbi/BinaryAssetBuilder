@@ -9,7 +9,7 @@ public static partial class Marshaler
         {
             return;
         }
-        Marshal(node.GetAttributeValue(nameof(SetLocomotorSpeedUpdateModuleData.Type), "INVALID"), &objT->Type, state);
+        Marshal(node.GetAttributeValue(nameof(SetLocomotorSpeedUpdateModuleData.Type), nameof(SetLocomotorSpeedUpdateType.INVALID)), &objT->Type, state);
         Marshal(node.GetAttributeValue(nameof(SetLocomotorSpeedUpdateModuleData.LocomotorSpeedToSet), "0.0"), &objT->LocomotorSpeedToSet, state);
         Marshal(node.GetAttributeValue(nameof(SetLocomotorSpeedUpdateModuleData.LocomotorDeltaPerUpdate), "0.0"), &objT->LocomotorDeltaPerUpdate, state);
         Marshal(node.GetAttributeValue(nameof(SetLocomotorSpeedUpdateModuleData.OtherScaredScanRangeMultiplier), "0.0"), &objT->OtherScaredScanRangeMultiplier, state);

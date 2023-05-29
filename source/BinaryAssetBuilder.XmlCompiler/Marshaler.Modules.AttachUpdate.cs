@@ -30,7 +30,7 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue(nameof(AttachUpdateModuleData.InitialAttachDelay), null), &objT->InitialAttachDelay, state);
         Marshal(node.GetAttributeValue(nameof(AttachUpdateModuleData.IdleScanDelay), "0.35s"), &objT->IdleScanDelay, state);
         Marshal(node.GetAttributeValue(nameof(AttachUpdateModuleData.CanAttachToHordeMembers), "false"), &objT->CanAttachToHordeMembers, state);
-        Marshal(node.GetAttributeValue(nameof(AttachUpdateModuleData.Flags), "NONE"), &objT->Flags, state);
+        Marshal(node.GetAttributeValue(nameof(AttachUpdateModuleData.Flags), nameof(AttachUpdateFlagsType.NONE)), &objT->Flags, state);
         Marshal(node.GetChildNode(nameof(AttachUpdateModuleData.ObjectFilter), null), &objT->ObjectFilter, state);
         Marshal(node, (UpdateModuleData*)objT, state);
     }
