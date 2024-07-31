@@ -1,10 +1,10 @@
-﻿using BinaryAssetBuilder.Core;
+﻿using System;
+using System.ComponentModel;
+using System.Xml;
+using BinaryAssetBuilder.Core;
 using BinaryAssetBuilder.Core.CommandLine;
 using BinaryAssetBuilder.Core.SageXml;
 using BinaryAssetBuilder.Core.Xml;
-using System;
-using System.ComponentModel;
-using System.Xml;
 
 namespace BinaryAssetBuilder
 {

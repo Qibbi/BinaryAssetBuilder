@@ -91,10 +91,10 @@ namespace BinaryAssetBuilder
 
             public void StartBuild(string[] args)
             {
-                if (!SetupSettings(args))
-                {
-                    return;
-                }
+                // if (!SetupSettings(args))
+                // {
+                //     return;
+                // }
                 _babThread = new Thread(_bab.Run)
                 {
                     Name = "BabBuildThread"
