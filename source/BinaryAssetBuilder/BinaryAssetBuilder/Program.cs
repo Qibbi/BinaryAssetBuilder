@@ -55,7 +55,7 @@ namespace BinaryAssetBuilder
 
             public bool SetupSettings(string[] args)
             {
-                string cfg = "BinaryAssetBuilder.cfg";
+                string cfg = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BinaryAssetBuilder.cfg");
                 if (!File.Exists(cfg))
                 {
                     throw new BinaryAssetBuilderException(ErrorCode.FileNotFound, "BinaryAssetBuilder configuration not found.");
