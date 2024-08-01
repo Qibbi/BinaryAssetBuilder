@@ -20,7 +20,7 @@ public struct FloodUpdateModuleData
 {
     public UpdateModuleData Base;
     public float AngleOfFlow;
-    public List<FloodUpdateModuleData> DataList;
+    public List<FloodMemberData> DataList;
     public SageBool IsDirectionRelative;
 }
 #endif
