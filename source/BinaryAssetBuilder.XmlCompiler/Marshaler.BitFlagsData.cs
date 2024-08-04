@@ -1565,57 +1565,6 @@ public static partial class Marshaler
         Marshal(value.GetText(), objT, state);
     }
 
-    public static unsafe void Marshal(string text, ModelConditionBitFlags* objT, Tracker state)
-    {
-        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
-        if (tokens.Length == 0)
-        {
-            return;
-        }
-        for (int idy = 0; idy < tokens.Length; ++idy)
-        {
-            string token = tokens[idy];
-            bool includeToken = true;
-            if (token[0] == '+')
-            {
-                includeToken = true;
-            }
-            else if (token[0] == '-')
-            {
-                includeToken = false;
-            }
-            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
-            {
-                for (int idx = 0; idx < ModelConditionBitFlags.NumSpans; ++idx)
-                {
-                    objT->Value[idx] = uint.MaxValue;
-                }
-                continue;
-            }
-            ModelConditionFlagType value = (ModelConditionFlagType)(-1);
-            Marshal(token, &value, state);
-            if (value != (ModelConditionFlagType)(-1))
-            {
-                uint uintValue = (uint)value;
-                if (uintValue < ModelConditionBitFlags.Count)
-                {
-                    if (includeToken)
-                    {
-                        objT->Value[uintValue / ModelConditionBitFlags.BitsInSpan] |= (uint)(1 << (int)(uintValue % ModelConditionBitFlags.BitsInSpan));
-                    }
-                    else
-                    {
-                        objT->Value[uintValue / ModelConditionBitFlags.BitsInSpan] ^= (uint)(1 << (int)(uintValue % ModelConditionBitFlags.BitsInSpan));
-                    }
-                }
-            }
-        }
-        for (int idx = 0; idx < ModelConditionBitFlags.NumSpans; ++idx)
-        {
-            state.InplaceEndianToPlatform(&objT->Value[idx]);
-        }
-    }
-
     public static unsafe void Marshal(string text, MapObjectBitFlags* objT, Tracker state)
     {
         string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
@@ -1674,6 +1623,57 @@ public static partial class Marshaler
             return;
         }
         Marshal(value.GetText(), objT, state);
+    }
+
+    public static unsafe void Marshal(string text, ModelConditionBitFlags* objT, Tracker state)
+    {
+        string[] tokens = text.Split(WhiteSpaces, System.StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return;
+        }
+        for (int idy = 0; idy < tokens.Length; ++idy)
+        {
+            string token = tokens[idy];
+            bool includeToken = true;
+            if (token[0] == '+')
+            {
+                includeToken = true;
+            }
+            else if (token[0] == '-')
+            {
+                includeToken = false;
+            }
+            if (string.Equals(token, "ALL", System.StringComparison.Ordinal))
+            {
+                for (int idx = 0; idx < ModelConditionBitFlags.NumSpans; ++idx)
+                {
+                    objT->Value[idx] = uint.MaxValue;
+                }
+                continue;
+            }
+            ModelConditionFlagType value = (ModelConditionFlagType)(-1);
+            Marshal(token, &value, state);
+            if (value != (ModelConditionFlagType)(-1))
+            {
+                uint uintValue = (uint)value;
+                if (uintValue < ModelConditionBitFlags.Count)
+                {
+                    if (includeToken)
+                    {
+                        objT->Value[uintValue / ModelConditionBitFlags.BitsInSpan] |= (uint)(1 << (int)(uintValue % ModelConditionBitFlags.BitsInSpan));
+                    }
+                    else
+                    {
+                        objT->Value[uintValue / ModelConditionBitFlags.BitsInSpan] ^= (uint)(1 << (int)(uintValue % ModelConditionBitFlags.BitsInSpan));
+                    }
+                }
+            }
+        }
+        for (int idx = 0; idx < ModelConditionBitFlags.NumSpans; ++idx)
+        {
+            state.InplaceEndianToPlatform(&objT->Value[idx]);
+        }
     }
 
     public static unsafe void Marshal(Value value, ModelConditionBitFlags* objT, Tracker state)
