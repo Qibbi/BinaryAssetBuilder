@@ -65,7 +65,7 @@ BinaryAssetBuilder implementation for Kane's Wrath in .Net
 * [ ] MissionObjectiveList                                      0xC385A8C1
 * [ ] StringHashTable                                           0x2C112832
 * [ ] InGameUISettings                                          0x49FE3760
-* [ ] DamageFX                                                  0x4DF81EBD
+* [x] DamageFX
 * [ ] MultiplayerSettings                                       0x1BAF4C42
 * [ ] OnlineChatColors                                          0xF3645AA7
 * [ ] MultiplayerColor                                          0x966F336A
