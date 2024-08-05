@@ -63,7 +63,7 @@ BinaryAssetBuilder implementation for Kane's Wrath in .Net
 * [ ] MpGameRules                                               0xEDDBB607
 * [ ] ExperienceLevelTemplate                                   0xAE55047B
 * [ ] MissionObjectiveList                                      0xC385A8C1
-* [ ] StringHashTable                                           0x2C112832
+* [x] StringHashTable
 * [ ] InGameUISettings                                          0x49FE3760
 * [ ] DamageFX                                                  0x4DF81EBD
 * [ ] MultiplayerSettings                                       0x1BAF4C42
