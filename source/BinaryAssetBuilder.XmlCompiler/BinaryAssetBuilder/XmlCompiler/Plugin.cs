@@ -142,6 +142,16 @@ public class Plugin : IAssetBuilderPlugin
             0x6D59C409u,
 #endif
             false),
+
+
+
+            (typeof(StringHashTable),
+#if TIBERIUMWARS
+            0x2C112832u,
+#elif KANESWRATH
+            0xCBB109A0u,
+#endif
+            false),
         })
         {
             CreateTypeInfo(type, num, hash, hasCustomData);
