@@ -8,7 +8,7 @@ BinaryAssetBuilder implementation for Kane's Wrath in .Net
 * [x] WeaponTemplate
 * [x] LocomotorTemplate
 * [ ] GameObject                                                0x132408DB
-* [ ] FXParticleSystemTemplate                                  0xA148D511
+* [x] FXParticleSystemTemplate
 * [ ] Weather                                                   0x368A8BA2
 * [ ] ShadowMap                                                 0xC6389FA6
 * [ ] WaterTransparency                                         0x331DA6CE
