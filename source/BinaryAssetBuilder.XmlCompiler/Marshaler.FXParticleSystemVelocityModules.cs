@@ -54,6 +54,7 @@ public static partial class Marshaler
         Marshal(node, (FXParticleEmissionVelocityBase*)objT, state);
     }
 
+#if TIBERIUMWARS
     public static unsafe void Marshal(Node node, FXParticleEmissionVelocityHemisphere* objT, Tracker state)
     {
         if (node is null)
@@ -62,6 +63,7 @@ public static partial class Marshaler
         }
         Marshal(node, (FXParticleEmissionVelocitySphere*)objT, state);
     }
+#endif
 
     public static unsafe void Marshal(Node node, FXParticleEmissionVelocityBase** objT, Tracker state)
     {
@@ -73,9 +75,11 @@ public static partial class Marshaler
         Marshal(node.GetAttributeValue("TypeId", "0"), &typeId, Tracker.NullTracker);
         switch (typeId)
         {
+#if TIBERIUMWARS
             case 0xB7B54FC2u:
                 MarshalPolymorphicType<FXParticleEmissionVelocityHemisphere, FXParticleEmissionVelocityBase>(node, objT, state);
                 break;
+#endif
             case 0x8BB38534u:
                 MarshalPolymorphicType<FXParticleEmissionVelocitySphere, FXParticleEmissionVelocityBase>(node, objT, state);
                 break;

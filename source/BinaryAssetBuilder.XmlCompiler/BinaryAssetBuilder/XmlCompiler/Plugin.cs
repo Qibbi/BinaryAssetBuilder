@@ -124,6 +124,13 @@ public class Plugin : IAssetBuilderPlugin
             0x50612DE9u,
 #endif
             false),
+            (typeof(FXParticleSystemTemplate),
+#if TIBERIUMWARS
+            0xA148D511u,
+#elif KANESWRATH
+            0xA0C56702u,
+#endif
+            false),
 
 
 
