@@ -142,6 +142,15 @@ public class Plugin : IAssetBuilderPlugin
             0x6D59C409u,
 #endif
             false),
+
+
+            (typeof(SpecialPowerTemplate),
+#if TIBERIUMWARS
+            0x5EF0ACA9u,
+#elif KANESWRATH
+            0xC4DCAF5Au,
+#endif
+            false),
         })
         {
             CreateTypeInfo(type, num, hash, hasCustomData);
